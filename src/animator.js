@@ -85,6 +85,8 @@ var Animator = function() {
 
   // Renders the current state of the elements.
   this._renderFrame = function(canvas) {
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
     for (var id in animator.elements) {
       if (animator.elements.hasOwnProperty(id)) {
         animator.elements[id].render(canvas);
