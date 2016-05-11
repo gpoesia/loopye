@@ -1,0 +1,13 @@
+{
+  "name": "comp4kids",
+  "version": "0.0.1",
+  "description": "A playful CS 101 course with a novel approach.",
+  "repository": "https://github.com/gpoesia/comp4kids",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "browserify": "13.0.1",
+    "flux": "2.1.1",
+    "react": "15.0.2",
+    "react-dom": "15.0.2"
+  }
+}
