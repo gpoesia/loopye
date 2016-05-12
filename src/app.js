@@ -8,7 +8,6 @@ var DummyLesson = require("./lesson/dummy_lesson");
 
 var startLesson = function(lessonClass, domElement) {
   ReactDOM.render(React.createElement(lessonClass), domElement);
-  console.log("Rendered");
 };
 
 module.exports = {

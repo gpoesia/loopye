@@ -1,15 +1,24 @@
 /*
  * Component that contains the code editor.
+ * TODO find a code editor component that works.
  */
 
 var React = require("react");
 
 var CodeEditor = React.createClass({
+  _styles: {
+    editor: {
+      width: "100%",
+      height: "100%",
+      fontSize: "3em",
+      margin: "0px",
+      border: "0px",
+    },
+  },
   render: function() {
-    return <div style={{backgroundColor: "#ffffaa", width: "100%",
-                        height: "100%"}}>
-              <p style={{margin: "0"}}>Code editor</p>
-           </div>;
+    var editor = <textarea ref="editor" style={this._styles.editor}>
+                 </textarea>;
+    return editor;
   },
 });
 
