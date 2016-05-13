@@ -4,12 +4,27 @@
  */
 
 var React = require("react");
+var Constants = require("../constants");
 
 var ButtonBar = React.createClass({
+  _styles: {
+    playButton: {
+      height: "100%",
+      width: "10%",
+      backgroundImage: "url(\"" + Constants.PLAY_ICON_URL + "\")",
+      backgroundSize: "contain",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    },
+  },
+  playButtonClicked: function() {
+    console.log("Play button clicked.");
+  },
   render: function() {
-    return <div style={{backgroundColor: "#aaffaa", width: "100%",
+    return <div style={{backgroundColor: "#eeffee", width: "100%",
                         height: "100%"}}>
-              <p style={{margin: "0"}}>Button bar</p>
+              <button onClick={this.playButtonClicked}
+                      style={this._styles.playButton} />
            </div>;
   },
 });
