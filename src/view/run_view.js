@@ -6,10 +6,22 @@ var React = require("react");
 
 var RunView = React.createClass({
   render: function() {
-    return <div style={{backgroundColor: "#ffaaff", width: "100%",
-                        height: "100%"}}>
-              <p style={{margin: "0"}}>Results</p>
+    return <div style={{width: "100%", height: "100%"}}>
+              <canvas ref="canvas" style={{width: "100%", height: "100%"}} />
            </div>;
+  },
+
+  componentDidMount: function() {
+    this.forceUpdate();
+  },
+
+  componentDidUpdate: function() {
+    if (this.props.animator) {
+      var canvas = this.refs.canvas;
+      this.props.animator.render(canvas);
+      var self = this;
+      window.requestAnimationFrame(function() { self.forceUpdate(); });
+    }
   },
 });
 

@@ -16,10 +16,17 @@ var CodeEditor = React.createClass({
       resize: "none",
     },
   },
+  _callOnChange: function(callback) {
+    if (callback) {
+      return function(event) {
+        return callback(event.target.value);
+      };
+    }
+  },
   render: function() {
-    var editor = <textarea ref="editor" style={this._styles.editor}>
-                 </textarea>;
-    return editor;
+    return <textarea style={this._styles.editor}
+                     onChange={this._callOnChange(this.props.onChange)}
+                     value={this.props.code} />
   },
 });
 

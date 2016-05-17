@@ -7,9 +7,18 @@ var React = require("react");
 
 var InstructionPane = React.createClass({
   render: function() {
-    return <div style={{backgroundColor: "#aaaaff", width: "100%",
+    var advanceButton = <span/>;
+
+    if (this.props.canAdvance) {
+      advanceButton = <input type="button"
+                             value="Next"
+                             onClick={this.props.onAdvance} />;
+    }
+
+    return <div style={{backgroundColor: "#eeeeff", width: "100%",
                         height: "100%"}}>
-              <p style={{margin: "0"}}>Instructions</p>
+              <p style={{margin: "0"}}>{this.props.content}</p>
+              {advanceButton}
            </div>;
   },
 });

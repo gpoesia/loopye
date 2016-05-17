@@ -17,13 +17,10 @@ var ButtonBar = React.createClass({
       backgroundRepeat: "no-repeat",
     },
   },
-  playButtonClicked: function() {
-    console.log("Play button clicked.");
-  },
   render: function() {
     return <div style={{backgroundColor: "#eeffee", width: "100%",
                         height: "100%"}}>
-              <button onClick={this.playButtonClicked}
+              <button onClick={this.props.onPlay}
                       style={this._styles.playButton} />
            </div>;
   },

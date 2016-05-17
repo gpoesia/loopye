@@ -1,5 +1,5 @@
 /*
- * A simple animations framework for a HTML canvas.
+ * A simple animation framework using HTML canvas.
  *
  * An animation consists of elements and a description of how their visual
  * properties change over time. The animator plays such changes in a canvas.
@@ -78,9 +78,14 @@ var Animator = function() {
 
   // Play the animation in a canvas. Must be called after start().
   this.play = function(canvas) {
+    this.render(canvas);
+    window.requestAnimationFrame(function() {animator.play(canvas);});
+  };
+
+  // Renders the current state of the animation in a canvas.
+  this.render = function(canvas) {
     this._animateElements();
     this._renderFrame(canvas);
-    window.requestAnimationFrame(function() {animator.play(canvas);});
   };
 
   // Renders the current state of the elements.
@@ -109,4 +114,11 @@ var Animator = function() {
       }
     }
   };
+};
+
+module.exports = {
+  Element: Element,
+  RectangleElement: RectangleElement,
+  Animation: Animation,
+  Animator: Animator,
 };

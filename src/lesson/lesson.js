@@ -15,7 +15,7 @@ Lesson.prototype = {
 
   /// Returns the number of steps in this lesson.
   getNumberOfSteps: function() {
-    return this.steps.length();
+    return this.steps.length;
   },
 
   /// Returns the i-th step in this lesson.

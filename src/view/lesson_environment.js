@@ -39,20 +39,62 @@ var LessonEnvironment = React.createClass({
     },
   },
 
+  getInitialState: function() {
+    return {
+      sourceCode: "",
+      currentStep: 0,
+    };
+  },
+
+  _updateCode: function(code) {
+    console.log("New code: " + code);
+    this.setState({sourceCode: code});
+  },
+
+  _startStep: function(step) {
+    this.setState({
+      currentStep: step,
+      sourceCode: this.props.lesson.getStep(step).getInitialSourceCode(),
+    });
+  },
+
+  _advanceStep: function() {
+    console.log("Advancing...");
+    this._startStep(Math.min(this.props.lesson.getNumberOfSteps() - 1,
+                             this.state.currentStep + 1));
+  },
+
+  _previousStep: function() {
+    this._startStep(Math.max(0, this.state.currentStep - 1));
+  },
+
+  _playCode: function() {
+    console.log("Playing code.");
+    var currentStep = this.props.lesson.getStep(this.state.currentStep);
+    var animator = currentStep.play(this.state.sourceCode);
+    animator.start();
+    this.setState({animator: animator});
+  },
+
   render: function() {
-    return <div class='lesson-environment' style={{width: "100%", height: "100%"}}>
+    var currentStep = this.props.lesson.getStep(this.state.currentStep);
+
+    return <div style={{width: "100%", height: "100%"}}>
              <div style={this.styles.instructionPane}>
-               <InstructionPane/>
+               <InstructionPane content={currentStep.getContent()}
+                                canAdvance={currentStep.canAdvance()}
+                                onAdvance={this._advanceStep} />
              </div>
              <div style={this.styles.actionSide}>
                <div style={this.styles.editor}>
-                 <CodeEditor/>
+                 <CodeEditor code={this.state.sourceCode}
+                             onChange={this._updateCode} />
                </div>
                <div style={this.styles.buttonBar}>
-                 <ButtonBar/>
+                 <ButtonBar onPlay={this._playCode} />
                </div>
                <div style={this.styles.runView}>
-                 <RunView/>
+                 <RunView animator={this.state.animator} />
                </div>
              </div>
            </div>;
