@@ -1,6 +1,6 @@
 var animator = new Animator();
 
-animator.addElement(new SimpleGrid(
+animator.addElement(new SimpleGridElement(
   'grid', 10, 100));
 
 animator.addElement(new RectangleElement(
