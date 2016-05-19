@@ -123,6 +123,11 @@ var Animator = function() {
   this.addAnimation = function(animation) {
     animator.animations.push(animation);
   };
+  
+  // Clears all animations on the scene.
+  this.clearAllAnimations = function() {
+    animator.animations = new Array();
+  };
 
   // Starts the animation timer. Needs to be called before play().
   this.start = function() {
@@ -172,6 +177,8 @@ var Animator = function() {
 module.exports = {
   Element: Element,
   RectangleElement: RectangleElement,
+  CircleElement: CircleElement,
+  SimpleGridElement: SimpleGridElement,
   Animation: Animation,
   Animator: Animator,
 };
