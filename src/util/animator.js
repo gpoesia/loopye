@@ -45,54 +45,57 @@ var RectangleElement = function(id, width, height, color, stroke_color,
 // An element that is a colored circle.
 var CircleElement = function(id, radius, color, stroke_color,
                              line_width) {
-    var circle = this;
-    Element.apply(circle, [id]);
-    this.radius = radius || 0;
-    this.color = color || 'black';
-    this.stroke_color = stroke_color || 'black';
-    this.line_width = line_width || 0;
+  var circle = this;
+  Element.apply(circle, [id]);
+  this.radius = radius || 0;
+  this.color = color || 'black';
+  this.stroke_color = stroke_color || 'black';
+  this.line_width = line_width || 0;
 
-    this.render = function(canvas) {
-        var context = canvas.getContext('2d');
-        context.beginPath();
-        context.arc(circle.x + circle.radius, circle.y + circle.radius, circle.radius, 0, 2*Math.PI);
-        context.fillStyle = circle.color;
-        context.fill();
-        context.lineWidth = circle.line_width;
-        context.strokeStyle = circle.stroke_color;
-        context.stroke();
-    };
+  this.render = function(canvas) {
+    var context = canvas.getContext('2d');
+    context.beginPath();
+    context.arc(circle.x + circle.radius,
+                circle.y + circle.radius,
+                circle.radius, 0, 2*Math.PI);
+    context.fillStyle = circle.color;
+    context.fill();
+    context.lineWidth = circle.line_width;
+    context.strokeStyle = circle.stroke_color;
+    context.stroke();
+  };
 };
 
-// An element that draws a simple grid. Each cell has height equal to `cell_height`
+// An element that draws a simple grid. Each cell has height equal
+// to `cell_height`
 // and width equal to `cell_width`. Each grid has `h_cells` X `v_cells` cells.
 var SimpleGridElement = function(id, cell_width, h_cells, cell_height, v_cells,
                                  stroke_color, line_width) {
-    var grid = this;
-    Element.apply(grid, [id]);
-    this.cell_width = cell_width || 10;
-    this.cell_height = cell_height || this.cell_width;
-    this.h_cells = h_cells || 10;
-    this.v_cells = v_cells || this.h_cells;
-    this.stroke_color = stroke_color || 'black';
-    this.line_width = line_width || 1;
+  var grid = this;
+  Element.apply(grid, [id]);
+  this.cell_width = cell_width || 10;
+  this.cell_height = cell_height || this.cell_width;
+  this.h_cells = h_cells || 10;
+  this.v_cells = v_cells || this.h_cells;
+  this.stroke_color = stroke_color || 'black';
+  this.line_width = line_width || 1;
 
-    this.render = function(canvas) {
-        var context = canvas.getContext('2d');
-        var width = grid.h_cells * grid.cell_width;
-        var height = grid.v_cells * grid.cell_height;
-        for(var x = 0; x <= grid.v_cells; ++x) {
-            context.moveTo(grid.x + grid.cell_height * x, grid.y);
-            context.lineTo(grid.x + grid.cell_height * x, grid.y + width);
-        }
-        for(var y = 0; y <= grid.h_cells; ++y) {
-            context.moveTo(grid.x, grid.y + grid.cell_width * y);
-            context.lineTo(grid.x + height, grid.y + grid.cell_width * y);
-        }
-        context.lineWidth = grid.line_width;
-        context.strokeStyle = context.stroke_color;
-        context.stroke();
+  this.render = function(canvas) {
+    var context = canvas.getContext('2d');
+    var width = grid.h_cells * grid.cell_width;
+    var height = grid.v_cells * grid.cell_height;
+    for (var x = 0; x <= grid.v_cells; ++x) {
+      context.moveTo(grid.x + grid.cell_height * x, grid.y);
+      context.lineTo(grid.x + grid.cell_height * x, grid.y + width);
     }
+    for (var y = 0; y <= grid.h_cells; ++y) {
+      context.moveTo(grid.x, grid.y + grid.cell_width * y);
+      context.lineTo(grid.x + height, grid.y + grid.cell_width * y);
+    }
+    context.lineWidth = grid.line_width;
+    context.strokeStyle = context.stroke_color;
+    context.stroke();
+  }
 }
 
 // An animation is a change to an element's properties, which can happen
@@ -168,7 +171,8 @@ var Animator = function() {
       var animation = animations[i];
       if (animations[i].start_time <= t && animations[i].end_time >= t) {
         var element = animator.elements[animation.element_id];
-        element[animation.property] = animation.fn(t - animation.start_time, element);
+        element[animation.property] = 
+          animation.fn(t - animation.start_time, element);
       }
     }
   };
