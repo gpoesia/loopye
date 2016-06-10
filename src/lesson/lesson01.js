@@ -108,7 +108,6 @@ Lesson01ExerciseStepPlayer.prototype = {
   var character_animation = function(t) {
     return directions[Math.floor(t)];
   }
-  console.log("Animator: ", animator);
   for (var i = 1; i < game.obstacles.length; ++i) {
     var bla = function() {
       var initial_pos = animator.elements['o' + i].y;
@@ -136,7 +135,6 @@ Lesson01ExerciseStepPlayer.prototype = {
           return o_radius_fn;
         }()));
   }
-  console.log("directions: ", directions);
   animator.addAnimation(new Animator.Animation(0, directions.length,
         'p', 'x', function() {
           var initial_pos = animator.elements['p'].x;
@@ -178,8 +176,6 @@ Lesson01ExerciseStepPlayer.prototype = {
 
     obstacle.x = game.obstacles[i] * 10;
     obstacle.y = (game.n_rows - 1 - i) * 10;
-
-    console.log(game.obstacles[i], obstacle.x, obstacle.y);
 
     animator.addElement(obstacle);
   }
@@ -225,8 +221,6 @@ Lesson01StatementStepPlayer.prototype = {
 
     obstacle.x = game.obstacles[i] * 10;
     obstacle.y = (game.n_rows - 1 - i) * 10;
-
-    console.log(game.obstacles[i], obstacle.x, obstacle.y);
 
     animator.addElement(obstacle);
   }
