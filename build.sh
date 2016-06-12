@@ -22,3 +22,4 @@ npm install .
 echo "Building file bundle.js..."
 jsx src/ build/
 browserify build/app.js --s comp4kids > bundle.js
+browserify build/test/test_app.js --s comp4kids > test_bundle.js
