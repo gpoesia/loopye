@@ -1,5 +1,6 @@
 
 var Lesson = require("./lesson");
+var Interpreter = require("../language/interpreter")
 var Animator = require("../util/animator");
 
 var Lesson01Game = function(n_rows, n_cols) {
@@ -38,7 +39,7 @@ var Action = function(action) {
 };
 
 var Lesson01Interpreter = function() {
-  Lesson.Interpreter.call(this);
+  Interpreter.call(this);
   this.actionList = new Array();
 };
 

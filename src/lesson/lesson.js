@@ -82,5 +82,4 @@ module.exports = {
   Lesson: Lesson,
   LessonStep: LessonStep,
   LessonStepPlayer: LessonStepPlayer,
-  Interpreter: Interpreter,
 };
