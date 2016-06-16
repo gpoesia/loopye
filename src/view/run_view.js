@@ -1,26 +1,35 @@
 /*
- * Graphically shows the results of a run of the user's code.
+ * Component that graphically shows the results of a run of the user's code.
  */
 
 var React = require("react");
+var Constants = require("../constants");
 
 var RunView = React.createClass({
+  styles: {
+    canvas: {
+      height: "100%",
+      marginLeft: "auto",
+      marginRight: "auto",
+      display: "block",
+      border: "1px solid black",
+    },
+  },
+
   render: function() {
-    return <div style={{width: "100%", height: "100%"}}>
-              <canvas ref="canvas" style={{width: "100%", height: "100%"}} />
-           </div>;
+    return <canvas ref="canvas" style={this.styles.canvas} moz-opaque
+                   width={Constants.RUN_VIEW_SQUARE_DIMENSION}
+                   height={Constants.RUN_VIEW_SQUARE_DIMENSION} />;
+
   },
 
   componentDidMount: function() {
+    this.refs.canvas.style.width = this.refs.canvas.offsetHeight + "px";
     this.forceUpdate();
   },
 
-  componentDidUpdate: function() {
-    if (this.props.animator) {
-      var canvas = this.refs.canvas;
-      this.props.animator.start();
-      this.props.animator.play(canvas);
-    }
+  getCanvas: function() {
+    return this.refs.canvas;
   },
 });
 

@@ -7,13 +7,13 @@ var ButtonBar = require("./button_bar.js");
 var CodeEditor = require("./code_editor.js");
 var InstructionPane = require("./instruction_pane.js");
 var RunView = require("./run_view.js");
+var MessagePane = require("./message_pane.js");
 
 var LessonEnvironment = React.createClass({
   styles: {
     instructionPane: {
-      width: "30%",
-      height: "100%",
-      float: "left",
+      width: "100%",
+      height: "20%",
       margin: "0",
     },
     actionSide: {
@@ -23,9 +23,10 @@ var LessonEnvironment = React.createClass({
       margin: "0",
     },
     editor: {
-      width: "100%",
-      height: "50%",
-      margin: "0",
+      float: "left",
+      width: "25%",
+      height: "100%",
+      margin: "0px",
     },
     buttonBar: {
       width: "100%",
@@ -34,7 +35,7 @@ var LessonEnvironment = React.createClass({
     },
     runView: {
       width: "100%",
-      height: "45%",
+      height: "75%",
       margin: "0",
     },
   },
@@ -51,6 +52,9 @@ var LessonEnvironment = React.createClass({
   },
 
   _startStep: function(step) {
+    this.refs.exercise_messages.clear();
+    this.refs.code_messages.clear();
+
     this.setState({
       currentStep: step,
       sourceCode: this.props.lesson.getStep(step).getInitialSourceCode(),
@@ -67,33 +71,73 @@ var LessonEnvironment = React.createClass({
   },
 
   _playCode: function() {
+    this.refs.code_messages.clear();
+
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
-    var animator = currentStep.play(this.state.sourceCode);
-    this.setState({animator: animator});
+    var result = currentStep.play(this.state.sourceCode);
+
+    if (!!result.compilation_errors) {
+      result.compilation_errors.map(this.refs.code_messages.addError);
+    } else {
+      var animator = result.animator;
+      var runtime_errors = result.runtime_errors;
+      var exercise_messages = this.refs.exercise_messages;
+
+      animator.start();
+
+      if (Array.isArray(runtime_errors) && runtime_errors.length) {
+        animator.onStop(function() {
+          runtime_errors.map(exercise_messages.addError);
+        });
+      } else {
+        var forceUpdate = this.forceUpdate.bind(this);
+        animator.onStop(function() {
+          exercise_messages.addSuccess(currentStep.getSuccessMessage());
+          forceUpdate();
+        });
+      }
+
+      animator.play(this.refs.run_view.getCanvas());
+    }
+  },
+
+  _reset: function() {
+    var currentStep = this.props.lesson.getStep(this.state.currentStep);
+    currentStep.reset(this.refs.run_view.getCanvas());
   },
 
   render: function() {
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
 
     return <div style={{width: "100%", height: "100%"}}>
-             <div style={this.styles.instructionPane}>
-               <InstructionPane content={currentStep.getContent()}
-                                canAdvance={currentStep.canAdvance()}
-                                onAdvance={this._advanceStep} />
+             <div style={this.styles.editor}>
+               <MessagePane ref="code_messages" />
+               <CodeEditor code={this.state.sourceCode}
+                           onChange={this._updateCode} />
              </div>
              <div style={this.styles.actionSide}>
-               <div style={this.styles.editor}>
-                 <CodeEditor code={this.state.sourceCode}
-                             onChange={this._updateCode} />
+               <div style={this.styles.instructionPane}>
+                 <MessagePane ref="exercise_messages" />
+                 <InstructionPane content={currentStep.getContent()}
+                                  canAdvance={currentStep.canAdvance()}
+                                  onAdvance={this._advanceStep} />
                </div>
                <div style={this.styles.buttonBar}>
-                 <ButtonBar onPlay={this._playCode} />
+                 <ButtonBar onPlay={this._playCode} onReset={this._reset} />
                </div>
                <div style={this.styles.runView}>
-                 <RunView animator={this.state.animator} />
+                 <RunView ref="run_view" />
                </div>
              </div>
            </div>;
+  },
+
+  componentDidMount: function() {
+    this._reset();
+  },
+
+  componentDidUpdate: function() {
+    this._reset();
   },
 });
 
