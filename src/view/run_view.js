@@ -18,9 +18,8 @@ var RunView = React.createClass({
   componentDidUpdate: function() {
     if (this.props.animator) {
       var canvas = this.refs.canvas;
-      this.props.animator.render(canvas);
-      var self = this;
-      window.requestAnimationFrame(function() { self.forceUpdate(); });
+      this.props.animator.start();
+      this.props.animator.play(canvas);
     }
   },
 });

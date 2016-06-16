@@ -47,7 +47,6 @@ var LessonEnvironment = React.createClass({
   },
 
   _updateCode: function(code) {
-    console.log("New code: " + code);
     this.setState({sourceCode: code});
   },
 
@@ -59,7 +58,6 @@ var LessonEnvironment = React.createClass({
   },
 
   _advanceStep: function() {
-    console.log("Advancing...");
     this._startStep(Math.min(this.props.lesson.getNumberOfSteps() - 1,
                              this.state.currentStep + 1));
   },
@@ -69,10 +67,8 @@ var LessonEnvironment = React.createClass({
   },
 
   _playCode: function() {
-    console.log("Playing code.");
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
     var animator = currentStep.play(this.state.sourceCode);
-    animator.start();
     this.setState({animator: animator});
   },
 
