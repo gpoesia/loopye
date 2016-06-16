@@ -67,6 +67,7 @@ Object.assign(RectangleElement.prototype, {
     context.lineWidth = this.line_width;
     context.strokeStyle = this.stroke_color;
     context.stroke();
+    context.closePath();
   },
 });
 
@@ -94,6 +95,7 @@ Object.assign(CircleElement.prototype, {
     context.lineWidth = this.line_width;
     context.strokeStyle = this.stroke_color;
     context.stroke();
+    context.closePath();
   },
 });
 
@@ -117,6 +119,7 @@ Object.assign(SimpleGridElement.prototype, {
     var context = canvas.getContext('2d');
     var width = this.h_cells * this.cell_width;
     var height = this.v_cells * this.cell_height;
+    context.beginPath();
     for (var x = 0; x <= this.v_cells; ++x) {
       context.moveTo(this.x + this.cell_height * x, this.y);
       context.lineTo(this.x + this.cell_height * x, this.y + width);
@@ -127,6 +130,7 @@ Object.assign(SimpleGridElement.prototype, {
     }
     context.lineWidth = this.line_width;
     context.strokeStyle = context.stroke_color;
+    context.closePath();
     context.stroke();
   },
 });

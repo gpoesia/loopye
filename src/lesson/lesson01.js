@@ -84,10 +84,16 @@ Lesson01ExerciseStepPlayer.prototype = {
   render: function(actions, game, animator) {
   var success = true;
   var directions = Array();
-  console.log("Action list: ", actions);
+
   for (var i = 1; i < game.n_rows; ++i) {
-    var action = actions.shift();
-    switch(action.action) {
+    var command = actions.shift();
+    var action = "WAIT";
+
+    if (command) {
+      action = command.action;
+    }
+
+    switch (action) {
       case "LEFT":
         direction = -1;
         directions.push(direction);
@@ -101,6 +107,7 @@ Lesson01ExerciseStepPlayer.prototype = {
         directions.push(direction);
         break;
     }
+
     if (!game.moveCharacter(i, direction)) {
       success = false;
       break;
@@ -127,7 +134,7 @@ Lesson01ExerciseStepPlayer.prototype = {
           return o_y_fn;
         }()));
     animator.addAnimation(new Animator.Animation(0, directions.length,
-        'o' + i, 'radius', 
+        'o' + i, 'radius',
         function() {
           var max_y = (game.n_rows - 1) * 10;
           function o_radius_fn(t, elem) {
