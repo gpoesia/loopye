@@ -28,16 +28,20 @@ function InterpreterState() {
 Robolang.prototype = Object.create(Interpreter.prototype);
 Object.assign(Robolang.prototype, {
   parse: function(code) {
-    var tokens = Lexer.tokenize(code);
-    var parserState = new Lexer.TokenStream(tokens);
-    var parser = new Parser.ASTProgramNodeParser();
-    this.program = parser.parse(parserState);
+    try {
+      var tokens = Lexer.tokenize(code);
+      var parserState = new Lexer.TokenStream(tokens);
+      var parser = new Parser.ASTProgramNodeParser();
+      this.program = parser.parse(parserState);
 
-    this.state = new InterpreterState();
-    this.state.nodes.push(this.program);
-    this.state.nextChildIndex.push(0);
+      this.state = new InterpreterState();
+      this.state.nodes.push(this.program);
+      this.state.nextChildIndex.push(0);
+    } catch (e) {
+      return [e];
+    }
 
-    return parserState.error;
+    return null;
   },
   runUntilNextAction: function() {
     var nodes = this.state.nodes;

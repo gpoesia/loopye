@@ -1,12 +1,22 @@
+/*
+ * comp4kids programming 101 lesson 1.
+ */
 
 var Lesson = require("./lesson");
 var Interpreter = require("../language/interpreter")
 var Animator = require("../util/animator");
+var AnimationFactories = require("../util/animator/animation_factories");
+var ElementFactories = require("../util/animator/element_factories");
+var Robolang = require("../language/robolang/robolang");
+var Constants = require("../constants");
+
+var GRID_SIZE = 10;
+var GRID_CELL_SIZE = Constants.RUN_VIEW_SQUARE_DIMENSION / GRID_SIZE;
 
 var Lesson01Game = function(n_rows, n_cols) {
   var game = this;
-  this.n_rows = n_rows || 10;
-  this.n_cols = n_cols || 10;
+  this.n_rows = n_rows || GRID_SIZE;
+  this.n_cols = n_cols || GRID_SIZE;
   this.character_position = Math.floor(this.n_cols / 2);
   this.obstacles = new Array();
 
@@ -34,203 +44,157 @@ var Lesson01Game = function(n_rows, n_cols) {
   }
 };
 
-var Action = function(action) {
-  this.action = action;
-};
-
-var Lesson01Interpreter = function() {
-  Interpreter.call(this);
-  this.actionList = new Array();
-};
-
-Lesson01Interpreter.prototype = {
-  parse: function(code) {
-    actionList = new Array();
-    for (var i = 0; i < code.length; ++i) {
-      if (code[i] == ' ')
-        continue;
-      switch(code[i]) {
-        case 'L':
-          actionList.push(new Action('LEFT'));
-          break;
-        case 'R':
-          actionList.push(new Action('RIGHT'));
-          break;
-        case 'W':
-          actionList.push(new Action('WAIT'));
-          break;
-        default:
-          return "Invalid command: " + code[i];
-      }
-    }
-    this.actionList = actionList;
-    return null;
-  },
-  runUntilNextAction: function() {
-    if (this.actionList.length == 0)
-      return null;
-    return this.actionList.shift();
-  }
-};
-
-var game = new Lesson01Game();
-
-function Lesson01ExerciseStepPlayer() {
+function Lesson01ExerciseStepPlayer(isExample) {
   Lesson.LessonStepPlayer.call(this);
-  this.gameEndedSuccessfully = false;
-};
-
-Lesson01ExerciseStepPlayer.prototype = {
-  render: function(actions, game, animator) {
-  var success = true;
-  var directions = Array();
-  console.log("Action list: ", actions);
-  for (var i = 1; i < game.n_rows; ++i) {
-    var action = actions.shift();
-    switch(action.action) {
-      case "LEFT":
-        direction = -1;
-        directions.push(direction);
-        break;
-      case "RIGHT":
-        direction = 1;
-        directions.push(direction);
-        break;
-      case "WAIT":
-        direction = 0;
-        directions.push(direction);
-        break;
-    }
-    if (!game.moveCharacter(i, direction)) {
-      success = false;
-      break;
-    }
-  }
-  var character_animation = function(t) {
-    return directions[Math.floor(t)];
-  }
-  for (var i = 1; i < game.obstacles.length; ++i) {
-    var bla = function() {
-      var initial_pos = animator.elements['o' + i].y;
-      function ble(t, elem) {
-        return initial_pos + 10*t;
-      };
-      return ble;
-    };
-    animator.addAnimation(new Animator.Animation(0, directions.length,
-        'o' + i, 'y',
-        function() {
-          var initial_pos = animator.elements['o' + i].y;
-          function o_y_fn(t, elem) {
-            return initial_pos + 10*t;
-          };
-          return o_y_fn;
-        }()));
-    animator.addAnimation(new Animator.Animation(0, directions.length,
-        'o' + i, 'radius', 
-        function() {
-          var max_y = (game.n_rows - 1) * 10;
-          function o_radius_fn(t, elem) {
-            return elem.y <= max_y ? elem.radius : 0;
-          }
-          return o_radius_fn;
-        }()));
-  }
-  animator.addAnimation(new Animator.Animation(0, directions.length,
-        'p', 'x', function() {
-          var initial_pos = animator.elements['p'].x;
-          var positions = Array();
-          var last_direction = Number(0);
-          positions.push(last_direction);
-          for (var i in directions) {
-            positions.push(last_direction + directions[i]);
-            last_direction = positions[positions.length - 1];
-          }
-          console.log("directions: ", directions);
-          console.log("positions: ", positions);
-          function p_x_fn(t, elem) {
-            return initial_pos +
-              positions[Math.floor(t)] * 10 +
-              directions[Math.floor(t)] * 10 * (t - Math.floor(t));
-          };
-          return p_x_fn;
-        }()));
-  },
-  play: function(sourceCode) {
-  var animator = new Animator.Animator();
-
-  var grid = new Animator.SimpleGridElement(
-      'grid', 10, 10);
-
-  var character = new Animator.RectangleElement(
-    'p', 10, 10);
-
-  character.x = game.character_position * 10;
-  character.y = (game.n_rows - 1) * 10;
-
-  animator.addElement(grid);
-  animator.addElement(character);
-
-  for (var i = 1; i < game.n_rows; ++i) {
-    var obstacle = new Animator.CircleElement(
-        'o' + i, 5);
-
-    obstacle.x = game.obstacles[i] * 10;
-    obstacle.y = (game.n_rows - 1 - i) * 10;
-
-    animator.addElement(obstacle);
-  }
-
-  var interpreter = new Lesson01Interpreter();
-  interpreter.parse(sourceCode);
-
-  this.render(interpreter.actionList, game, animator);
-
-  return animator;
-  },
-
-  isInAcceptingState: function() {
-  return true;
-  },
-};
-
-function Lesson01StatementStepPlayer() {
-  Lesson.LessonStepPlayer.call(this);
+  this.game = new Lesson01Game();
+  this.game.initializeGame();
+  this._solved = !!isExample;
 }
 
-Lesson01StatementStepPlayer.prototype = {
+Lesson01ExerciseStepPlayer.prototype = {
+  reset: function(canvas) {
+    this._animator = new Animator.Animator();
+    this._initializeElements();
+
+    if (canvas) {
+      this._animator.render(canvas);
+    }
+  },
+
   play: function(sourceCode) {
-  var animator = new Animator.Animator();
+    var interpreter = new Robolang.Interpreter();
+    var compilation_errors = interpreter.parse(sourceCode);
 
-  var grid = new Animator.SimpleGridElement(
-      'grid', 10, 10);
+    if (compilation_errors) {
+      return {compilation_errors: compilation_errors};
+    }
 
-  var character = new Animator.RectangleElement(
-    'p', 10, 10);
+    var actions_list = new Array();
+    var next_action = null;
 
-  game.initializeGame();
+    while (true) {
+      next_action = interpreter.runUntilNextAction();
 
-  character.x = game.character_position * 10;
-  character.y = (game.n_rows - 1) * 10;
+      if (next_action) {
+        actions_list.push(next_action);
+      } else {
+        break;
+      }
+    }
 
-  animator.addElement(grid);
-  animator.addElement(character);
+    var runtime_errors = this._render(actions_list);
 
-  for (var i = 1; i < game.n_rows; ++i) {
-    var obstacle = new Animator.CircleElement(
-        'o' + i, 5);
+    if (!runtime_errors.length) {
+      this._solved = true;
+    }
 
-    obstacle.x = game.obstacles[i] * 10;
-    obstacle.y = (game.n_rows - 1 - i) * 10;
-
-    animator.addElement(obstacle);
-  }
-
-  return animator;
+    return {
+      runtime_errors: runtime_errors,
+      animator: this._animator,
+    };
   },
 
   isInAcceptingState: function() {
-  return true;
+    return this._solved;
+  },
+
+  // Creates the elements of the class in their initial position.
+  _initializeElements: function() {
+    var grid = new Animator.SimpleGridElement(
+        'grid', GRID_CELL_SIZE, GRID_CELL_SIZE);
+    this._animator.addElement(grid);
+
+    var character = new ElementFactories.createRobot(
+        'p', GRID_CELL_SIZE, GRID_CELL_SIZE);
+    character.x = (0.5 + this.game.character_position) * GRID_CELL_SIZE;
+    character.y = (0.5 + this.game.n_rows - 1) * GRID_CELL_SIZE;
+    this._animator.addElement(character);
+
+    for (var i = 1; i < this.game.n_rows; ++i) {
+      var obstacle = new Animator.CircleElement('o' + i, GRID_CELL_SIZE / 2);
+      obstacle.x = (0.5 + this.game.obstacles[i]) * GRID_CELL_SIZE;
+      obstacle.y = (0.5 + (this.game.n_rows - 1 - i)) * GRID_CELL_SIZE;
+      this._animator.addElement(obstacle);
+    }
+  },
+
+  // Renders the execution to the animator.
+  // Returns a list of runtime error messages (empty if the robot survived).
+  _render: function(actions) {
+    var directions_success = this._actionsToDirections(actions);
+    var directions = directions_success[0];
+    var success = directions_success[1];
+
+    for (var i = 1; i < this.game.obstacles.length; ++i) {
+      this._animator.addAnimation(AnimationFactories.straightMove(
+            'o' + i, 0, directions.length,
+            0, GRID_CELL_SIZE * this.game.n_rows));
+
+      this._animator.addAnimation(new Animator.Animation(0, directions.length,
+            'o' + i, 'radius',
+            function() {
+              var max_y = (this.game.n_rows - 1) * GRID_CELL_SIZE;
+              function o_radius_fn(t, elem) {
+                return elem.y <= max_y ? elem.radius : 0;
+              }
+              return o_radius_fn;
+            }.bind(this)()));
+    }
+
+    var character = this._animator.getElement('p');
+
+    for (var i = 0; i < directions.length; i++) {
+      var animationName = ((directions[i] == -1) ? 'walk_left':
+                           (directions[i] == 1) ? 'walk_right' : 'walk_down');
+      var duration = (animationName == 'walk_down' ) ? 0.1 : 1;
+
+      this._animator.addAnimation([
+          character.createAnimation(animationName, i, i + duration, 0.5),
+          AnimationFactories.straightMove(
+            'p', i, i + 1, GRID_CELL_SIZE * directions[i], 0),
+      ]);
+    }
+
+    if (success)
+      return [];
+
+    return [Constants.Lesson01.FAILURE_MESSAGE];
+  },
+
+  // Given a list of actions and the game, returns a pair (directions, success)
+  // where `directions` is a list of integers (-1, 0 or 1) representing the
+  // player's movements, and `success` is a boolean indicating whether the
+  // player survived.
+  _actionsToDirections: function(actions) {
+    var directions = Array();
+    var success = true;
+
+    for (var i = 1; i < this.game.n_rows; ++i) {
+      var action = actions.shift() || "W";
+      var direction = null;
+
+      switch (action) {
+        case "L":
+          direction = -1;
+          directions.push(direction);
+          break;
+        case "R":
+          direction = 1;
+          directions.push(direction);
+          break;
+        case "W":
+          direction = 0;
+          directions.push(direction);
+          break;
+      }
+
+      if (!this.game.moveCharacter(i, direction)) {
+        success = false;
+        break;
+      }
+    }
+
+    return [directions, success];
   },
 };
 
@@ -239,15 +203,18 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "This is the puzzle you'll have to solve.",
-      new Lesson01StatementStepPlayer(),
-      ""));
+      "Desafio para você! Faça o robô sobreviver. " +
+      "Você tem 3 comandos: R, W e L.",
+      new Lesson01ExerciseStepPlayer(),
+      "",
+      Constants.Lesson01.SUCCESS_MESSAGE));
 
   this.addStep(
     new Lesson.LessonStep(
-      "Write code and solve it.",
+      "Você consegue fazer de novo?",
       new Lesson01ExerciseStepPlayer(),
-      ""));
+      "",
+      Constants.Lesson01.SUCCESS_MESSAGE));
 }
 
 Lesson01.prototype = Object.create(Lesson.Lesson.prototype, {});
