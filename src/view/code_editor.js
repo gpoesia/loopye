@@ -12,7 +12,7 @@ var CodeEditor = React.createClass({
       height: "100%",
       fontSize: "3em",
       margin: "0px",
-      border: "0px",
+      border: "2px solid green",
       resize: "none",
     },
   },

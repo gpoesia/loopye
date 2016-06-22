@@ -6,6 +6,9 @@
  */
 
 // An identified element of the animation.
+// Element's (x, y) position is its center. In the animator's plane, the
+// top-left corner is the origin, with x growing to the right and y growing to
+// the bottom of the screen.
 var Element = function(id) {
   if (!id)
     throw "Element must have an id.";
@@ -61,7 +64,8 @@ Object.assign(RectangleElement.prototype, {
   render: function(canvas) {
     var context = canvas.getContext('2d');
     context.beginPath();
-    context.rect(this.x, this.y, this.width, this.height);
+    context.rect(this.x - (this.width / 2), this.y - (this.height / 2),
+                 this.width, this.height);
     context.fillStyle = this.color;
     context.fill();
     context.lineWidth = this.line_width;
@@ -71,8 +75,7 @@ Object.assign(RectangleElement.prototype, {
 });
 
 // An element that is a colored circle.
-var CircleElement = function(id, radius, color, stroke_color,
-                             line_width) {
+var CircleElement = function(id, radius, color, stroke_color, line_width) {
   var circle = this;
   Element.apply(circle, [id]);
   this.radius = radius || 0;
@@ -86,9 +89,7 @@ Object.assign(CircleElement.prototype, {
   render: function(canvas) {
     var context = canvas.getContext('2d');
     context.beginPath();
-    context.arc(this.x + this.radius,
-                this.y + this.radius,
-                this.radius, 0, 2*Math.PI);
+    context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     context.fillStyle = this.color;
     context.fill();
     context.lineWidth = this.line_width;
@@ -206,7 +207,8 @@ AnimatedImageElement.prototype = {
 
     var context = canvas.getContext('2d');
     context.drawImage(this.image, tile_x, tile_y, tile_width, tile_height,
-                      this.x, this.y,
+                      this.x - (rendered_tile_width / 2),
+                      this.y - (rendered_tile_height / 2),
                       rendered_tile_width, rendered_tile_height);
   },
 };
@@ -214,13 +216,23 @@ AnimatedImageElement.prototype = {
 // An Animator has elements, animations, and plays the scene in a canvas.
 var Animator = function() {
   var animator = this;
-  animator.elements = new Object();
-  animator.animations = new Array();
-  animator.start_time = 0;
+
+  this.elements = new Object();
+  this.animations = new Array();
+  this.start_time = 0;
+  this.playing = false;
+  this.stop_callback = function() {};
 
   // Adds an element to the scene.
   this.addElement = function(element) {
-    animator.elements[element.id] = element;
+    this.elements[element.id] = element;
+  };
+
+  // Returns the element with the given id.
+  this.getElement = function(id) {
+    if (!this.elements.hasOwnProperty(id))
+      throw "No such element " + id;
+    return this.elements[id];
   };
 
   // Adds an animation to the scene.
@@ -232,24 +244,38 @@ var Animator = function() {
         this.addAnimation(animation[i]);
       }
     } else {
-      animator.animations.push(animation);
+      this.animations.push(animation);
     }
   };
 
   // Clears all animations on the scene.
   this.clearAllAnimations = function() {
-    animator.animations = new Array();
+    this.animations = new Array();
   };
 
   // Starts the animation timer. Needs to be called before play().
   this.start = function() {
-    animator.start_time = new Date().getTime();
+    this.start_time = new Date().getTime();
+    this.playing = true;
   };
 
   // Play the animation in a canvas. Must be called after start().
   this.play = function(canvas) {
     this.render(canvas);
-    window.requestAnimationFrame(function() {animator.play(canvas);});
+    if (this.playing) {
+      window.requestAnimationFrame(function() {animator.play(canvas);});
+    }
+  };
+
+  // Registers a function to be called when the animation stops.
+  this.onStop = function(callback) {
+    this.stop_callback = callback;
+  }
+
+  // Stops the current animation.
+  this.stop = function(canvas) {
+    this.playing = false;
+    this.stop_callback();
   };
 
   // Renders the current state of the animation in a canvas.
@@ -262,17 +288,18 @@ var Animator = function() {
   this._renderFrame = function(canvas) {
     var context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
-    for (var id in animator.elements) {
-      if (animator.elements.hasOwnProperty(id)) {
-        animator.elements[id].render(canvas);
+    for (var id in this.elements) {
+      if (this.elements.hasOwnProperty(id)) {
+        this.elements[id].render(canvas);
       }
     }
   };
 
   // Updates the elements according to the animations.
   this._animateElements = function() {
-    var t = (new Date().getTime() - animator.start_time) / 1000;
-    var animations = animator.animations;
+    var t = (new Date().getTime() - this.start_time) / 1000;
+    var animations = this.animations;
+    var shouldStop = true;
 
     // Save the elements' current state as their initial state in animations
     // that will start playing in this tick. It's better to do this before
@@ -282,8 +309,17 @@ var Animator = function() {
       var animation = animations[i];
       if (animation.isPlayingAt(t) && animation.initial_state === null) {
         animation.initial_state = JSON.parse(JSON.stringify(
-              animator.elements[animation.element_id]));
+              this.elements[animation.element_id]));
       }
+      // If there's still work to be done with this animation, don't stop.
+      if (t < animation.end_time) {
+        shouldStop = false;
+      }
+    }
+
+    if (shouldStop) {
+      this.stop();
+      return;
     }
 
     // Update elements' properties based on active animations.
@@ -293,7 +329,7 @@ var Animator = function() {
     for (var i = 0; i < animations.length; ++i) {
       var animation = animations[i];
       if (animation.isPlayingAt(t)) {
-        var element = animator.elements[animation.element_id];
+        var element = this.elements[animation.element_id];
         element[animation.property] =
           animation.fn(t - animation.start_time, element,
                        animation.initial_state);
