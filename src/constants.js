@@ -5,6 +5,8 @@
 module.exports = {
   PLAY_ICON_URL: "/static/images/icons/play.png",
   RESET_ICON_URL: "/static/images/icons/reset.png",
+  ADVANCE_ICON_URL: "/static/images/icons/advance.png",
+
   RUN_VIEW_SQUARE_DIMENSION: 1000,
 
   Lesson01: {
