@@ -52,8 +52,11 @@ var LessonEnvironment = React.createClass({
   },
 
   _startStep: function(step) {
-    this.refs.exercise_messages.clear();
-    this.refs.code_messages.clear();
+    // Before the first rendering, we don't have refs.
+    if (this.refs.exercise_messages !== undefined) {
+      this.refs.exercise_messages.clear();
+      this.refs.code_messages.clear();
+    }
 
     this.setState({
       currentStep: step,
@@ -104,6 +107,10 @@ var LessonEnvironment = React.createClass({
   _reset: function() {
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
     currentStep.reset(this.refs.run_view.getCanvas());
+  },
+
+  componentWillMount: function() {
+    this._startStep(0);
   },
 
   render: function() {
