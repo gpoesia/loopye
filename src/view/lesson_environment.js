@@ -118,12 +118,13 @@ var LessonEnvironment = React.createClass({
              <div style={this.styles.actionSide}>
                <div style={this.styles.instructionPane}>
                  <MessagePane ref="exercise_messages" />
-                 <InstructionPane content={currentStep.getContent()}
-                                  canAdvance={currentStep.canAdvance()}
-                                  onAdvance={this._advanceStep} />
+                 <InstructionPane content={currentStep.getContent()} />
                </div>
                <div style={this.styles.buttonBar}>
-                 <ButtonBar onPlay={this._playCode} onReset={this._reset} />
+                 <ButtonBar onPlay={this._playCode}
+                            onReset={this._reset}
+                            onAdvance={this._advanceStep}
+                            advanceEnabled={currentStep.canAdvance()} />
                </div>
                <div style={this.styles.runView}>
                  <RunView ref="run_view" />
