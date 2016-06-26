@@ -71,6 +71,7 @@ var LessonEnvironment = React.createClass({
   },
 
   _playCode: function() {
+    this.refs.exercise_messages.clear();
     this.refs.code_messages.clear();
 
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
