@@ -37,6 +37,8 @@ var Animation = function(start_time, end_time, element_id, property, fn) {
   this.property = property;
   this.fn = fn;
   this.initial_state = null;
+  // Indicates whether this animation has already reached its final state.
+  this.finalized = false;
 };
 
 Animation.prototype = {
@@ -305,10 +307,23 @@ var Animator = function() {
     var animations = this.animations;
     var shouldStop = true;
 
+    // First, process animations that have finished but have not yet been
+    // finalized (i.e. updated the corresponding property in their final state).
+    for (var i = 0; i < animations.length; ++i) {
+      var animation = animations[i];
+      if (t >= animation.end_time && !animation.finalized) {
+        animation.finalized = true;
+        var element = this.elements[animation.element_id];
+        element[animation.property] =
+          animation.fn(animation.end_time - animation.start_time, element,
+                       animation.initial_state);
+      }
+    }
+
     // Save the elements' current state as their initial state in animations
     // that will start playing in this tick. It's better to do this before
     // any animation actually modifies elements' properties since otherwise two
-    // animations that modify the same element could interfere in one another
+    // animations that modify the same element could interfere in one another.
     for (var i = 0; i < animations.length; ++i) {
       var animation = animations[i];
       if (animation.isPlayingAt(t) && animation.initial_state === null) {
@@ -316,7 +331,7 @@ var Animator = function() {
               this.elements[animation.element_id]));
       }
       // If there's still work to be done with this animation, don't stop.
-      if (t < animation.end_time) {
+      if (!animation.finalized) {
         shouldStop = false;
       }
     }
@@ -327,12 +342,13 @@ var Animator = function() {
     }
 
     // Update elements' properties based on active animations.
-    // This can be optimized by sorting events that mark the beginning or end
-    // of an animation and maintaining a structure with the "active" animations.
+    // FIXME(gpoesia) This can be optimized by sorting events that mark the
+    // beginning or end of an animation and maintaining a structure with the
+    // "active" animations.
     // Then unstarted/finished animations won't add overhead to other frames.
     for (var i = 0; i < animations.length; ++i) {
       var animation = animations[i];
-      if (animation.isPlayingAt(t)) {
+      if (animation.isPlayingAt(t) && !animation.finalized) {
         var element = this.elements[animation.element_id];
         element[animation.property] =
           animation.fn(t - animation.start_time, element,
