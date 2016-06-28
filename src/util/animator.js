@@ -20,7 +20,7 @@ var Element = function(id) {
 };
 
 Element.prototype = {
-  render: function(canvas) {
+  render: function(canvas, origin_x, origin_y) {
     throw "Rendering abstract element not implemented.";
   },
 };
@@ -63,10 +63,11 @@ var RectangleElement = function(id, width, height, color, stroke_color,
 
 RectangleElement.prototype = Object.create(Element.prototype);
 Object.assign(RectangleElement.prototype, {
-  render: function(canvas) {
+  render: function(canvas, origin_x, origin_y) {
     var context = canvas.getContext('2d');
     context.beginPath();
-    context.rect(this.x - (this.width / 2), this.y - (this.height / 2),
+    context.rect(origin_x + this.x - (this.width / 2),
+                 origin_y + this.y - (this.height / 2),
                  this.width, this.height);
     context.fillStyle = this.color;
     context.fill();
@@ -89,10 +90,11 @@ var CircleElement = function(id, radius, color, stroke_color, line_width) {
 
 CircleElement.prototype = Object.create(Element.prototype);
 Object.assign(CircleElement.prototype, {
-  render: function(canvas) {
+  render: function(canvas, origin_x, origin_y) {
     var context = canvas.getContext('2d');
     context.beginPath();
-    context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    context.arc(origin_x + this.x, origin_y + this.y,
+                this.radius, 0, 2 * Math.PI);
     context.fillStyle = this.color;
     context.fill();
     context.lineWidth = this.line_width;
@@ -118,18 +120,22 @@ var SimpleGridElement = function(id, cell_width, h_cells, cell_height, v_cells,
 
 SimpleGridElement.prototype = Object.create(Element.prototype);
 Object.assign(SimpleGridElement.prototype, {
-  render: function(canvas) {
+  render: function(canvas, origin_x, origin_y) {
     var context = canvas.getContext('2d');
     var width = this.h_cells * this.cell_width;
     var height = this.v_cells * this.cell_height;
     context.beginPath();
     for (var x = 0; x <= this.v_cells; ++x) {
-      context.moveTo(this.x + this.cell_height * x, this.y);
-      context.lineTo(this.x + this.cell_height * x, this.y + width);
+      context.moveTo(origin_x + this.x + this.cell_height * x,
+                     origin_y + this.y);
+      context.lineTo(origin_x + this.x + this.cell_height * x,
+                     origin_y + this.y + width);
     }
     for (var y = 0; y <= this.h_cells; ++y) {
-      context.moveTo(this.x, this.y + this.cell_width * y);
-      context.lineTo(this.x + height, this.y + this.cell_width * y);
+      context.moveTo(origin_x + this.x,
+                     origin_y + this.y + this.cell_width * y);
+      context.lineTo(origin_x + this.x + height,
+                     origin_y + this.y + this.cell_width * y);
     }
     context.lineWidth = this.line_width;
     context.strokeStyle = context.stroke_color;
@@ -199,7 +205,7 @@ AnimatedImageElement.prototype = {
                          });
   },
 
-  render: function(canvas) {
+  render: function(canvas, origin_x, origin_y) {
     var tile_width = this.image.width / this.xdivs;
     var tile_height = this.image.height / this.ydivs;
     var rendered_tile_width = this.rendered_tile_width || tile_width;
@@ -213,8 +219,8 @@ AnimatedImageElement.prototype = {
 
     var context = canvas.getContext('2d');
     context.drawImage(this.image, tile_x, tile_y, tile_width, tile_height,
-                      this.x - (rendered_tile_width / 2),
-                      this.y - (rendered_tile_height / 2),
+                      origin_x + this.x - (rendered_tile_width / 2),
+                      origin_y + this.y - (rendered_tile_height / 2),
                       rendered_tile_width, rendered_tile_height);
   },
 };
@@ -228,10 +234,30 @@ var Animator = function() {
   this.start_time = 0;
   this.playing = false;
   this.stop_callback = function() {};
+  this.origin_x = 0;
+  this.origin_y = 0;
+  this.width = null;
+  this.height = null;
 
   // Adds an element to the scene.
   this.addElement = function(element) {
     this.elements[element.id] = element;
+  };
+
+  // Sets the origin of the animator's coordinate space relative to the canvas'
+  // coordinates. Effectively, every rendered element will be displaced by
+  // origin_x and origin_y.
+  this.setOrigin = function(origin_x, origin_y) {
+    this.origin_x = origin_x;
+    this.origin_y = origin_y;
+  };
+
+  // Sets the size of the canvas' coordinate space.
+  // If width and/or height are null (the default), the canvas' original
+  // size will be respected.
+  this.setSize = function(width, height) {
+    this.width = width;
+    this.height = height;
   };
 
   // Returns the element with the given id.
@@ -267,10 +293,18 @@ var Animator = function() {
 
   // Play the animation in a canvas. Must be called after start().
   this.play = function(canvas) {
-    this.render(canvas);
-    if (this.playing) {
-      window.requestAnimationFrame(function() {animator.play(canvas);});
+    if (!!this.width)
+      canvas.width = this.width;
+    if (!!this.height)
+      canvas.height = this.height;
+
+    function playUntilEnd() {
+      animator.render(canvas);
+      if (animator.playing) {
+        window.requestAnimationFrame(playUntilEnd);
+      }
     }
+    playUntilEnd();
   };
 
   // Registers a function to be called when the animation stops.
@@ -296,7 +330,7 @@ var Animator = function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (var id in this.elements) {
       if (this.elements.hasOwnProperty(id)) {
-        this.elements[id].render(canvas);
+        this.elements[id].render(canvas, this.origin_x, this.origin_y);
       }
     }
   };

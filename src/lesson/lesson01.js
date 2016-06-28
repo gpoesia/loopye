@@ -10,19 +10,18 @@ var ElementFactories = require("../util/animator/element_factories");
 var Robolang = require("../language/robolang/robolang");
 var Constants = require("../constants");
 
-var GRID_SIZE = 10;
-var GRID_CELL_SIZE = Constants.RUN_VIEW_SQUARE_DIMENSION / GRID_SIZE;
-
 var FailureReasons = {
   HIT_BY_ASTEROID: 1,
   LEFT_GRID: 2,
 };
 
+var MAX_GRID_CELL_SIZE = Constants.RUN_VIEW_SQUARE_DIMENSION / 8;
+
 var Lesson01Game = function(n_rows, n_cols, robot_position,
                             obstacle_positions) {
   var game = this;
-  this.n_rows = n_rows || GRID_SIZE;
-  this.n_cols = n_cols || GRID_SIZE;
+  this.n_rows = n_rows;
+  this.n_cols = n_cols;
   var robot_position = robot_position || Math.floor(this.n_cols / 2);
   this.character_position = Math.min(this.n_cols - 1, robot_position);
   this.initial_character_position = this.character_position;
@@ -34,6 +33,12 @@ var Lesson01Game = function(n_rows, n_cols, robot_position,
     var position = obstacle_positions[pos];
     this.obstacles[
       Math.floor(position / this.n_cols)].push(position % this.n_cols);
+  }
+
+  this.gridCellSize = function() {
+    return Math.min(MAX_GRID_CELL_SIZE,
+                    (Constants.RUN_VIEW_SQUARE_DIMENSION /
+                     Math.max(this.n_rows, this.n_cols)));
   }
 
   this.initializeRandomGame = function () {
@@ -89,6 +94,8 @@ Lesson01ExerciseStepPlayer.prototype = {
   },
 
   play: function(sourceCode) {
+    this.reset();
+
     var interpreter = new Robolang.Interpreter();
     var compilation_errors = interpreter.parse(sourceCode);
 
@@ -127,25 +134,35 @@ Lesson01ExerciseStepPlayer.prototype = {
 
   // Creates the elements of the class in their initial position.
   _initializeElements: function() {
+    var grid_cell_size = this.game.gridCellSize();
+
+    // Offsets that centralize the canvas.
+    var offset_x = (Constants.RUN_VIEW_SQUARE_DIMENSION / 2 -
+                    grid_cell_size * this.game.n_cols / 2);
+    var offset_y = (Constants.RUN_VIEW_SQUARE_DIMENSION / 2 -
+                    grid_cell_size * this.game.n_rows / 2);
+    this._animator.setOrigin(offset_x, offset_y);
+
+
     this.game.character_position = this.game.initial_character_position
     var grid = new Animator.SimpleGridElement(
-        'grid', GRID_CELL_SIZE, this.game.n_rows,
-         GRID_CELL_SIZE, this.game.n_cols);
+        'grid', grid_cell_size, this.game.n_rows,
+         grid_cell_size, this.game.n_cols);
     this._animator.addElement(grid);
 
     var character = new ElementFactories.createRobot(
-        'p', GRID_CELL_SIZE, GRID_CELL_SIZE);
-    character.x = (0.5 + this.game.character_position) * GRID_CELL_SIZE;
-    character.y = (0.5 + this.game.n_rows - 1) * GRID_CELL_SIZE;
+        'p', grid_cell_size, grid_cell_size);
+    character.x = (0.5 + this.game.character_position) * grid_cell_size;
+    character.y = (0.5 + this.game.n_rows - 1) * grid_cell_size;
     this._animator.addElement(character);
 
     for (var i = 1; i < this.game.n_rows; ++i) {
       for (var obstacle_pos in this.game.obstacles[i]) {
         var obstacle = new Animator.CircleElement(
-            'o' + i + obstacle_pos, GRID_CELL_SIZE / 2);
-        obstacle.x = (0.5 + this.game.obstacles[i][obstacle_pos])
-          * GRID_CELL_SIZE;
-        obstacle.y = (0.5 + (this.game.n_rows - 1 - i)) * GRID_CELL_SIZE;
+            'o' + i + obstacle_pos, grid_cell_size / 2);
+        obstacle.x = (0.5 + this.game.obstacles[i][obstacle_pos]) *
+          grid_cell_size;
+        obstacle.y = (0.5 + (this.game.n_rows - 1 - i)) * grid_cell_size;
         this._animator.addElement(obstacle);
       }
     }
@@ -157,18 +174,19 @@ Lesson01ExerciseStepPlayer.prototype = {
     var directions_failure_reason = this._actionsToDirections(actions);
     var directions = directions_failure_reason[0];
     var failure_reason = directions_failure_reason[1];
+    var grid_cell_size = this.game.gridCellSize();
 
     for (var i = 1; i < this.game.obstacles.length; ++i) {
       for (var obstacle_pos in this.game.obstacles[i]) {
         this._animator.addAnimation(AnimationFactories.straightMove(
               'o' + i + obstacle_pos, 0, directions.length,
-              0, GRID_CELL_SIZE * directions.length));
+              0, grid_cell_size * directions.length));
 
         this._animator.addAnimation(
             new Animator.Animation(0, directions.length,
               'o' + i + obstacle_pos, 'radius',
               function() {
-                var max_y = this.game.n_rows * GRID_CELL_SIZE;
+                var max_y = this.game.n_rows * grid_cell_size;
                 function o_radius_fn(t, elem) {
                   return elem.y <= max_y ? elem.radius : 0;
                 }
@@ -183,11 +201,12 @@ Lesson01ExerciseStepPlayer.prototype = {
       var animationName = ((directions[i] == -1) ? 'walk_left':
                            (directions[i] == 1) ? 'walk_right' : 'walk_down');
       var duration = (animationName == 'walk_down' ) ? 0.1 : 1;
+      console.log("Directions[" + i + "] = " + directions[i]);
 
       this._animator.addAnimation([
           character.createAnimation(animationName, i, i + duration, 0.5),
           AnimationFactories.straightMove(
-            'p', i, i + 1, GRID_CELL_SIZE * directions[i], 0),
+            'p', i, i + 1, grid_cell_size * directions[i], 0),
       ]);
     }
 
@@ -368,7 +387,7 @@ function Lesson01() {
     new Lesson.LessonStep(
       "E isso é tudo! Continue se divertindo salvando robôs, ou pode " +
       "descansar por hoje! :)",
-      new Lesson01ExerciseStepPlayer(),
+      new Lesson01ExerciseStepPlayer(false, 10, 10),
       "",
       Constants.Lesson01.SUCCESS_MESSAGE));
 }
