@@ -10,7 +10,8 @@ module.exports = {
   RUN_VIEW_SQUARE_DIMENSION: 1000,
 
   Lesson01: {
-    FAILURE_MESSAGE: "Que pena! O robô não sobreviveu. Tente novamente.",
+    FAILURE_MESSAGE_HIT_BY_ASTEROID: "Que pena! O robô foi atingido! Tente novamente.",
+    FAILURE_MESSAGE_LEFT_GRID: "Oh, o robô saiu da área de controle e ficou perdido! Ajude-o novamente.",
     SUCCESS_MESSAGE: "Muito bem! Mais um robô a salvo! :)",
   },
 };

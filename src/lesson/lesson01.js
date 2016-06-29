@@ -13,6 +13,11 @@ var Constants = require("../constants");
 var GRID_SIZE = 10;
 var GRID_CELL_SIZE = Constants.RUN_VIEW_SQUARE_DIMENSION / GRID_SIZE;
 
+var FailureReasons = {
+  HIT_BY_ASTEROID: 1,
+  LEFT_GRID: 2,
+};
+
 var Lesson01Game = function(n_rows, n_cols, robot_position,
                             obstacle_positions) {
   var game = this;
@@ -50,15 +55,18 @@ var Lesson01Game = function(n_rows, n_cols, robot_position,
 
   this.moveCharacter = function (step, direction) {
     var intended_position = game.character_position + direction;
-    if (intended_position >= 0 && intended_position < game.n_cols)
+    if (intended_position >= 0 && intended_position < game.n_cols) {
       game.character_position = intended_position;
+    } else {
+      return FailureReasons.LEFT_GRID;
+    }
 
     for (var pos in game.obstacles[step]) {
       if (game.obstacles[step][pos] == game.character_position) {
-        return false;
+        return FailureReasons.HIT_BY_ASTEROID;
       }
     }
-    return true;
+    return null;
   }
 };
 
@@ -146,21 +154,21 @@ Lesson01ExerciseStepPlayer.prototype = {
   // Renders the execution to the animator.
   // Returns a list of runtime error messages (empty if the robot survived).
   _render: function(actions) {
-    var directions_success = this._actionsToDirections(actions);
-    var directions = directions_success[0];
-    var success = directions_success[1];
+    var directions_failure_reason = this._actionsToDirections(actions);
+    var directions = directions_failure_reason[0];
+    var failure_reason = directions_failure_reason[1];
 
     for (var i = 1; i < this.game.obstacles.length; ++i) {
       for (var obstacle_pos in this.game.obstacles[i]) {
         this._animator.addAnimation(AnimationFactories.straightMove(
               'o' + i + obstacle_pos, 0, directions.length,
-              0, GRID_CELL_SIZE * this.game.n_rows));
+              0, GRID_CELL_SIZE * directions.length));
 
         this._animator.addAnimation(
             new Animator.Animation(0, directions.length,
               'o' + i + obstacle_pos, 'radius',
               function() {
-                var max_y = (this.game.n_rows - 1) * GRID_CELL_SIZE;
+                var max_y = this.game.n_rows * GRID_CELL_SIZE;
                 function o_radius_fn(t, elem) {
                   return elem.y <= max_y ? elem.radius : 0;
                 }
@@ -183,10 +191,16 @@ Lesson01ExerciseStepPlayer.prototype = {
       ]);
     }
 
-    if (success)
+    if (!failure_reason)
       return [];
 
-    return [Constants.Lesson01.FAILURE_MESSAGE];
+    if (failure_reason === FailureReasons.HIT_BY_ASTEROID) {
+      return [Constants.Lesson01.FAILURE_MESSAGE_HIT_BY_ASTEROID];
+    } else if (failure_reason === FailureReasons.LEFT_GRID) {
+      return [Constants.Lesson01.FAILURE_MESSAGE_LEFT_GRID];
+    } else {
+      throw "Unknown failure reason " + failure_reason;
+    }
   },
 
   // Given a list of actions and the game, returns a pair (directions, success)
@@ -195,7 +209,7 @@ Lesson01ExerciseStepPlayer.prototype = {
   // player survived.
   _actionsToDirections: function(actions) {
     var directions = Array();
-    var success = true;
+    var failure_reason = null;
 
     for (var i = 1; i < this.game.n_rows; ++i) {
       var action = actions.shift() || "W";
@@ -216,13 +230,13 @@ Lesson01ExerciseStepPlayer.prototype = {
           break;
       }
 
-      if (!this.game.moveCharacter(i, direction)) {
-        success = false;
+      failure_reason = this.game.moveCharacter(i, direction);
+      if (failure_reason !== null) {
         break;
       }
     }
 
-    return [directions, success];
+    return [directions, failure_reason];
   },
 };
 
@@ -240,7 +254,7 @@ function Lesson01() {
       "atingido, ele deve se movimentar para a direita. Por isso digitei " +
       "LW no nosso sistema. Clique no botão (>) para enviar a ordem " +
       "para o robô!",
-      new Lesson01ExerciseStepPlayer(false, 3, 3, 1, 
+      new Lesson01ExerciseStepPlayer(false, 3, 3, 1,
                                      [5, 7, 8]),
       "LW",
       Constants.Lesson01.SUCCESS_MESSAGE));
@@ -256,17 +270,17 @@ function Lesson01() {
       "letra R para o robô anterior, mas para este, iremos precisar. " +
       "Você consegue descobrir para que ela serve? Clique em (>) para ver " +
       "o que acontece.",
-      new Lesson01ExerciseStepPlayer(false, 3, 3, 1, 
+      new Lesson01ExerciseStepPlayer(false, 3, 3, 1,
                                      [3, 5, 6, 7]),
       "",
       Constants.Lesson01.SUCCESS_MESSAGE));
-  
+
   this.addStep(
     new Lesson.LessonStep(
       "Certo. Vamos salvar um robô em uma situação um pouco mais difícil. " +
       "Eu estou tentando mover este robô, mas sinto que cometi um erro " +
       "e escrevi o programa errado. Você consegue corrigir o erro?",
-      new Lesson01ExerciseStepPlayer(false, 5, 3, 1, 
+      new Lesson01ExerciseStepPlayer(false, 5, 3, 1,
                                      [4, 7, 8, 9, 11, 12, 13]),
       "LWRL",
       Constants.Lesson01.SUCCESS_MESSAGE));
@@ -277,7 +291,7 @@ function Lesson01() {
       "transferido para outra unidade, e por isso não poderei mais te " +
       "ajudar com os códigos. Acho que você está pronto para conduzir os " +
       "robôs restantes pela chuva de meteoros sozinho.",
-      new Lesson01ExerciseStepPlayer(false, 5, 4, 1, 
+      new Lesson01ExerciseStepPlayer(false, 5, 4, 1,
                                      [5, 10, 12, 14, 16, 17, 19]),
       "",
       Constants.Lesson01.SUCCESS_MESSAGE));
@@ -288,7 +302,7 @@ function Lesson01() {
       "robô seja salvo com sucesso. Por exemplo, o robô anterior poderia " +
       "ser salvo com qualquer um dos programas seguintes: LWRR, LRWR, RLWR, " +
       "RRWL. Você acha que o mesmo é verdade para este robô?",
-      new Lesson01ExerciseStepPlayer(false, 15, 3, 1, 
+      new Lesson01ExerciseStepPlayer(false, 15, 3, 1,
                                      [3, 4, 6, 8, 9, 11, 12, 14, 15, 17,
                                       18, 20, 22, 23, 24, 26, 27, 28, 30, 31,
                                       33, 35, 37, 38, 39, 41, 43, 44]),
