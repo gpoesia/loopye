@@ -2,6 +2,8 @@
  * Basic structure of a lesson.
  */
 
+var ResourceLoader = require("../util/resource_loader");
+
 /// A lesson is a sequence of lesson steps.
 function Lesson() {
   this.steps = new Array();
@@ -21,7 +23,12 @@ Lesson.prototype = {
   /// Returns the i-th step in this lesson.
   getStep: function(i) {
     return this.steps[i];
-  }
+  },
+
+  /// Returns a resource loader that loads all resources needed by the lesson.
+  getResourceLoader: function() {
+    return new ResourceLoader();
+  },
 };
 
 /// Interface for one step of a lesson.

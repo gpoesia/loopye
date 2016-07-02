@@ -4,6 +4,8 @@
 
 var animator = require("../animator");
 
+var ROBOT_IMAGE_URL = "/static/images/elements/stormtrooper.png";
+
 // Creates an AnimatedImageElement that renders to a robot.
 // It has four animations: walk_down, walk_up, walk_left and
 // walk_right.
@@ -12,7 +14,7 @@ var animator = require("../animator");
 // If none are given, the image's original size is used.
 function createRobot(id, max_width, max_height) {
   var image = new Image();
-  image.src = "/static/images/elements/stormtrooper.png";
+  image.src = ROBOT_IMAGE_URL;
   var IMAGE_WIDTH = 32;
   var IMAGE_HEIGHT = 48;
   var width = IMAGE_WIDTH;
@@ -54,4 +56,5 @@ function createRobot(id, max_width, max_height) {
 
 module.exports = {
   createRobot: createRobot,
+  ROBOT_IMAGE_URL: ROBOT_IMAGE_URL,
 };
