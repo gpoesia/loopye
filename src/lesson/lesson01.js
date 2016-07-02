@@ -5,6 +5,7 @@
 var Lesson = require("./lesson");
 var Interpreter = require("../language/interpreter")
 var Animator = require("../util/animator");
+var ResourceLoader = require("../util/resource_loader");
 var AnimationFactories = require("../util/animator/animation_factories");
 var ElementFactories = require("../util/animator/element_factories");
 var Robolang = require("../language/robolang/robolang");
@@ -373,6 +374,13 @@ function Lesson01() {
       Constants.Lesson01.SUCCESS_MESSAGE));
 }
 
-Lesson01.prototype = Object.create(Lesson.Lesson.prototype, {});
+Lesson01.prototype = Object.create(Lesson.Lesson.prototype);
+Object.assign(Lesson01.prototype, {
+  getResourceLoader: function() {
+    var loader = new ResourceLoader();
+    loader.addImage(ElementFactories.ROBOT_IMAGE_URL);
+    return loader;
+  },
+});
 
 module.exports = Lesson01;
