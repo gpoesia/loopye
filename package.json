@@ -8,6 +8,7 @@
     "browserify": "13.0.1",
     "flux": "2.1.1",
     "react": "15.0.2",
-    "react-dom": "15.0.2"
+    "react-dom": "15.0.2",
+    "react-popup": "0.4.2"
   }
 }

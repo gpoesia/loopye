@@ -32,6 +32,14 @@ var ButtonBar = React.createClass({
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
     },
+    helpButton: {
+      height: "100%",
+      width: "10%",
+      backgroundImage: "url(\"" + Constants.HELP_ICON_URL + "\")",
+      backgroundSize: "contain",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    },
   },
   render: function() {
     return <div style={{backgroundColor: "#eeffee", width: "100%",
@@ -45,6 +53,9 @@ var ButtonBar = React.createClass({
               <button onClick={this.props.onAdvance}
                       disabled={!this.props.advanceEnabled}
                       style={this._styles.advanceButton} />
+
+              <button onClick={this.props.onHelp}
+                      style={this._styles.helpButton} />
            </div>;
   },
 });
