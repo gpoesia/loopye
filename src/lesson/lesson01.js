@@ -2,6 +2,7 @@
  * comp4kids programming 101 lesson 1.
  */
 
+var React = require("react");
 var Lesson = require("./lesson");
 var Interpreter = require("../language/interpreter")
 var Animator = require("../util/animator");
@@ -10,6 +11,7 @@ var AnimationFactories = require("../util/animator/animation_factories");
 var ElementFactories = require("../util/animator/element_factories");
 var Robolang = require("../language/robolang/robolang");
 var Constants = require("../constants");
+var Icons = require("../view/icons");
 
 var FailureReasons = {
   HIT_BY_ASTEROID: 1,
@@ -265,15 +267,36 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Olá! Você deve ser o novo programador que o Capitão contratou para " +
-      "nossa missão. Bom, não sei se ele já te passou as instruções, mas " +
-      "a sua tarefa é salvar os nossos robôs da chuva de meteoros que está " +
-      "acontecendo no planeta onde eles estão. Eu vou te mostrar como " +
-      "funciona. Veja este robô! Existem 3 obstáculos acima dele, prestes " +
-      "a cair. Para que ele sobre viva à chuva de meteoros sem ser " +
-      "atingido, ele deve se movimentar para a direita. Por isso digitei " +
-      "LW no nosso sistema. Clique no botão (>) para enviar a ordem " +
-      "para o robô!",
+      <p>
+        Eu já escrevi um programa para salvar este robô, ali do lado esquerdo.
+        Ele é "LW". Aperte {Icons.PlayIcon} para ver o que ele faz.
+      </p>,
+      <div>
+        <p>
+          Olá! Você deve ser o novo programador que o Capitão contratou para
+          nossa missão. Bom, não sei se ele já te passou as instruções, mas
+          a sua tarefa é salvar os nossos robôs da chuva de meteoros que está
+          acontecendo no planeta onde eles estão. Eu vou te mostrar como
+          funciona.
+        </p>
+        <p>
+          Veja este robô! Existem 3 obstáculos acima dele, prestes
+          a cair. Para que ele sobreviva à chuva de meteoros sem ser
+          atingido, ele deve se movimentar para a esquerda. Por isso já digitei
+          LW no nosso sistema, ali na esquerda. O robô executa cada comando em sequência:
+          primeiro o comando L, e em seguida o W. Quando acabam os comandos, ele fica parado,
+          esperando que a chuva passe. Todos os comandos são letras maiúsculas.
+          Vamos ver o que acontece e já te explico o que cada um faz.
+        </p>
+        <p>
+          O seu painel de controle te permite fazer várias coisas.
+          Clique no botão {Icons.PlayIcon} para enviar a ordem
+          para o robô. Caso você consiga salvar o robô, vamos para o próximo, apertando
+          o botão {Icons.AdvanceIcon}. Se você precisar tentar novamente, é só usar
+          o botão {Icons.ResetIcon}. E para ver estas instruções de novo, você
+          pode apertar o {Icons.HelpIcon}. Minha principal lição é: não entre em pânico!
+        </p>
+      </div>,
       new Lesson01ExerciseStepPlayer(false, 3, 3, 1,
                                      [5, 7, 8]),
       "LW",
@@ -281,15 +304,23 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Muito bem! Ah, você deve estar se perguntando porque LW. Bom, " +
-      "vamos passo-a-passo: a letra L (de \"left\", ou esquerda), comanda " +
-      "que o robô se movimente para a esquerda. A letra \"W\" (de \"wait\", " +
-      "ou aguarde), comanda que o robô permaneça onde está naquele momento. " +
-      "Combinando os dois comandos, o robô se movimenta para a esquerda e, " +
-      "em sequência, aguarda na posição atual. Não precisamos utilizar a " +
-      "letra R para o robô anterior, mas para este, iremos precisar. " +
-      "Você consegue descobrir para que ela serve? Clique em (>) para ver " +
-      "o que acontece.",
+      <p>
+        Para este robô, você precisará usar o comando "R" para ir para a direita.
+        Mas não apenas isso: antes, ele precisará esperar o meteoro que vai cair à sua direita.
+        Boa sorte! Não tenha medo de tentar, errar e tentar de novo,
+        o robô é resistente :-)
+      </p>,
+      <p>
+        Muito bem! Ah, você deve estar se perguntando porque LW. Bom,
+        vamos passo-a-passo: a letra L (de "left", ou esquerda em inglês), comanda
+        que o robô se movimente para a esquerda. A letra "W" (de "wait",
+        aguarde), comanda que o robô permaneça onde está naquele momento.
+        Combinando os dois comandos, o robô se movimenta para a esquerda e,
+        em sequência, aguarda na posição atual. Não precisamos utilizar a
+        letra R para o robô anterior, mas para este, iremos precisar.
+        Você consegue descobrir para que ela serve? Clique em {Icons.PlayIcon} para ver
+        o que acontece.
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 3, 3, 1,
                                      [3, 5, 6, 7]),
       "",
@@ -297,9 +328,15 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Certo. Vamos salvar um robô em uma situação um pouco mais difícil. " +
-      "Eu estou tentando mover este robô, mas sinto que cometi um erro " +
-      "e escrevi o programa errado. Você consegue corrigir o erro?",
+      <p>
+        Eu tentei "LWRL", mas o robô está sendo atingido. Acho que com uma pequena
+        correção esse programa já deve ser suficiente.
+      </p>,
+      <p>
+        Certo. Vamos salvar um robô em uma situação um pouco mais difícil.
+        Eu estou tentando, mas sinto que cometi um erro
+        e escrevi o programa errado. Você consegue corrigir o erro?
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 5, 3, 1,
                                      [4, 7, 8, 9, 11, 12, 13]),
       "LWRL",
@@ -307,10 +344,15 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Realmente, havia um erro no meu programa. Bom, eu estou sendo " +
-      "transferido para outra unidade, e por isso não poderei mais te " +
-      "ajudar com os códigos. Acho que você está pronto para conduzir os " +
-      "robôs restantes pela chuva de meteoros sozinho.",
+      <p>
+        Ainda poderei te ajudar, mas escrever os programas agora é com você. Boa sorte!
+      </p>,
+      <p>
+        Muito bem! Realmente, havia um erro no meu programa. Bom, eu estou sendo
+        transferido para outra unidade, e por isso não poderei mais te
+        ajudar com os códigos. Acho que você está pronto para conduzir os
+        robôs restantes pela chuva de meteoros sozinho.
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 5, 4, 1,
                                      [5, 10, 12, 14, 16, 17, 19]),
       "",
@@ -318,10 +360,15 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Para alguns casos, existem diversos programas diferentes em que o " +
-      "robô seja salvo com sucesso. Por exemplo, o robô anterior poderia " +
-      "ser salvo com qualquer um dos programas seguintes: LWRR, LRWR, RLWR, " +
-      "RRWL. Você acha que o mesmo é verdade para este robô?",
+      <p>
+        Esse robô caiu em uma enrascada!
+      </p>,
+      <p>
+        Para alguns casos, existem diversos programas diferentes em que o
+        robô seja salvo com sucesso. Por exemplo, o robô anterior poderia
+        ser salvo com qualquer um dos programas seguintes: LWRR, LRWR, RLWR,
+        RRWL. Você acha que o mesmo é verdade para este robô?
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 15, 3, 1,
                                      [3, 4, 6, 8, 9, 11, 12, 14, 15, 17,
                                       18, 20, 22, 23, 24, 26, 27, 28, 30, 31,
@@ -331,11 +378,16 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Se você respondeu RLWWWWLRRWLLRL para o robô anterior, e acha que é " +
-      "o único programa que faz com que o robô desvie corretamente de " +
-      "todos os meteoros, você acertou! Igualmente, para este robô, só " +
-      "existe um programa que faz com que ele seja salvo sem ser atingido " +
-      "por nenhum meteoro.",
+      <p>
+        Outro robô em apuros...
+      </p>,
+      <p>
+        Se você respondeu RLWWWWLRRWLLRL para o robô anterior, e acha que é
+        o único programa que faz com que o robô desvie corretamente de
+        todos os meteoros, você acertou! Igualmente, para este robô, só
+        existe um programa que faz com que ele seja salvo sem ser atingido
+        por nenhum meteoro.
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 6, 10, 4,
                                      [11, 13, 15, 17, 22, 23, 24, 26,
                                       31, 34, 35, 37, 44, 46, 47, 48,
@@ -345,8 +397,14 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Salve o robô. Você consegue pensar em alguma maneira de salvar este " +
-      "robô com um programa de apenas um comando?",
+      <p>
+        Esse será moleza :)
+      </p>,
+      <p>
+        Ah, um caso mais fácil. Você pode economizar seus dedos desta vez.
+        Consegue pensar em alguma maneira de salvar este
+        robô com um programa de apenas um comando?
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 5, 8, 1,
                                      [9, 17, 18, 25, 26, 27, 33, 35, 36]),
       "",
@@ -354,10 +412,16 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Para o robô anterior, vimos que existe uma \"região segura\" que, " +
-      "após alcançada, significa que o robô não será atingido se todos os " +
-      "comandos seguintes forem somente de espera (sequência de Ws). " +
-      "Você acha que existe alguma regiao segura para o robô atual?",
+      <p>
+        Hmm, não sei se esse robô terá o luxo de ficar parado esperando
+        que a chuva passe...
+      </p>,
+      <p>
+        Para o robô anterior, vimos que existe uma "região segura" que,
+        após alcançada, significa que o robô não será atingido se todos os
+        comandos seguintes forem somente de espera (sequência de Ws).
+        Você acha que existe alguma regiao segura para o robô atual?
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 6, 7, 3,
                                      [7, 9, 11, 13, 15, 17, 19,
                                       21, 23, 25, 27, 29, 31, 33,
@@ -367,8 +431,13 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Para o robô anterior, não existia região segura. O que acontece " +
-      "se o robô já começar em uma regiao segura?",
+      <p>
+        Todo robô queria estar em uma situação assim :)
+      </p>,
+      <p>
+        Para o robô anterior, não existia região segura. O que acontece
+        se o robô já começar em uma regiao segura?
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 5, 5, 2,
                                      [6, 10, 13, 16, 18, 19, 21, 23]),
       "",
@@ -376,8 +445,13 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "Muito bem. Salve este outro robô. Para este novo robô, é fácil se " +
-      "confundir. Então programe com bastante atenção!",
+      <p>
+        Cuidado por onde leva o robô! Mas a esta altura sei que você já é profissional.
+      </p>,
+      <p>
+        Muito bem! Essa foi fácil. Salve este outro robô. Para este novo robô, é fácil se
+        confundir. Então programe com bastante atenção!
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 10, 5, 2,
                                      [7, 11, 12, 13, 17, 22, 26, 27, 28, 29,
                                       32, 36, 38, 42, 45, 46, 47, 48]),
@@ -386,8 +460,13 @@ function Lesson01() {
 
   this.addStep(
     new Lesson.LessonStep(
-      "E isso é tudo! Continue se divertindo salvando robôs, ou pode " +
-      "descansar por hoje! :)",
+      <p>
+        Parabéns! Os robôs agradecem a sua ajuda!
+      </p>,
+      <p>
+        E isso é tudo! Continue se divertindo salvando robôs, ou pode
+        descansar por hoje! :)
+      </p>,
       new Lesson01ExerciseStepPlayer(false, 10, 10),
       "",
       Constants.Lesson01.SUCCESS_MESSAGE));
