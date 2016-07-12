@@ -25,18 +25,26 @@ Lesson.prototype = {
 };
 
 /// Interface for one step of a lesson.
-function LessonStep(instructionText, player, initialCode, successMessage) {
-  this.instructionText = instructionText;
+function LessonStep(shortInstruction, instructions, player, initialCode,
+                    successMessage) {
+  this.shortInstruction = shortInstruction;
+  this.instructions = instructions;
   this.player = player;
   this.initialCode = initialCode || "";
   this.successMessage = successMessage || null;
 }
 
 LessonStep.prototype = {
-  /// Returns the instructional content that will be displayed during this
-  /// step (on the left side of the lesson environment).
-  getContent: function() {
-    return this.instructionText;
+  /// Returns the short instructional content that will be displayed during this
+  /// step (inside the lesson environment).
+  getShortInstructions: function() {
+    return this.shortInstruction;
+  },
+
+  /// Returns the longer instructional content that will be displayed in a
+  /// pop-up when the step starts or when the help button is clicked.
+  getInstructions: function() {
+    return this.instructions;
   },
 
   /// Returns the message to be displayed when the user correctly solves this

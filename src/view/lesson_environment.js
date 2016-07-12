@@ -8,6 +8,7 @@ var CodeEditor = require("./code_editor.js");
 var InstructionPane = require("./instruction_pane.js");
 var RunView = require("./run_view.js");
 var MessagePane = require("./message_pane.js");
+var Popup = require("react-popup").default;
 
 var LessonEnvironment = React.createClass({
   styles: {
@@ -62,6 +63,8 @@ var LessonEnvironment = React.createClass({
       currentStep: step,
       sourceCode: this.props.lesson.getStep(step).getInitialSourceCode(),
     });
+
+    this._showInstructions(step);
   },
 
   _advanceStep: function() {
@@ -110,6 +113,17 @@ var LessonEnvironment = React.createClass({
     currentStep.reset(this.refs.run_view.getCanvas());
   },
 
+  _showInstructions: function(step) {
+    Popup.create({
+      title: "Instruções",
+      content: (this.props.lesson.getStep(step || this.state.currentStep)
+                .getInstructions()),
+      buttons: {
+        right: ["ok"],
+      },
+    });
+  },
+
   componentWillMount: function() {
     this._startStep(0);
   },
@@ -126,12 +140,13 @@ var LessonEnvironment = React.createClass({
              <div style={this.styles.actionSide}>
                <div style={this.styles.instructionPane}>
                  <MessagePane ref="exercise_messages" />
-                 <InstructionPane content={currentStep.getContent()} />
+                 <InstructionPane content={currentStep.getShortInstructions()} />
                </div>
                <div style={this.styles.buttonBar}>
                  <ButtonBar onPlay={this._playCode}
                             onReset={this._reset}
                             onAdvance={this._advanceStep}
+                            onHelp={this._showInstructions.bind(this, null)}
                             advanceEnabled={currentStep.canAdvance()} />
                </div>
                <div style={this.styles.runView}>
