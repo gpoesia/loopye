@@ -7,6 +7,24 @@ var animator = require("../animator");
 var ROBOT_IMAGE_URL = "/static/images/elements/robot.png";
 var ASTEROIDS_IMAGE_URL = "/static/images/elements/asteroids.png";
 
+// Calculates the largest size an image can have so that 1) proportions are kept
+// and 2) maximum size constraints are not violated.
+function calculateDimensions(max_width, max_height, image_width, image_height) {
+  if (max_width || max_height) {
+    max_width = max_width || (max_height * (image_height / image_width));
+    max_height = max_height || (max_width * (image_width / image_height));
+
+    if (max_width * (image_height / image_width) < max_height) {
+      width = max_width;
+      height = width * (image_height / image_width);
+    } else {
+      height = max_height;
+      width = height * (image_width / image_height);
+    }
+  }
+  return [width, height];
+}
+
 // Creates an AnimatedImageElement that renders to a robot.
 // It has four animations: walk_down, walk_up, walk_left and
 // walk_right.
@@ -18,26 +36,17 @@ function createRobot(id, max_width, max_height) {
   image.src = ROBOT_IMAGE_URL;
   var IMAGE_WIDTH = 32;
   var IMAGE_HEIGHT = 48;
-  var width = IMAGE_WIDTH;
-  var height = IMAGE_HEIGHT;
-
-  if (max_width || max_height) {
-    max_width = max_width || (max_height * (IMAGE_HEIGHT / IMAGE_WIDTH));
-    max_height = max_height || (max_width * (IMAGE_WIDTH / IMAGE_HEIGHT));
-
-    if (max_width * (IMAGE_HEIGHT / IMAGE_WIDTH) < max_height) {
-      width = max_width;
-      height = width * (IMAGE_HEIGHT / IMAGE_WIDTH);
-    } else {
-      height = max_height;
-      width = height * (IMAGE_WIDTH / IMAGE_HEIGHT);
-    }
-  }
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
 
   var walk_down_frames =  [0, 1, 2, 3];
   var walk_left_frames =  [4, 5, 6, 7];
   var walk_right_frames = [8, 9, 10, 11];
   var walk_up_frames =    [12, 13, 14, 15];
+  var turn_down_frames =  [0];
+  var turn_left_frames =  [4];
+  var turn_right_frames = [8];
+  var turn_up_frames =    [12];
 
   return new animator.AnimatedImageElement(
       id,
@@ -47,11 +56,47 @@ function createRobot(id, max_width, max_height) {
         new animator.SpriteAnimation("walk_left", walk_left_frames),
         new animator.SpriteAnimation("walk_right", walk_right_frames),
         new animator.SpriteAnimation("walk_up", walk_up_frames),
+        new animator.SpriteAnimation("turn_down", turn_down_frames),
+        new animator.SpriteAnimation("turn_left", turn_left_frames),
+        new animator.SpriteAnimation("turn_right", turn_right_frames),
+        new animator.SpriteAnimation("turn_up", turn_up_frames),
       ],
       4,
       4,
-      width,
-      height
+      dimensions[0],
+      dimensions[1]
+      );
+}
+
+var GOOD_BATTERY_IMAGE_URL = "/static/images/elements/good-battery.png";
+var BAD_BATTERY_IMAGE_URL = "/static/images/elements/bad-battery.png";
+
+function createBattery(id, max_width, max_height, is_good) {
+  var image = new Image();
+  var IMAGE_WIDTH = 32;
+  var IMAGE_HEIGHT = 32;
+
+  if (is_good) {
+    image.src = GOOD_BATTERY_IMAGE_URL;
+  } else {
+    image.src = BAD_BATTERY_IMAGE_URL;
+  }
+
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+
+  var charge_frames = [0, 1, 2, 3];
+
+  return new animator.AnimatedImageElement(
+      id,
+      image,
+      [
+        new animator.SpriteAnimation("charge", charge_frames),
+      ],
+      4,
+      1,
+      dimensions[0],
+      dimensions[1]
       );
 }
 
@@ -107,6 +152,9 @@ function createAsteroid(id, max_width, max_height) {
 
 module.exports = {
   createRobot: createRobot,
+  createBattery: createBattery,
+  GOOD_BATTERY_IMAGE_URL: GOOD_BATTERY_IMAGE_URL,
+  BAD_BATTERY_IMAGE_URL: BAD_BATTERY_IMAGE_URL,
   ROBOT_IMAGE_URL: ROBOT_IMAGE_URL,
   createAsteroid: createAsteroid,
   ASTEROIDS_IMAGE_URL: ASTEROIDS_IMAGE_URL,

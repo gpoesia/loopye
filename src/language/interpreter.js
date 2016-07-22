@@ -19,6 +19,22 @@ Interpreter.prototype = {
   runUntilNextAction: function() {
     throw "Not implemented.";
   },
+
+  /// Runs the program until its end, returning a list of all actions executed.
+  /// Only useful if the program does not use variables and is guaranteed to
+  /// terminate.
+  run: function() {
+    var actions = [];
+    while (true) {
+      var next_action = this.runUntilNextAction();
+      if (!!next_action) {
+        actions.push(next_action);
+      } else {
+        break;
+      }
+    }
+    return actions;
+  }
 };
 
 module.exports = Interpreter;

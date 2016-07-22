@@ -9,6 +9,8 @@
 // Element's (x, y) position is its center. In the animator's plane, the
 // top-left corner is the origin, with x growing to the right and y growing to
 // the bottom of the screen.
+// The visible property indicates whether this element is being rendered.
+// Elements are also animated when invisible.
 var Element = function(id) {
   if (!id)
     throw "Element must have an id.";
@@ -17,6 +19,7 @@ var Element = function(id) {
   this.y = 0;
   this.id = id;
   this.angle = 0;
+  this.visible = true;
 };
 
 Element.prototype = {
@@ -267,6 +270,11 @@ var Animator = function() {
     return this.elements[id];
   };
 
+  // Returns whether there is an element with the given id.
+  this.hasElement = function(id) {
+    return this.elements.hasOwnProperty(id);
+  }
+
   // Adds an animation to the scene.
   // If `animation` is an array, each element is expected to be an animation
   // to be added.
@@ -319,8 +327,8 @@ var Animator = function() {
   };
 
   // Renders the current state of the animation in a canvas.
-  this.render = function(canvas) {
-    this._animateElements();
+  this.render = function(canvas, t) {
+    this._animateElements(t);
     this._renderFrame(canvas);
   };
 
@@ -330,29 +338,21 @@ var Animator = function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (var id in this.elements) {
       if (this.elements.hasOwnProperty(id)) {
-        this.elements[id].render(canvas, this.origin_x, this.origin_y);
+        var element = this.elements[id];
+        if (element.visible) {
+          element.render(canvas, this.origin_x, this.origin_y);
+        }
       }
     }
   };
 
   // Updates the elements according to the animations.
-  this._animateElements = function() {
-    var t = (new Date().getTime() - this.start_time) / 1000;
+  this._animateElements = function(t) {
+    if (this.start_time !== null && t === undefined) {
+      t = (new Date().getTime() - this.start_time) / 1000;
+    }
     var animations = this.animations;
     var shouldStop = true;
-
-    // First, process animations that have finished but have not yet been
-    // finalized (i.e. updated the corresponding property in their final state).
-    for (var i = 0; i < animations.length; ++i) {
-      var animation = animations[i];
-      if (t >= animation.end_time && !animation.finalized) {
-        animation.finalized = true;
-        var element = this.elements[animation.element_id];
-        element[animation.property] =
-          animation.fn(animation.end_time - animation.start_time, element,
-                       animation.initial_state);
-      }
-    }
 
     // Save the elements' current state as their initial state in animations
     // that will start playing in this tick. It's better to do this before
@@ -360,13 +360,26 @@ var Animator = function() {
     // animations that modify the same element could interfere in one another.
     for (var i = 0; i < animations.length; ++i) {
       var animation = animations[i];
-      if (animation.isPlayingAt(t) && animation.initial_state === null) {
+      if (animation.start_time <= t && animation.initial_state === null) {
         animation.initial_state = JSON.parse(JSON.stringify(
               this.elements[animation.element_id]));
       }
       // If there's still work to be done with this animation, don't stop.
       if (!animation.finalized) {
         shouldStop = false;
+      }
+    }
+
+    // Process animations that have finished but have not yet been
+    // finalized (i.e. updated the corresponding property in their final state).
+    for (var i = 0; i < animations.length; ++i) {
+      var animation = animations[i];
+      if (t > animation.end_time && !animation.finalized) {
+        animation.finalized = true;
+        var element = this.elements[animation.element_id];
+        element[animation.property] =
+          animation.fn(animation.end_time - animation.start_time, element,
+                       animation.initial_state);
       }
     }
 

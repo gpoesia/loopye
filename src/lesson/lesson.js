@@ -33,12 +33,13 @@ Lesson.prototype = {
 
 /// Interface for one step of a lesson.
 function LessonStep(shortInstruction, instructions, player, initialCode,
-                    successMessage) {
+                    successMessage, codeSizeLimit) {
   this.shortInstruction = shortInstruction;
   this.instructions = instructions;
   this.player = player;
   this.initialCode = initialCode || "";
   this.successMessage = successMessage || null;
+  this.codeSizeLimit = codeSizeLimit || null;
 }
 
 LessonStep.prototype = {
@@ -64,6 +65,12 @@ LessonStep.prototype = {
   /// the step.
   getInitialSourceCode: function() {
     return this.initialCode;
+  },
+
+  /// Returns the maximum number of characters the user is allowed to use
+  /// in this lesson step. If there's no limit, returns null.
+  getCodeSizeLimit: function() {
+    return this.codeSizeLimit;
   },
 
   /// Returns whether the user is allowed to go to the next step.
