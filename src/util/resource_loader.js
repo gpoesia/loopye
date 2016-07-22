@@ -16,21 +16,25 @@ ResourceLoader.prototype = {
     loaded_images.length = this._images.length;
     loaded_images.fill(false);
 
-    var done = function() { return loaded_images.indexOf(false) == -1; };
+    var done = function() {
+      return loaded_images.indexOf(false) == -1;
+    };
 
-    for (var i = 0; i < this._images.length; i++) {
-      loaded_images[i] = false;
-
-      var image = new Image();
-      var index = i;
-      var url = this._images[i];
-
-      image.onload = function() {
+    function createCallback(loaded_images, index, done, onLoad) {
+      return function() {
         loaded_images[index] = true;
         if (done()) {
           onLoad();
         }
       };
+    }
+
+    for (var i = 0; i < this._images.length; i++) {
+      var image = new Image();
+      var index = new Number(i);
+      var url = this._images[i];
+
+      image.onload = createCallback(loaded_images, new Number(i), done, onLoad);
 
       image.onerror = function(error) {
         console.error("Error when loading " + url + ": " + error);
