@@ -15,4 +15,12 @@ module.exports = {
     FAILURE_MESSAGE_LEFT_GRID: "Oh, o robô saiu da área de controle e ficou perdido! Ajude-o novamente.",
     SUCCESS_MESSAGE: "Muito bem! Mais um robô a salvo! :)",
   },
+
+  Lesson02: {
+    SUCCESS_MESSAGE: "Muito bem! Robô alimentado com sucesso :)",
+    FAILURE_MESSAGE_LEFT_GRID: "Oh, o robô saiu da área de controle e ficou perdido! Ajude-o novamente.",
+    FAILURE_MESSAGE_HIT_LEAKING_BATTERY: "Ops, o robô pegou uma bateria vencida! Nada bom.... Tente novamente!",
+    FAILURE_MESSAGE_LEFT_BATTERIES_BEHIND: "O robô sobreviveu, mas faltaram baterias para serem coletadas. Vamos lá, você consegue pegar todas!",
+  },
+
 };

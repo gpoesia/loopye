@@ -135,7 +135,8 @@ var LessonEnvironment = React.createClass({
              <div style={this.styles.editor}>
                <MessagePane ref="code_messages" />
                <CodeEditor code={this.state.sourceCode}
-                           onChange={this._updateCode} />
+                           onChange={this._updateCode}
+                           limit={currentStep.getCodeSizeLimit()} />
              </div>
              <div style={this.styles.actionSide}>
                <div style={this.styles.instructionPane}>
