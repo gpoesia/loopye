@@ -28,12 +28,13 @@ var Lesson01Game = function(n_rows, n_cols, robot_position,
   var robot_position = robot_position || Math.floor(this.n_cols / 2);
   this.character_position = Math.min(this.n_cols - 1, robot_position);
   this.initial_character_position = this.character_position;
+  this.obstacle_positions = obstacle_positions || []
   this.obstacles = new Array(this.n_rows);
   for (var i = 0; i < this.n_rows; ++i) {
     this.obstacles[i] = new Array();
   }
-  for (var pos in obstacle_positions){
-    var position = obstacle_positions[pos];
+  for (var pos = 0; pos < this.obstacle_positions.length; ++pos){
+    var position = this.obstacle_positions[pos];
     this.obstacles[
       Math.floor(position / this.n_cols)].push(position % this.n_cols);
   }
@@ -69,7 +70,7 @@ var Lesson01Game = function(n_rows, n_cols, robot_position,
       return FailureReasons.LEFT_GRID;
     }
 
-    for (var pos in game.obstacles[step]) {
+    for (var pos = 0; pos < game.obstacles[step].length; ++pos) {
       if (game.obstacles[step][pos] == game.character_position) {
         return FailureReasons.HIT_BY_ASTEROID;
       }
@@ -160,7 +161,8 @@ Lesson01ExerciseStepPlayer.prototype = {
     this._animator.addElement(character);
 
     for (var i = 1; i < this.game.n_rows; ++i) {
-      for (var obstacle_pos in this.game.obstacles[i]) {
+      for (var obstacle_pos = 0;
+            obstacle_pos < this.game.obstacles[i].length; ++obstacle_pos) {
         var obstacle = new ElementFactories.createAsteroid(
             'o' + i + obstacle_pos, grid_cell_size / 2);
         obstacle.x = (0.5 + this.game.obstacles[i][obstacle_pos]) *
@@ -183,11 +185,10 @@ Lesson01ExerciseStepPlayer.prototype = {
     var grid_cell_size = this.game.gridCellSize();
 
     for (var i = 1; i < this.game.obstacles.length; ++i) {
-      for (var obstacle_pos in this.game.obstacles[i]) {
-
+      for (var obstacle_pos = 0;
+            obstacle_pos < this.game.obstacles[i].length; ++obstacle_pos) {
         var obstacle = this._animator.getElement('o' + i + obstacle_pos);
         var animationName = 'random';
-
         this._animator.addAnimation(AnimationFactories.straightMove(
               'o' + i + obstacle_pos, 0, directions.length,
               0, grid_cell_size * directions.length));
@@ -211,8 +212,6 @@ Lesson01ExerciseStepPlayer.prototype = {
       var animationName = ((directions[i] == -1) ? 'walk_left':
                            (directions[i] == 1) ? 'walk_right' : 'walk_down');
       var duration = (animationName == 'walk_down' ) ? 0.1 : 1;
-      console.log("Directions[" + i + "] = " + directions[i]);
-
       this._animator.addAnimation([
           character.createAnimation(animationName, i, i + duration, 0.5),
           AnimationFactories.straightMove(
@@ -237,7 +236,7 @@ Lesson01ExerciseStepPlayer.prototype = {
   // player's movements, and `success` is a boolean indicating whether the
   // player survived.
   _actionsToDirections: function(actions) {
-    var directions = Array();
+    var directions = new Array();
     var failure_reason = null;
 
     for (var i = 1; i < this.game.n_rows; ++i) {
@@ -268,6 +267,172 @@ Lesson01ExerciseStepPlayer.prototype = {
     return [directions, failure_reason];
   },
 };
+
+function Lesson01ExerciseStepPlayerMulti(isExample, nGames, nRowsList,
+                                         nColsList, robotPositionList,
+                                         obstaclePositionsList) {
+  Lesson.LessonStepPlayer.call(this);
+  this.lessonStepPlayers = new Array(nGames);
+  for (var i = 0; i < nGames; ++i) {
+    this.lessonStepPlayers[i] = new Lesson01ExerciseStepPlayer(
+      isExample, nRowsList[i], nColsList[i], robotPositionList[i],
+      obstaclePositionsList[i]);
+  }
+  this._solved = !!isExample;
+}
+
+Lesson01ExerciseStepPlayerMulti.prototype = Object.create(
+    Lesson01ExerciseStepPlayer.prototype);
+
+Object.assign(Lesson01ExerciseStepPlayerMulti.prototype, {
+  _initializeElements: function() {
+    var nPlayers = this.lessonStepPlayers.length;
+    for (var sp = 0; sp < this.lessonStepPlayers.length; ++sp) {
+      stepPlayer = this.lessonStepPlayers[sp];
+      var grid_cell_size = stepPlayer.game.gridCellSize() / nPlayers;
+
+      // Offsets that centralize the canvas.
+      var offset_x = (Constants.RUN_VIEW_SQUARE_DIMENSION / (2 * nPlayers) +
+                      Constants.RUN_VIEW_SQUARE_DIMENSION / nPlayers * sp -
+                      grid_cell_size * stepPlayer.game.n_cols / 2);
+      var offset_y = (Constants.RUN_VIEW_SQUARE_DIMENSION / 2 -
+                      grid_cell_size * stepPlayer.game.n_rows / 2);
+
+      stepPlayer.game.character_position =
+          stepPlayer.game.initial_character_position;
+      var grid = new Animator.SimpleGridElement(
+          'grid' + sp, grid_cell_size, stepPlayer.game.n_rows,
+          grid_cell_size, stepPlayer.game.n_cols);
+      grid.x = offset_x;
+      grid.y = offset_y;
+      this._animator.addElement(grid);
+
+      var character = new ElementFactories.createRobot(
+          'p' + sp, grid_cell_size, grid_cell_size);
+      character.x = offset_x + (0.5 + stepPlayer.game.character_position) *
+          grid_cell_size;
+      character.y = offset_y + (0.5 + stepPlayer.game.n_rows - 1) *
+          grid_cell_size;
+      this._animator.addElement(character);
+
+      for (var i = 1; i < stepPlayer.game.n_rows; ++i) {
+        for (var obstacle_pos = 0;
+              obstacle_pos < stepPlayer.game.obstacles[i].length;
+              ++obstacle_pos) {
+          var obstacle = new ElementFactories.createAsteroid(
+              'o' + sp + i + obstacle_pos, grid_cell_size / 2);
+          obstacle.x = offset_x +
+              (0.5 + stepPlayer.game.obstacles[i][obstacle_pos]) *
+              grid_cell_size;
+          obstacle.y = offset_y + (0.5 + (stepPlayer.game.n_rows - 1 - i)) *
+              grid_cell_size;
+          this._animator.addElement(obstacle);
+          var asteroid_number = (stepPlayer.game.n_rows * i + obstacle_pos) % 8;
+          this._animator.addAnimation(obstacle.createAnimation(
+            'asteroid_' + asteroid_number, 0, 1, 1));
+          }
+      }
+    }
+  },
+  _render: function(actions) {
+    var nPlayers = this.lessonStepPlayers.length;
+    var directions_failure_reason = this._actionsToDirections(actions);
+    for (var sp = 0; sp < this.lessonStepPlayers.length; ++sp) {
+      var stepPlayer = this.lessonStepPlayers[sp];
+      var directions = directions_failure_reason[0];
+      var failure_reason = directions_failure_reason[1];
+      var grid_cell_size = stepPlayer.game.gridCellSize() / nPlayers;
+      var failure_collector = new Array();
+
+      for (var i = 1; i < stepPlayer.game.obstacles.length; ++i) {
+        for (var obstacle_pos = 0;
+              obstacle_pos < stepPlayer.game.obstacles[i].length;
+              ++obstacle_pos) {
+          this._animator.addAnimation(AnimationFactories.straightMove(
+                'o' + sp + i + obstacle_pos, 0, directions.length,
+                0, grid_cell_size * directions.length));
+
+          var offset_y = (Constants.RUN_VIEW_SQUARE_DIMENSION / 2 -
+                          grid_cell_size * stepPlayer.game.n_rows / 2);
+
+          this._animator.addAnimation(
+              new Animator.Animation(0, directions.length,
+                'o' + sp + i + obstacle_pos, 'radius',
+                function() {
+                  var max_y = offset_y + this.game.n_rows * grid_cell_size;
+                  function o_radius_fn(t, elem) {
+                    return elem.y <= max_y ? elem.radius : 0;
+                  }
+                  return o_radius_fn;
+                }.bind(stepPlayer)()));
+        }
+      }
+
+      var character = this._animator.getElement('p' + sp);
+
+      for (var i = 0; i < directions.length; i++) {
+        var animationName = ((directions[i] == -1) ? 'walk_left':
+                             (directions[i] == 1) ? 'walk_right' : 'walk_down');
+        var duration = (animationName == 'walk_down' ) ? 0.1 : 1;
+        this._animator.addAnimation([
+            character.createAnimation(animationName, i, i + duration, 0.5),
+            AnimationFactories.straightMove(
+              'p' + sp, i, i + 1, grid_cell_size * directions[i], 0),
+        ]);
+      }
+
+      if (failure_reason === FailureReasons.HIT_BY_ASTEROID) {
+        failure_collector.push(
+            Constants.Lesson01.FAILURE_MESSAGE_HIT_BY_ASTEROID);
+      } else if (failure_reason === FailureReasons.LEFT_GRID) {
+        failure_collector.push(Constants.Lesson01.FAILURE_MESSAGE_LEFT_GRID);
+      } else if (!!failure_reason){
+        throw "Unknown failure reason " + failure_reason;
+      }
+    }
+    return failure_collector;
+  },
+  _actionsToDirections: function(actions) {
+    var directions = new Array();
+    var failure_reason = null;
+
+    var max_n_rows = Math.max.apply(
+        null,
+        this.lessonStepPlayers.map(function(x) {
+            return x.game.n_rows;
+        })
+    );
+
+    for (var i = 1; i < max_n_rows; ++i) {
+      var action = actions.shift() || "W";
+      var direction = null;
+
+      switch (action) {
+        case "L":
+          direction = -1;
+          directions.push(direction);
+          break;
+        case "R":
+          direction = 1;
+          directions.push(direction);
+          break;
+        case "W":
+          direction = 0;
+          directions.push(direction);
+          break;
+      }
+
+      for (var sp = 0; sp < this.lessonStepPlayers.length; ++sp) {
+        var stepPlayer = this.lessonStepPlayers[sp];
+        failure_reason = stepPlayer.game.moveCharacter(i, direction);
+        if (failure_reason !== null) {
+          return [directions, failure_reason];
+        }
+      }
+    }
+    return [directions, failure_reason];
+  }
+});
 
 function Lesson01() {
   Lesson.Lesson.call(this);
@@ -462,6 +627,70 @@ function Lesson01() {
       new Lesson01ExerciseStepPlayer(false, 10, 5, 2,
                                      [7, 11, 12, 13, 17, 22, 26, 27, 28, 29,
                                       32, 36, 38, 42, 45, 46, 47, 48]),
+      "",
+      Constants.Lesson01.SUCCESS_MESSAGE));
+
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Salve os dois robôs!
+      </p>,
+      <p>
+        Alguns de nossos robôs recebem comandos do mesmo computador e, por isso,
+         o programa que for escrito para salvá-los deve ser único e deve funcionar
+         igualmente para os dois robôs. Veja neste exemplo: o programa WLWW
+         salva o primeiro robô, mas faz com que o segundo seja atingido por um meteoro.
+         Já o programa LLWW salva o segundo robô, mas faz com que o primeiro
+         seja atingido por um meteoro. O único programa que salva os dois
+         robôs, ao mesmo tempo, é WRLW (ou WRL).
+      </p>,
+      new Lesson01ExerciseStepPlayerMulti(true, 2, [5, 5], [5, 5], [2, 2],
+                                          [[6, 8, 12, 15, 18], [8, 11, 19]]),
+      "WRL",
+      Constants.Lesson01.SUCCESS_MESSAGE));
+
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Salve os dois robôs ao mesmo tempo!
+      </p>,
+      <p>
+        Agora é sua vez. Escreva um programa que salve os dois robôs ao mesmo tempo.
+      </p>,
+      new Lesson01ExerciseStepPlayerMulti(false, 2, [5, 5], [5, 5], [2, 2],
+                                          [[6, 12, 13, 15, 19, 21, 23],
+                                           [7, 11, 12, 15, 23, 24]]),
+      "",
+      Constants.Lesson01.SUCCESS_MESSAGE));
+
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Salve os dois robôs ao mesmo tempo!
+      </p>,
+      <p>
+        Salve mais estes robôs. Estamos quase salvando todos eles! :)
+      </p>,
+      new Lesson01ExerciseStepPlayerMulti(false, 2, [6, 6], [8, 8], [1, 4],
+                                          [[9, 13, 16, 18, 19, 22, 26, 29, 32, 35,
+                                            36, 41, 46], [8, 11, 18, 19, 22, 25, 28,
+                                            37, 38, 41, 43, 44]]),
+      "",
+      Constants.Lesson01.SUCCESS_MESSAGE));
+
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Salve os dois robôs ao mesmo tempo!
+      </p>,
+      <p>
+        Com estes robôs, finalizamos por hoje. Todos os robôs terão sido
+        salvos com sucesso, e tudo graças a você! Espero que possamos
+        trabalhar juntos novamente, e boa sorte nessa nova jornada!
+      </p>,
+      new Lesson01ExerciseStepPlayerMulti(false, 2, [10, 10], [5, 5], [2, 2],
+                                          [[7, 11, 13, 22, 26, 27, 38, 42, 46, 49],
+                                           [11, 12, 13, 17, 25, 28, 32, 36, 47, 48]]),
       "",
       Constants.Lesson01.SUCCESS_MESSAGE));
 
