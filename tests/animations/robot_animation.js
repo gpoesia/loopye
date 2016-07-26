@@ -21,11 +21,11 @@ for (var i = 0; i < 20; i++) {
   animator.addAnimation(robot.createAnimation('walk_right', t0 + 3, t0 + 6,
                                               1.0));
 
-  animator.addAnimation(
-      comp4kids.AnimationFactories.straightMove('robot', t0 + 6, t0 + 9,
-                                                0, -30));
-  animator.addAnimation(robot.createAnimation('walk_up', t0 + 6, t0 + 9,
-                                              1.0));
+  // animator.addAnimation(
+  //     comp4kids.AnimationFactories.straightMove('robot', t0 + 6, t0 + 9,
+  //                                               0, -30));
+  // animator.addAnimation(robot.createAnimation('walk_up', t0 + 6, t0 + 9,
+  //                                             1.0));
 
   animator.addAnimation(
       comp4kids.AnimationFactories.straightMove('robot', t0 + 9, t0 + 12,
