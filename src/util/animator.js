@@ -115,7 +115,7 @@ var SimpleGridElement = function(id, cell_width, h_cells, cell_height, v_cells,
   this.h_cells = h_cells || 10;
   this.v_cells = v_cells || this.h_cells;
   this.stroke_color = stroke_color || 'black';
-  this.line_width = line_width || 1;
+  this.line_width = line_width || 2;
 }
 
 SimpleGridElement.prototype = Object.create(Element.prototype);
