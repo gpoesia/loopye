@@ -354,6 +354,19 @@ var Animator = function() {
     var animations = this.animations;
     var shouldStop = true;
 
+    // Process animations that have finished but have not yet been
+    // finalized (i.e. updated the corresponding property in their final state).
+    for (var i = 0; i < animations.length; ++i) {
+      var animation = animations[i];
+      if (t > animation.end_time && !animation.finalized) {
+        animation.finalized = true;
+        var element = this.elements[animation.element_id];
+        element[animation.property] =
+          animation.fn(animation.end_time - animation.start_time, element,
+                       animation.initial_state || element);
+      }
+    }
+
     // Save the elements' current state as their initial state in animations
     // that will start playing in this tick. It's better to do this before
     // any animation actually modifies elements' properties since otherwise two
@@ -367,19 +380,6 @@ var Animator = function() {
       // If there's still work to be done with this animation, don't stop.
       if (!animation.finalized) {
         shouldStop = false;
-      }
-    }
-
-    // Process animations that have finished but have not yet been
-    // finalized (i.e. updated the corresponding property in their final state).
-    for (var i = 0; i < animations.length; ++i) {
-      var animation = animations[i];
-      if (t > animation.end_time && !animation.finalized) {
-        animation.finalized = true;
-        var element = this.elements[animation.element_id];
-        element[animation.property] =
-          animation.fn(animation.end_time - animation.start_time, element,
-                       animation.initial_state);
       }
     }
 
