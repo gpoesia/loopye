@@ -34,9 +34,9 @@ function makeInvisible(element_id, time) {
 }
 
 module.exports = {
-  linearChange,
-  straightMove,
-  setProperty,
-  makeVisible,
-  makeInvisible,
+  linearChange: linearChange,
+  straightMove: straightMove,
+  setProperty: setProperty,
+  makeVisible: makeVisible,
+  makeInvisible: makeInvisible,
 };
