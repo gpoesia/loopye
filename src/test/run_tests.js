@@ -20,5 +20,6 @@ if (!module.tests) {
     console.log("    PASSED");
   } catch (e) {
     console.error("    FAILED: " + e);
+    console.error(e.stack);
   }
 }
