@@ -130,6 +130,22 @@ Object.assign(ASTBlockNodeParser.prototype, {
   },
 });
 
+function ASTBlockNodeParser() {}
+ASTBlockNodeParser.prototype = Object.create(ASTNodeParser.prototype);
+Object.assign(ASTBlockNodeParser.prototype, {
+  lookahead: function(parserState) {
+    return parserState.lookahead().type == Lexer.TokenTypes.BEGIN_BLOCK;
+  },
+
+  parse: function(parserState) {
+    var node = new ASTNode(ASTNodeTypes.BLOCK);
+    parserState.consumeToken(Lexer.TokenTypes.BEGIN_BLOCK);
+    node.children.push(new ASTProgramNodeParser().parse(parserState));
+    parserState.consumeToken(Lexer.TokenTypes.END_BLOCK);
+    return node;
+  },
+});
+
 ASTNodeParser.nodeParsers.push(ASTBlockNodeParser);
 
 function ASTLoopNodeParser() { }
@@ -150,17 +166,39 @@ Object.assign(ASTLoopNodeParser.prototype, {
 
 ASTNodeParser.nodeParsers.push(ASTLoopNodeParser);
 
+function ASTConditionalNodeParser() { }
+ASTConditionalNodeParser.prototype = Object.create(ASTNodeParser.prototype);
+Object.assign(ASTConditionalNodeParser.prototype, {
+  lookahead: function(parserState) {
+    var next = parserState.lookahead(2);
+    return (next.length == 2 &&
+            next[0].type === Lexer.TokenTypes.IDENTIFIER &&
+            next[1].type === Lexer.TokenTypes.CONDITION_SIGN);
+  },
+
+  parse: function(parserState) {
+    var node = new ASTNode(ASTNodeTypes.CONDITIONAL);
+    node.attributes.variable =
+        parserState.consumeToken(Lexer.TokenTypes.IDENTIFIER).value;
+    parserState.consumeToken(Lexer.TokenTypes.CONDITION_SIGN);
+    node.children.push(new ASTBlockNodeParser().parse(parserState));
+    return node;
+  },
+});
+
+ASTNodeParser.nodeParsers.push(ASTConditionalNodeParser);
+
 function ASTActionNodeParser() { }
 ASTActionNodeParser.prototype = Object.create(ASTNodeParser.prototype);
 Object.assign(ASTActionNodeParser.prototype, {
   lookahead: function(parserState) {
-    return parserState.lookahead().type === Lexer.TokenTypes.IDENTIFIER;
+    return parserState.lookahead().type === Lexer.TokenTypes.ACTION_IDENTIFIER;
   },
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.ACTION);
     node.attributes.action =
-        parserState.consumeToken(Lexer.TokenTypes.IDENTIFIER).value;
+        parserState.consumeToken(Lexer.TokenTypes.ACTION_IDENTIFIER).value;
     return node;
   },
 });

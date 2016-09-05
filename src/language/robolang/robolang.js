@@ -6,6 +6,7 @@
 var Interpreter = require("../interpreter");
 var Lexer = require("./lexer");
 var Parser = require("./parser");
+var Scope = require("../scope");
 
 /// Feature flags: control which language constructs are enabled.
 var LOOPS = 1 << 0;
@@ -16,11 +17,13 @@ function Robolang(actions, flags) {
   this.flags = flags;
 }
 
-function InterpreterState() {
+function InterpreterState(globalScope) {
   // Stack of active loop counters.
   this.counters = new Array();
   // Stack of active nodes in the AST traversal.
   this.nodes = new Array();
+  // Scope of the current program point.
+  this.scope = globalScope;
   // Index of the next child to be visited in each node in `this.nodes`.
   this.nextChildIndex = new Array();
 }
@@ -34,7 +37,7 @@ Object.assign(Robolang.prototype, {
       var parser = new Parser.ASTProgramNodeParser();
       this.program = parser.parse(parserState);
 
-      this.state = new InterpreterState();
+      this.state = new InterpreterState(this.getGlobalScope());
       this.state.nodes.push(this.program);
       this.state.nextChildIndex.push(0);
     } catch (e) {
@@ -50,6 +53,24 @@ Object.assign(Robolang.prototype, {
     while (currentNode !== null &&
            currentNode.type !== Parser.ASTNodeTypes.ACTION) {
       switch (currentNode.type) {
+      case Parser.ASTNodeTypes.CONDITIONAL:
+        var variable = currentNode.attributes.variable;
+        var value = this.state.scope.lookup(variable);
+
+        if (value === undefined) {
+          throw "Variable '" + variable + "' was not declared in this scope.";
+        } else {
+          this.state.nextChildIndex.pop();
+          nodes.pop();
+
+          if (value) {
+            // A conditional has only one child: a block with the 'then' body.
+            nodes.push(currentNode.children[0]);
+            this.state.nextChildIndex.push(0);
+          }
+        }
+        break;
+
       case Parser.ASTNodeTypes.LOOP:
         var counter = this.state.counters[this.state.counters.length - 1];
         var tripCount = currentNode.attributes.tripCount;
@@ -57,7 +78,7 @@ Object.assign(Robolang.prototype, {
         if (counter < tripCount) {
           // Run next iteration: increment loop counter.
           ++this.state.counters[this.state.counters.length - 1];
-          // A loop always has only one children: a block with its body.
+          // A loop always has only one child: a block with its body.
           nodes.push(currentNode.children[0]);
           this.state.nextChildIndex.push(0);
         } else {
@@ -73,7 +94,7 @@ Object.assign(Robolang.prototype, {
         var nextChildIndex =
           this.state.nextChildIndex[this.state.nextChildIndex.length - 1];
 
-        // If there are more children to visit.
+        // Check whether there are more children to visit.
         if (nextChildIndex === currentNode.children.length) {
           nodes.pop();
           this.state.nextChildIndex.pop();

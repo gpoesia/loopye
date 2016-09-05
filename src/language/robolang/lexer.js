@@ -4,9 +4,11 @@
 
 /// Source code tokens.
 var TokenTypes = {
-  IDENTIFIER: {name: "id"},
+  ACTION_IDENTIFIER: {name: "action_identifier"},
+  IDENTIFIER: {name: "identifier"},
   BEGIN_BLOCK: {name: "begin_block"},
   END_BLOCK: {name: "end_block"},
+  CONDITION_SIGN: {name: "condition_sign"},
   INTEGER: {name: "int"},
 };
 
@@ -47,8 +49,17 @@ TokenStream.prototype = {
     ++this.i;
     return token;
   },
-  lookahead: function() {
-    return this.tokens[this.i];
+  /// Returns some of the next tokens in the stream without consuming them.
+  /// `n` is the number of tokens wanted. If there are fewer than `n` tokens
+  /// remaining, it returns all remaining tokens in an array that has length
+  /// less than `n`.
+  /// If n is undefined, it only looks for the next token, and returns that
+  /// token (or undefined) instead of an array.
+  /// If n is an integer (even if n=1), then it returns an array.
+  lookahead: function(n) {
+    if (!n)
+      return this.tokens[this.i];
+    return this.tokens.slice(this.i, this.i + n);
   },
 };
 
@@ -74,10 +85,28 @@ var tokenize = function(code) {
       continue;
     }
 
-    // Action.
-    if (/[a-zA-Z]/.test(code[i])) {
-      tokens.push(new Token(TokenTypes.IDENTIFIER, code[i]));
+    // Condition sign: '?'
+    if (/\?/.test(code[i])) {
+      tokens.push(new Token(TokenTypes.CONDITION_SIGN, code[i]));
       ++i;
+      continue;
+    }
+
+    // Action.
+    if (/[A-Z]/.test(code[i])) {
+      tokens.push(new Token(TokenTypes.ACTION_IDENTIFIER, code[i]));
+      ++i;
+      continue;
+    }
+
+    // Identifier.
+    if (/[a-z]/.test(code[i])) {
+      var id = "";
+      while (i < code.length && /[a-zA-Z0-9_]/.test(code[i])) {
+        id += code[i];
+        ++i;
+      }
+      tokens.push(new Token(TokenTypes.IDENTIFIER, id));
       continue;
     }
 

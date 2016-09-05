@@ -5,9 +5,18 @@
  * in the lesson's execution, like making a character move or wait.
  */
 
-function Interpreter() {}
+var Scope = require("./scope");
+
+function Interpreter() {
+  this._global_scope = new Scope.Scope();
+}
 
 Interpreter.prototype = {
+  /// Returns the global scope.
+  getGlobalScope: function() {
+    return this._global_scope;
+  },
+
   /// Parses the user's code, saving an intermediate representation in memory,
   /// or returning an error if any was found.
   parse: function(code) {
