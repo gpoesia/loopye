@@ -10,6 +10,8 @@ var ASTNodeTypes = {
   BLOCK: {name: "Block"},
   LOOP: {name: "Loop"},
   PROGRAM: {name: "Program"},
+  CONDITIONAL: {name: "Conditional"},
+  CONDITIONAL_LOOP: {name: "Conditional Loop"},
 };
 
 /// Represents one node of the Abstract Syntax Tree.
@@ -209,3 +211,30 @@ module.exports = {
   ASTProgramNodeParser: ASTProgramNodeParser,
   ASTNodeTypes: ASTNodeTypes,
 };
+
+function ASTConditionalLoopNodeParser() { }
+ASTConditionalLoopNodeParser.prototype = Object.create(ASTNodeParser.prototype);
+Object.assign(ASTConditionalLoopNodeParser.prototype, {
+  lookahead: function(parserState) {
+    var next = parserState.lookahead(4);
+    return (next.length == 4 &&
+            next[0].type === Lexer.TokenTypes.CONDITIONAL_LOOP_KEYWORD &&
+            next[1].type === Lexer.TokenTypes.BEGIN_EXPRESSION &&
+            next[2].type === Lexer.TokenTypes.IDENTIFIER &&
+            next[3].type === Lexer.TokenTypes.END_EXPRESSION);
+  },
+
+  parse: function(parserState) {
+    var node = new ASTNode(ASTNodeTypes.CONDITIONAL_LOOP);
+    parserState.consumeToken(Lexer.TokenTypes.CONDITIONAL_LOOP_KEYWORD);
+    parserState.consumeToken(Lexer.TokenTypes.BEGIN_EXPRESSION);
+    node.attributes.variable =
+        parserState.consumeToken(Lexer.TokenTypes.IDENTIFIER).value;
+    parserState.consumeToken(Lexer.TokenTypes.END_EXPRESSION);
+    node.children.push(new ASTBlockNodeParser().parse(parserState));
+    return node;
+  },
+});
+
+ASTNodeParser.nodeParsers.push(ASTConditionalLoopNodeParser);
+

@@ -10,6 +10,7 @@ var Scope = require("../scope");
 
 /// Feature flags: control which language constructs are enabled.
 var LOOPS = 1 << 0;
+var CONDITIONAL_LOOPS = 1 << 1;
 
 function Robolang(actions, flags) {
   Interpreter.call(this);
@@ -67,6 +68,23 @@ Object.assign(Robolang.prototype, {
             // A conditional has only one child: a block with the 'then' body.
             nodes.push(currentNode.children[0]);
             this.state.nextChildIndex.push(0);
+          }
+        }
+        break;
+
+      case Parser.ASTNodeTypes.CONDITIONAL_LOOP:
+        var variable = currentNode.attributes.variable;
+        var value = this.state.scope.lookup(variable);
+
+        if (value === undefined) {
+          throw "Variable '" + variable + "' was not declared in this scope.";
+        } else {
+          if (value) {
+            nodes.push(currentNode.children[0]);
+            this.state.nextChildIndex.push(0);
+          } else {
+            this.state.nextChildIndex.pop();
+            nodes.pop();
           }
         }
         break;

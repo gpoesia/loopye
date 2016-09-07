@@ -10,11 +10,16 @@ var TokenTypes = {
   END_BLOCK: {name: "end_block"},
   CONDITION_SIGN: {name: "condition_sign"},
   INTEGER: {name: "int"},
+  CONDITIONAL_LOOP_KEYWORD: {name: "conditional_loop_keyword"},
+  BEGIN_EXPRESSION: {name: "begin_expression"},
+  END_EXPRESSION: {name: "end_expression"},
 };
 
 /// Token strings.
 const BEGIN_BLOCK_TOKEN = "{";
 const END_BLOCK_TOKEN = "}";
+const BEGIN_EXPRESSION_TOKEN = "(";
+const END_EXPRESSION_TOKEN = ")";
 
 function Token(type, value) {
   this.type = type;
@@ -85,10 +90,29 @@ var tokenize = function(code) {
       continue;
     }
 
+    if (code[i] == BEGIN_EXPRESSION_TOKEN) {
+      tokens.push(new Token(TokenTypes.BEGIN_EXPRESSION));
+      ++i;
+      continue;
+    }
+
+    if (code[i] == END_EXPRESSION_TOKEN) {
+      tokens.push(new Token(TokenTypes.END_EXPRESSION));
+      ++i;
+      continue;
+    }
+
     // Condition sign: '?'
     if (/\?/.test(code[i])) {
       tokens.push(new Token(TokenTypes.CONDITION_SIGN, code[i]));
       ++i;
+      continue;
+    }
+
+    // Conditional loop keyword: "ENQ"
+    if (code.substr(i, 3) === "ENQ") {
+      tokens.push(new Token(TokenTypes.CONDITIONAL_LOOP_KEYWORD));
+      i += 3;
       continue;
     }
 
