@@ -7,6 +7,7 @@ var ReactDOM = require("react-dom");
 var DummyLesson = require("./lesson/dummy_lesson");
 var Lesson01 = require("./lesson/lesson01");
 var Lesson02 = require("./lesson/lesson02");
+var Lesson03 = require("./lesson/lesson03");
 var LessonEnvironment = require("./view/lesson_environment");
 var Popup = require("react-popup").default;
 
@@ -36,4 +37,5 @@ module.exports = {
   DummyLesson: DummyLesson,
   Lesson01: Lesson01,
   Lesson02: Lesson02,
+  Lesson03: Lesson03,
 };

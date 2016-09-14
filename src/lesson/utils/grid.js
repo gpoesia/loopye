@@ -19,14 +19,15 @@ Position.prototype = {
   }
 };
 
-function Grid(n_rows, n_cols) {
+function Grid(n_rows, n_cols, initial_value) {
+  initial_value = initial_value || null;
   this._matrix = new Array();
   this._matrix.length = n_rows;
   for (var i = 0; i < n_rows; i++) {
     this._matrix[i] = new Array();
     this._matrix[i].length = n_cols;
     for (var j = 0; j < n_cols; j++) {
-      this._matrix[i][j] = null;
+      this._matrix[i][j] = initial_value;
     }
   }
 }
@@ -54,6 +55,18 @@ Grid.prototype = {
   valid: function(row, column) {
     return (0 <= row && row < this.rows() &&
             0 <= column && column < this.columns());
+  },
+
+  findAll: function(value) {
+    var positions = [];
+    for (var i = 0; i < this.rows(); i++) {
+      for (var j = 0; j < this.columns(); j++) {
+        if (this._matrix[i][j] === value) {
+          positions.push(new Position(i, j));
+        }
+      }
+    }
+    return positions;
   },
 };
 

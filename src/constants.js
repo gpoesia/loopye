@@ -23,4 +23,15 @@ module.exports = {
     FAILURE_MESSAGE_LEFT_BATTERIES_BEHIND: "O robô sobreviveu, mas faltaram baterias para serem coletadas. Vamos lá, você consegue pegar todas!",
   },
 
+  Lesson03: {
+    SUCCESS_MESSAGE: "É isso aí! Nossa base está cada vez melhor.",
+    LEFT_GRID: "Oh não, o robô saiu da área de controle e ficou perdido! Ajude-o novamente.",
+    HIT_MACHINE: "O robô colidiu com uma máquina e ela se quebrou! Tente novamente.",
+    BROKE_COMPONENT: "O robô passou por cima de uma peça e ela se quebrou! Tente novamente.",
+    NO_COMPONENT_TO_GET: "O robô tentou pegar uma peça, mas não havia nenhuma...",
+    NO_COMPONENT_TO_PUT: "O robô tentou colocar uma peça na máquina, mas ele não tinha peças em mãos...",
+    NO_MACHINE_TO_PUT_COMPONENT_IN: "O robô tentou colocar uma peça, mas não havia uma máquina próxima.",
+    TRIED_HOLDING_TWO_COMPONENTS: "O robô tentou pegar uma peça do chão, mas ele só pode carregar uma de cada vez...",
+    MISSION_UNFINISHED: "O robô sobreviveu, mas não completou sua missão. Tente novamente.",
+  },
 };
