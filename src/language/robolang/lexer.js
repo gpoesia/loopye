@@ -47,7 +47,8 @@ TokenStream.prototype = {
   /// next token in the stream does not match the expected type.
   consumeToken: function(expectedType) {
     var token = this.tokens[this.i];
-    if (expectedType !== undefined && token.type !== expectedType) {
+    if (expectedType !== undefined &&
+        (token === undefined || token.type !== expectedType)) {
       throw ("Unexpected token " + token +
              " (expected " + expectedType.name + ")");
     }
