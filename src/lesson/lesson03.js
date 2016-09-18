@@ -56,13 +56,15 @@ var Sensors = {
 };
 
 function Lesson03Game(rows, cols, initial_position, initial_direction,
-                      components_positions, machines_positions) {
+                      components_positions, machines_positions,
+                      initially_holding) {
   this._grid = null;
-  this._holding_component = false;
+  this._holding_component = initially_holding || false;
   this._rows = rows;
   this._columns = cols;
   this._initial_position = initial_position;
   this._initial_direction = initial_direction;
+  this._initially_holding = initially_holding || false;
   this._components_positions = components_positions;
   this._machines_positions = machines_positions;
   this.reset();
@@ -93,7 +95,7 @@ Lesson03Game.prototype = {
 
     this._position = this._initial_position;
     this._direction = this._initial_direction;
-    this._holding_component = false;
+    this._holding_component = this._initially_holding;
     this._components_left = this._components_positions.length;
     this._machines_left = this._machines_positions.length;
   },
@@ -217,6 +219,11 @@ Lesson03Game.prototype = {
     return this._direction;
   },
 
+  /// Returns if the robot is holding a component.
+  holding: function() {
+    return this._holding_component;
+  },
+
   rows: function() {
     return this._grid.rows();
   },
@@ -246,6 +253,7 @@ Lesson03Game.prototype = {
 
 function Lesson03ExerciseStepPlayer(rows, cols, robot_position,
                                     robot_direction,
+                                    initially_holding,
                                     components_positions,
                                     machines_positions,
                                     goal) {
@@ -253,7 +261,8 @@ function Lesson03ExerciseStepPlayer(rows, cols, robot_position,
   this._game = new Lesson03Game(rows, cols,
                                 robot_position, robot_direction,
                                 components_positions,
-                                machines_positions);
+                                machines_positions,
+                                initially_holding);
   this._goal = goal || Goals.FIX_ALL_MACHINES;
   this._solved = false;
 }
@@ -319,8 +328,8 @@ Lesson03ExerciseStepPlayer.prototype = {
       var component = this._game.components()[i];
       var element = new ElementFactories.createMachineComponent(
             "c_" + component.row + "_" + component.column,
-            grid_cell_size / 4,
-            grid_cell_size / 4);
+            grid_cell_size / 3,
+            grid_cell_size / 3);
       element.x = (0.5 + component.column) * grid_cell_size;
       element.y = (0.5 + component.row) * grid_cell_size;
       this._animator.addElement(element);
@@ -330,8 +339,8 @@ Lesson03ExerciseStepPlayer.prototype = {
       var machine = this._game.machines()[i];
       var element = new ElementFactories.createMachine(
             "m_" + machine.row + "_" + machine.column,
-            grid_cell_size / 2,
-            grid_cell_size / 2);
+            grid_cell_size / 1.5,
+            grid_cell_size / 1.5);
       element.x = (0.5 + machine.column) * grid_cell_size;
       element.y = (0.5 + machine.row) * grid_cell_size;
       this._animator.addElement(element);
@@ -345,6 +354,10 @@ Lesson03ExerciseStepPlayer.prototype = {
     this._animator.addAnimation(this._character.createAnimation(
           "turn_" + Grid.directionName(this._game.direction()),
           0, 0, 1));
+    if (this._game.holding()) {
+      this._animator.addAnimation(this._character.changeStyle(
+          ElementFactories.ROBOT_HOLDING_STYLE, 0));
+    }
   },
 
   // Updates the values of the robot sensor variables to reflect the current
@@ -454,6 +467,9 @@ Lesson03ExerciseStepPlayer.prototype = {
           if (this._animator.hasElement(component_id)) {
             this._animator.addAnimation(
                 AnimationFactories.makeInvisible(component_id, i + 0.5));
+            this._animator.addAnimation(this._character.changeStyle(
+                ElementFactories.ROBOT_HOLDING_STYLE,
+                i + 0.5));
           }
           break;
 
@@ -472,6 +488,9 @@ Lesson03ExerciseStepPlayer.prototype = {
             var element = this._animator.getElement(machine_id);
             this._animator.addAnimation(element.changeStyle(
                   ElementFactories.WORKING_MACHINE_STYLE,
+                  i + 0.5));
+            this._animator.addAnimation(this._character.changeStyle(
+                  "default",
                   i + 0.5));
           }
 
@@ -518,46 +537,852 @@ Lesson03ExerciseStepPlayer.prototype = {
 function Lesson03() {
   Lesson.Lesson.call(this);
 
+  // Step 1
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Comandos: P (put), G (get), F (forward), L (left), R (right).
-        Sensores: eng (engrenagem), maq (máquina). Exemplo: {"eng?{G}"}
+        O robô precisa andar para frente e pegar a engrenagem.
       </p>,
       <div>
         <p>
-          Objetivo: pegar engrenagem.
+          Olá! Da última vez que nos encontramos conseguimos coletar muitas
+          baterias, e agora temos bastante energia para que o robô consiga
+          cumprir a sua missão. Agora, precisamos garantir que todas as
+          máquinas na nossa base de operações estejam funcionando.
+        </p>
+        <p>
+          A chuva de
+          meteoros provocou tremores na nossa base e várias máquinas pararam de
+          funcionar, porque suas engrenagens se soltaram. Elas não
+          estavam preparadas para tanto impacto. A missão do robô agora
+          é pegar todas as engrenagens e
+          colocá-las de volta nas máquinas.
+        </p>
+        <p>
+          Olhe só, nesse cenário existe uma engrenagem solta.
+          Você precisa fazer o robô pegá-la. Para isso, você só precisa
+          utilizar o comando “<b>F</b>” (do inglês <i>Forward</i>,
+          que significa <b>pra frente</b>) para o robô andar uma vez
+          e ficar em frente à engrenagem, e depois utilizar
+          o comando “<b>G</b>” (do inglês <i>Get</i>, que
+          significa <b>pegar</b>) para o robô pegar a engrenagem.
         </p>
       </div>,
       new Lesson03ExerciseStepPlayer(
-        3, 3, new Grid.Position(0, 0), Grid.Directions.RIGHT,
-        [new Grid.Position(2, 2)],
-        [],
-        Goals.GET_ALL_COMPONENTS),
-      "F",
+        3, // rows
+        3, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(1, 2)], // components_positions
+        [], // machines_positions
+        // [], // hidden_positions
+        Goals.GET_ALL_COMPONENTS // goal
+      ),
+      "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      null));
+      null
+    )
+  );
 
-
+  // Step 2
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Comandos: P (put), G (get), F (forward), L (left), R (right).
-        Sensores: eng (engrenagem), maq (máquina). Exemplo: {"eng?{G}"}
+        O robô precisa chegar em frente à máquina e colocar a engrenagem.
       </p>,
       <div>
         <p>
-          Objetivo: ligar máquina.
+          Muito bem, o robô pegou uma engrenagem, e está segurando
+          ela. Agora, ele precisa colocá-la em uma máquina que
+          está com uma engrenagem faltando.
+          Para isso, ele precisa chegar em frente à máquina e utilizar o seu
+          comando “<b>P</b>” (do inglês <i>Put</i>, que significa
+          &nbsp;<b>colocar</b>).
+        </p>
+        <p>
+          Lembre-se que quando precisar virar à esquerda, você pode utilizar
+          o comando “<b>L</b>” (do inglês, <i>Left</i>), ou para virar à
+          direita o comando “<b>R</b>” (do inglês, <i>Right</i>).
         </p>
       </div>,
       new Lesson03ExerciseStepPlayer(
-        3, 9, new Grid.Position(0, 0), Grid.Directions.RIGHT,
-        [new Grid.Position(0, 1), new Grid.Position(0, 4), new Grid.Position(0, 7)],
-        [new Grid.Position(2, 1), new Grid.Position(2, 4), new Grid.Position(2, 7)],
-        Goals.FIX_ALL_MACHINES),
-      "F",
+        3, // rows
+        3, // cols
+        new Grid.Position(0, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        true, // initially_holding
+        [], // components_positions
+        [new Grid.Position(2, 2)], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      null));
+      null
+    )
+  );
+
+  // Step 3
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Pegue a engrenagem e coloque na máquina.
+      </p>,
+      <div>
+        <p>
+          Parabéns! Você conseguiu consertar uma máquina colocando a engrenagem
+          que faltava nela. Agora temos que continuar consertando todas as
+          máquinas na nossa base. Olhe nessa sala, existe uma engrenagem solta e
+          uma máquina quebrada. Conserte a máquina pegando a engrenagem e depois
+          colocado ela na máquina. Lembre-se, o comando para pegar é
+          “<b>G</b>” (<i>Get</i>), e para colocar é “<b>P</b>” (<i>Put</i>).
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        3, // cols
+        new Grid.Position(0, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(0, 2)], // components_positions
+        [new Grid.Position(2, 2)], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 4
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Pegue a engrenagem e coloque na máquina. O robô vai ter que andar muito.
+        Você pode utilizar um laço para repetir o código.
+      </p>,
+      <div>
+        <p>
+          Agora temos mais uma máquina funcionando! Mas o trabalho
+          não acabou, ainda. Nessa sala também temos uma máquina
+          estragada, mas sua engrenagem
+          foi parar muito longe! Você se lembra como andar longas distâncias
+          utilizando pouco código? Você pode executar 9 vezes o comando
+          “<b>F</b>” (pra frente) se utilizar o código <b>{"9{F}"}</b>. Lembra
+          do nome desse tipo de estratégia? Isso é um <b>laço</b>. Acho que
+          você vai precisar utilizar um laço agora.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(0, 0), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(2, 0)], // components_positions
+        [new Grid.Position(2, 9)], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      9
+    )
+  );
+
+  // Step 5
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Pegue uma engrenagem de cada vez para consertar as duas máquinas.
+      </p>,
+      <div>
+        <p>
+          Muito bem! Olha só, nessa sala tem duas máquinas para consertar.
+          Mas o robô só pode carregar uma engrenagem de cada vez. Você vai ter
+          que programar o robô para pegar uma engrenagem e colocar em uma
+          máquina, para só depois pegar a outra engrenagem e colocar na outra
+          máquina.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        4, // rows
+        3, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2)
+        ], // components_positions
+        [
+          new Grid.Position(3, 1), new Grid.Position(3, 2)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 6
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        São muitas máquinas para consertar! Seria bom escrever um código
+        que possa repetir várias vezes em um laço.
+      </p>,
+      <div>
+        <p>
+          Muito bem! Naquela sala tinha apenas duas máquinas, mas nessa
+          sala existem 9 máquinas. O que fazer? Acho que resolver esse
+          problema usando um laço que repete 9 vezes um código que
+          conserta uma máquina deixará o programa bem mais simples.
+          Vamos tentar?
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        4, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2),
+          new Grid.Position(0, 3), new Grid.Position(0, 4),
+          new Grid.Position(0, 5), new Grid.Position(0, 6),
+          new Grid.Position(0, 7), new Grid.Position(0, 8),
+          new Grid.Position(0, 9)
+        ], // components_positions
+        [
+          new Grid.Position(3, 1), new Grid.Position(3, 2),
+          new Grid.Position(3, 3), new Grid.Position(3, 4),
+          new Grid.Position(3, 5), new Grid.Position(3, 6),
+          new Grid.Position(3, 7), new Grid.Position(3, 8),
+          new Grid.Position(3, 9)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "9{}",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      14
+    )
+  );
+
+  // Step 7
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Nessa sala grande, podemos utilizar laços para andar, dentro
+        de outro laço para consertar todas as máquinas.
+      </p>,
+      <div>
+        <p>
+          É bem melhor utilizar laços do que escrever aquele monte de
+          comando tudo de novo, não é mesmo? Agora, olha essa sala, a
+          situação é bem parecida com a anterior. Mas essa sala é
+          muito grande e todas as engrenagens foram parar muito longe.
+          Ainda bem que podemos usar um laço dentro do outro no nosso
+          programa. Lembra quando fizemos isso, e chamamos de laços
+          aninhados, quando um está dentro do outro? Acho que isso vai
+          ser útil agora.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        10, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2),
+          new Grid.Position(0, 3), new Grid.Position(0, 4),
+          new Grid.Position(0, 5), new Grid.Position(0, 6),
+          new Grid.Position(0, 7), new Grid.Position(0, 8),
+          new Grid.Position(0, 9)
+        ], // components_positions
+        [
+          new Grid.Position(9, 1), new Grid.Position(9, 2),
+          new Grid.Position(9, 3), new Grid.Position(9, 4),
+          new Grid.Position(9, 5), new Grid.Position(9, 6),
+          new Grid.Position(9, 7), new Grid.Position(9, 8),
+          new Grid.Position(9, 9)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      20
+    )
+  );
+
+  // Step 8
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Programe o robô para consertar todas as máquinas.
+      </p>,
+      <div>
+        <p>
+          Você está indo muito bem! Veja agora essa outra sala. Aqui, as
+          engrenagens caíram pertinho das máquinas. Programe o robô para
+          consertar todas elas. Acho que você conseguirá ver um padrão
+          de repetição aqui também.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        9, // rows
+        9, // cols
+        new Grid.Position(1, 1), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 2), new Grid.Position(0, 4),
+          new Grid.Position(0, 6),
+          new Grid.Position(2, 8), new Grid.Position(4, 8),
+          new Grid.Position(6, 8),
+          new Grid.Position(8, 2), new Grid.Position(8, 4),
+          new Grid.Position(8, 6),
+          new Grid.Position(2, 0), new Grid.Position(4, 0),
+          new Grid.Position(6, 0)
+        ], // components_positions
+        [
+          new Grid.Position(0, 3), new Grid.Position(0, 5),
+          new Grid.Position(0, 7),
+          new Grid.Position(3, 8), new Grid.Position(5, 8),
+          new Grid.Position(7, 8),
+          new Grid.Position(8, 1), new Grid.Position(8, 3),
+          new Grid.Position(8, 5),
+          new Grid.Position(1, 0), new Grid.Position(3, 0),
+          new Grid.Position(5, 0)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      15
+    )
+  );
+
+  // Step 9
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+         Ande até a área desconhecida, verifique se existe uma engrenagem,
+         e só pegue se ela existir.
+      </p>,
+      <div>
+        <p>
+          Nossa! Chegando aqui, descobrimos uma situação imprevista.
+          A chuva de meteoros danificou a câmera de algumas salas,
+          e não conseguimos ver o que tem debaixo das áreas pretas
+          na imagem. Porém, pode ser que ali tenha uma engrenagem perdida.
+          Precisamos descobrir se tem ou não.
+        </p>
+        <p>
+          Para isso, temos que mandar o robô verificar se ali
+          naquele quadrado existe uma engrenagem. O robô possui
+          um sensor de engrenagens,
+          um equipamento que diz se na frente dele existe uma engrenagem ou
+          não. E nós podemos usar esse sensor no nosso programa para
+          executar um código apenas se ele encontrar uma engrenagem.
+        </p>
+        <p>
+          Para isso, utilizamos o seguinte código: <b>{"eng?{G}"}</b>
+        </p>
+        <p>
+          É como se estivessemos fazendo uma pergunta: “Existe uma
+          engrenagem na frente do robô?”. Se a resposta for sim, o código
+          que está entre <b>{"{"}</b> e <b>{"}"}</b> será executado.
+          Se a resposta for não, o programa pula tudo que está entre
+          as chaves. Nesse caso, ele só vai pegar a engrenagem com o
+          comando “G” se existir uma engrenagem escondida na área escura.
+          Senão o comando “G” não vai ser executado.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        3, // cols
+        new Grid.Position(0, 0), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(1, 2)], // components_positions
+        [], // machines_positions
+        // [new Grid.Position(1, 2)], // hidden_positions
+        Goals.GET_ALL_COMPONENTS // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 10
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Você vai precisar verificar se a engrenagem está em dois
+        locais diferentes.
+      </p>,
+      <div>
+        <p>
+          Muito bem! Encontramos uma engrenagem na área escura
+          da sala anterior. Para isso, você utilizou
+          &nbsp;<b>{"eng?{G}"}</b>, que só executa o comando G se a
+          engrenagem estiver em frente ao robô. Esse tipo de código
+          é chamado de <b>condicional</b>. Nesse caso, a condição
+          para executar o código entre chaves é existir uma
+          engrenagem na frente do robô.
+        </p>
+        <p>
+          Agora, a engrenagem que achamos na sala anterior pertence
+          a uma máquina nessa sala. A primeira missão aqui é
+          colocá-la em uma das máquinas.
+        </p>
+        <p>
+          Porém aqui também temos lugares em que a câmera está
+          danificada, e não conseguimos ver o que tem ali. A
+          engrenagem da outra máquina deve estar escondida em
+          um desses lugares. Você agora tem que verificar se a
+          engrenagem está em cada um deles, utilizando o sensor
+          de engrenagens, do mesmo jeito que fizemos na sala anterior.
+          Depois de achar a engrenagem, é só colocar na outra máquina.
+          Então vamos lá, vai ser fácil.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        3, // cols
+        new Grid.Position(0, 0), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        true, // initially_holding
+        [new Grid.Position(1, 2)], // components_positions
+        [
+          new Grid.Position(1, 0), new Grid.Position(2, 2)
+        ], // machines_positions
+        // [
+        //   new Grid.Position(0, 2), new Grid.Position(1, 2)
+        // ], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 11
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Encontre a engrenagem, pegue ela quando encontrar, e
+        conserte a máquina dessa sala.
+      </p>,
+      <div>
+        <p>
+          Muito bem, você conseguiu encontrar a engrenagem e
+          consertar a máquina na última sala. E nessa sala?
+          A câmera está bem ruim, há vários pontos cegos.
+          A engrenagem tem que estar em algum lugar. Você
+          terá que programar o nosso robô para verificar
+          todos eles!
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(0, 4)], // components_positions
+        [new Grid.Position(2, 9)], // machines_positions
+        // [
+        //   new Grid.Position(0, 1), new Grid.Position(0, 2),
+        //   new Grid.Position(0, 3), new Grid.Position(0, 4),
+        //   new Grid.Position(0, 5), new Grid.Position(0, 6),
+        //   new Grid.Position(0, 7), new Grid.Position(0, 8)
+        // ], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 12
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Mesmo sem lugares escuros, utilizar o sensor de engrenagens
+        pode ser muito útil. Vamos tentar!
+      </p>,
+      <div>
+        <p>
+          Nas últimas salas, as câmeras estavam com defeito,
+          por isso tivemos que utilizar o sensor de engrenagens
+          para achar a engrenagem faltando nas máquinas. Agora
+          voltamos para uma sala que temos uma visão completa.
+          Mas olha que curioso, as engrenagens soltas estão
+          exatamente na frente de cada máquina.
+        <p>
+        </p>
+          Você sabia que nós não precisamos utilizar apenas um
+          comando quando utilizamos a condicional do sensor de
+          engrenagens. Por exemplo, se a gente escrever o
+          código <b>{"eng?{GFPRRFR}"}</b> o robô vai executar esses
+          comandos entre chaves apenas se tiver uma engrenagem na
+          frente dele. Senão, ele pula para o próximo. Será que
+          desse jeito conseguimos resolver o problema nessa sala?
+          Acho que usando um laço vai ficar fácil.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(0, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(1, 1), new Grid.Position(1, 3),
+          new Grid.Position(1, 4), new Grid.Position(1, 5),
+          new Grid.Position(1, 8)
+        ], // components_positions
+        [
+          new Grid.Position(2, 1), new Grid.Position(2, 3),
+          new Grid.Position(2, 4), new Grid.Position(2, 5),
+          new Grid.Position(2, 8)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      20
+    )
+  );
+
+  // Step 13
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        O problema nessa sala é muito parecido com o da sala anterior.
+      </p>,
+      <div>
+        <p>
+          Muito bem! Você conseguiu utilizar o condicional para
+          resolver o problema naquela sala. Agora, olha só essa
+          nova sala. A situação aqui é muito parecida com a da
+          sala anterior. Será que vai ser muito difícil resolver
+          o problema dessa sala? Ou será que vai ser bem parecido
+          com a sala anterior? Pense um pouco e resolva.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(0, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(1, 2), new Grid.Position(1, 6),
+          new Grid.Position(1, 7), new Grid.Position(1, 8)
+        ], // components_positions
+        [
+          new Grid.Position(2, 2), new Grid.Position(2, 6),
+          new Grid.Position(2, 7), new Grid.Position(2, 8)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      20
+    )
+  );
+
+  // Step 14
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Como consertar todas as máquinas dessa sala?
+      </p>,
+      <div>
+        <p>
+          Viu que legal? Ao utilizar condicionais, você torna o
+          código mais genérico, e ele serve pra mais de uma
+          situação diferente.
+        </p>
+        <p>
+          Agora temos aqui um pequeno desafio, mas tenho certeza
+          que conseguimos utilizar a lógica e programar o robô de
+          uma maneira que ele vai consertar todas as máquinas
+          nessa sala também.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        6, // rows
+        10, // cols
+        new Grid.Position(2, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(1, 1), new Grid.Position(1, 2),
+          new Grid.Position(1, 4), new Grid.Position(1, 7),
+          new Grid.Position(3, 2), new Grid.Position(3, 4),
+          new Grid.Position(3, 5), new Grid.Position(3, 6),
+          new Grid.Position(3, 8), new Grid.Position(3, 9)
+        ], // components_positions
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2),
+          new Grid.Position(0, 4), new Grid.Position(0, 7),
+          new Grid.Position(5, 2), new Grid.Position(5, 4),
+          new Grid.Position(5, 5), new Grid.Position(5, 6),
+          new Grid.Position(5, 8), new Grid.Position(5, 9)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 15
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Você vai precisar encontrar a máquina na área escura dessa vez.
+      </p>,
+      <div>
+        <p>
+          Mais uma sala com a câmera defeituosa. Mas olha só,
+          desta vez conseguimos ver uma engrenagem solta, porém
+          não sabemos onde está a máquina. Pode ser que ela
+          esteja em qualquer área que não conseguimos ver.
+        </p>
+        <p>
+          Para descobrir onde está a máquina, o nosso robô também
+          conta com um sensor de máquinas, que indica se existe
+          uma máquina na frente dele. Você pode utilizar esse
+          sensor através do condicional <b>{"maq?{P}"}</b>.
+          Ele funciona como o sensor de engrenagens. Esse código
+          irá executar o comando P somente se o robô estiver em
+          frente a uma máquina.
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        5, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(2, 0)], // components_positions
+        [new Grid.Position(0, 2)], // machines_positions
+        // [
+        //   new Grid.Position(0, 1), new Grid.Position(0, 2),
+        //   new Grid.Position(0, 3), new Grid.Position(0, 4)
+        // ], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 16
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Os espaços entre as engrenagens e as máquinas são diferentes.
+        Condicionais vão ajudar a resolver esse problema.
+      </p>,
+      <div>
+        <p>
+          Agora sabemos utilizar condicionais para saber se
+          existem engrenagens ou máquinas na frente do robô. E
+          também não precisamos utilizar um só, podemos utilizar
+          os dois condicionais no mesmo código. Pensando nisso,
+          como fazer para consertar todas as máquinas dessa sala?
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        2, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 4),
+          new Grid.Position(0, 8)
+        ], // components_positions
+        [
+          new Grid.Position(0, 2), new Grid.Position(0, 6),
+          new Grid.Position(0, 9)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 17
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        De novo, esse problema é parecido com o anterior.
+      </p>,
+      <div>
+        <p>
+          Lembre-se que condicionais ajudam a deixar o código
+          genérico, e que isso significa que o mesmo código
+          serve para várias situações diferentes. Então qual
+          programa vai fazer o robô resolver o problema nessa sala?
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        2, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 2), new Grid.Position(0, 7)
+        ], // components_positions
+        [
+          new Grid.Position(0, 6), new Grid.Position(0, 8)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 18
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Conserte todas essas máquinas.
+      </p>,
+      <div>
+        <p>
+          A partir de agora temos só mais algumas salas com
+          máquinas para consertar. Utilize todo o seu conhecimento
+          e logo logo toda a nossa base estará funcionando!
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2),
+          new Grid.Position(0, 4), new Grid.Position(0, 6)
+        ], // components_positions
+        [
+          new Grid.Position(2, 1), new Grid.Position(2, 3),
+          new Grid.Position(2, 5), new Grid.Position(2, 9)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 19
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Estamos quase lá, conserte as máquinas dessa sala também.
+      </p>,
+      <div>
+        <p>
+          Um novo desafio, mas tenho certeza que você consegue resolvê-lo!
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 5),
+          new Grid.Position(2, 3), new Grid.Position(2, 7)
+        ], // components_positions
+        [
+          new Grid.Position(0, 4), new Grid.Position(0, 8),
+          new Grid.Position(2, 2), new Grid.Position(2, 6)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 20
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Essa é nossa última sala. A missão está quase completa.
+      </p>,
+      <div>
+        <p>
+          Essa é a nossa última sala! Quando essas máquinas
+          estiverem funcionando, nossa missão estará completa.
+          Vale lembrar que qualquer código pode ir entre as
+          chaves do condicional, inclusive laços!
+        </p>
+      </div>,
+      new Lesson03ExerciseStepPlayer(
+        8, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 3),
+          new Grid.Position(0, 8), new Grid.Position(0, 9),
+          new Grid.Position(7, 2), new Grid.Position(7, 4),
+          new Grid.Position(7, 5), new Grid.Position(7, 7)
+        ], // components_positions
+        [
+          new Grid.Position(0, 2), new Grid.Position(0, 4),
+          new Grid.Position(0, 5), new Grid.Position(0, 7),
+          new Grid.Position(6, 1), new Grid.Position(6, 3),
+          new Grid.Position(6, 8), new Grid.Position(6, 9)
+        ], // machines_positions
+        // [], // hidden_positions
+        Goals.FIX_ALL_MACHINES // goal
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
 }
 
 Lesson03.prototype = Object.create(Lesson.Lesson.prototype);
