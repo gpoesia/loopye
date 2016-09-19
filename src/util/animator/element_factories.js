@@ -6,6 +6,9 @@ var animator = require("../animator");
 
 var ROBOT_IMAGE_URL = "/static/images/elements/robot.png";
 var ASTEROIDS_IMAGE_URL = "/static/images/elements/asteroids.png";
+var MACHINE_COMPONENT_URL = "/static/images/elements/cogwheel.png";
+var MACHINE_URL = "/static/images/elements/machine.png";
+var WORKING_MACHINE_URL = "/static/images/elements/working_machine.png";
 
 // Calculates the largest size an image can have so that 1) proportions are kept
 // and 2) maximum size constraints are not violated.
@@ -150,6 +153,36 @@ function createAsteroid(id, max_width, max_height) {
       );
 }
 
+function createMachineComponent(id, max_width, max_height) {
+  var image = new Image();
+  image.src = MACHINE_COMPONENT_URL;
+  var IMAGE_WIDTH = 64;
+  var IMAGE_HEIGHT = 64;
+
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+
+  return new animator.AnimatedImageElement(
+      id, image, [], 1, 1, dimensions[0], dimensions[1]);
+}
+
+var WORKING_MACHINE_STYLE = "working_machine";
+
+function createMachine(id, max_width, max_height) {
+  var default_image = new Image();
+  default_image.src = MACHINE_URL;
+  var working_machine_image = new Image();
+  working_machine_image.src = WORKING_MACHINE_URL;
+  var IMAGE_WIDTH = 64;
+  var IMAGE_HEIGHT = 64;
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+  var styles = {"default": default_image};
+  styles[WORKING_MACHINE_STYLE] = working_machine_image;
+  return new animator.AnimatedImageElement(
+      id, styles, [], 1, 1, dimensions[0], dimensions[1]);
+}
+
 module.exports = {
   createRobot: createRobot,
   createBattery: createBattery,
@@ -158,4 +191,10 @@ module.exports = {
   ROBOT_IMAGE_URL: ROBOT_IMAGE_URL,
   createAsteroid: createAsteroid,
   ASTEROIDS_IMAGE_URL: ASTEROIDS_IMAGE_URL,
+  MACHINE_COMPONENT_URL: MACHINE_COMPONENT_URL,
+  MACHINE_URL: MACHINE_URL,
+  WORKING_MACHINE_URL: WORKING_MACHINE_URL,
+  WORKING_MACHINE_STYLE: WORKING_MACHINE_STYLE,
+  createMachineComponent: createMachineComponent,
+  createMachine: createMachine,
 };

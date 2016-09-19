@@ -159,21 +159,37 @@ var SpriteAnimation = function(name, tiles) {
 }
 
 // An element that renders animations in a tiled image.
-// `image` should be an HTMLImageElement containing the full image.
+// `image` should be either a single HTMLImageElement, or an object where
+// keys are strings (style names), and values are the corresponding images.
+// Styles are used to facilitate changing the state of the element during the
+// course of the animation. For example, a robot animation might have
+// two styles: 'robot_red', and 'default', each with the exact same format
+// (i.e. same animations, number of x/y divisions, etc), which are
+// easily interchangeable when the robot e.g. gets hurt and turns red for a
+// while.
+// If `image` is a single image, the element will have only one style with that
+// image.
+// Otherwise, the image *must* have one style called "default".
 // `xdivs` should be the number of tiles in a row of the image.
 // `ydivs` should be the number of tiles in a column of the image.
 // Thus, the full image is interpreted as a grid containin `xdivs` * `ydivs`
 // tiles. When used as frames in animations, tiles are numbered from 0 to
 // `xdivs` * `ydivs` - 1 in row-major order.
 // `animations` should be an array of SpriteAnimations.
-var AnimatedImageElement = function(id, image, animations,
+var AnimatedImageElement = function(id, styles_or_image, animations,
                                     xdivs,
                                     ydivs,
                                     rendered_tile_width,
                                     rendered_tile_height) {
   Element.apply(this, [id]);
 
-  this.image = image;
+  // Check whether we have an object with multiple styles or just one image.
+  if (styles_or_image instanceof HTMLImageElement) {
+    this.styles = {"default": styles_or_image};
+  } else {
+    this.styles = styles_or_image;
+  }
+  this.current_style = "default";
   this.animations = {};
   this.rendered_tile_width = rendered_tile_width;
   this.rendered_tile_height = rendered_tile_height;
@@ -188,6 +204,11 @@ var AnimatedImageElement = function(id, image, animations,
 };
 
 AnimatedImageElement.prototype = {
+  // Returns the image corresponding to the sprite's current style.
+  image: function() {
+    return this.styles[this.current_style];
+  },
+
   // Returns a new animation to be added to an Animator.
   // `start_time` and `end_time` are the times in which the animation starts
   // and ends, and `length` should be the duration of one playback of the
@@ -208,9 +229,17 @@ AnimatedImageElement.prototype = {
                          });
   },
 
+  // Returns a new animation that changes this image's style to `new_style`
+  // at the given time point `t`.
+  changeStyle: function(new_style, t) {
+    return new Animation(t, t, this.id, 'current_style',
+                         function() { return new_style; });
+  },
+
   render: function(canvas, origin_x, origin_y) {
-    var tile_width = this.image.width / this.xdivs;
-    var tile_height = this.image.height / this.ydivs;
+    var image = this.image();
+    var tile_width = image.width / this.xdivs;
+    var tile_height = image.height / this.ydivs;
     var rendered_tile_width = this.rendered_tile_width || tile_width;
     var rendered_tile_height = this.rendered_tile_height || tile_height;
 
@@ -221,7 +250,7 @@ AnimatedImageElement.prototype = {
     var tile_y = tile_height * tile_row;
 
     var context = canvas.getContext('2d');
-    context.drawImage(this.image, tile_x, tile_y, tile_width, tile_height,
+    context.drawImage(image, tile_x, tile_y, tile_width, tile_height,
                       origin_x + this.x - (rendered_tile_width / 2),
                       origin_y + this.y - (rendered_tile_height / 2),
                       rendered_tile_width, rendered_tile_height);
