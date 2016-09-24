@@ -1387,10 +1387,12 @@ function Lesson03() {
 
 Lesson03.prototype = Object.create(Lesson.Lesson.prototype);
 Object.assign(Lesson03.prototype, {
-  getResourceLoader: function() {
-    var loader = new ResourceLoader();
-    loader.addImage(ElementFactories.ROBOT_IMAGE_URL);
-    return loader;
+  populateResourceLoader: function() {
+    ResourceLoader.addImage(ElementFactories.ROBOT_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.ROBOT_HOLDING_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.MACHINE_COMPONENT_URL);
+    ResourceLoader.addImage(ElementFactories.MACHINE_URL);
+    ResourceLoader.addImage(ElementFactories.WORKING_MACHINE_URL);
   },
 });
 

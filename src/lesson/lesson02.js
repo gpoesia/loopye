@@ -972,12 +972,10 @@ function Lesson02() {
 
 Lesson02.prototype = Object.create(Lesson.Lesson.prototype);
 Object.assign(Lesson02.prototype, {
-  getResourceLoader: function() {
-    var loader = new ResourceLoader();
-    loader.addImage(ElementFactories.ROBOT_IMAGE_URL);
-    loader.addImage(ElementFactories.GOOD_BATTERY_IMAGE_URL);
-    loader.addImage(ElementFactories.BAD_BATTERY_IMAGE_URL);
-    return loader;
+  populateResourceLoader: function() {
+    ResourceLoader.addImage(ElementFactories.ROBOT_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.GOOD_BATTERY_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.BAD_BATTERY_IMAGE_URL);
   },
 });
 
