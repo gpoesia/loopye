@@ -256,6 +256,7 @@ function Lesson03ExerciseStepPlayer(rows, cols, robot_position,
                                     initially_holding,
                                     components_positions,
                                     machines_positions,
+                                    hidden_positions,
                                     goal) {
   Lesson.LessonStepPlayer.call(this);
   this._game = new Lesson03Game(rows, cols,
@@ -264,6 +265,7 @@ function Lesson03ExerciseStepPlayer(rows, cols, robot_position,
                                 machines_positions,
                                 initially_holding);
   this._goal = goal || Goals.FIX_ALL_MACHINES;
+  this._hidden_positions = hidden_positions || [];
   this._solved = false;
 }
 
@@ -354,9 +356,21 @@ Lesson03ExerciseStepPlayer.prototype = {
     this._animator.addAnimation(this._character.createAnimation(
           "turn_" + Grid.directionName(this._game.direction()),
           0, 0, 1));
-    if (this._game.holding()) {
+    if (this._game.holding())
       this._animator.addAnimation(this._character.changeStyle(
           ElementFactories.ROBOT_HOLDING_STYLE, 0));
+
+    // Create black squares over hidden positions.
+    for (var i = 0; i < this._hidden_positions.length; ++i) {
+      var position = this._hidden_positions[i];
+      var black_square = new Animator.RectangleElement(
+        "b_" + position.row + "_" + position.column,
+        0.95 * grid_cell_size,
+        0.95 * grid_cell_size,
+        "black");
+      black_square.x = (0.5 + position.column) * grid_cell_size;
+      black_square.y = (0.5 + position.row) * grid_cell_size;
+      this._animator.addElement(black_square);
     }
   },
 
@@ -576,7 +590,7 @@ function Lesson03() {
         false, // initially_holding
         [new Grid.Position(1, 2)], // components_positions
         [], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.GET_ALL_COMPONENTS // goal
       ),
       "",  // initialCode
@@ -614,7 +628,7 @@ function Lesson03() {
         true, // initially_holding
         [], // components_positions
         [new Grid.Position(2, 2)], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -647,7 +661,7 @@ function Lesson03() {
         false, // initially_holding
         [new Grid.Position(0, 2)], // components_positions
         [new Grid.Position(2, 2)], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -683,7 +697,7 @@ function Lesson03() {
         false, // initially_holding
         [new Grid.Position(2, 0)], // components_positions
         [new Grid.Position(2, 9)], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -719,7 +733,7 @@ function Lesson03() {
         [
           new Grid.Position(3, 1), new Grid.Position(3, 2)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -764,7 +778,7 @@ function Lesson03() {
           new Grid.Position(3, 7), new Grid.Position(3, 8),
           new Grid.Position(3, 9)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "9{}",  // initialCode
@@ -812,7 +826,7 @@ function Lesson03() {
           new Grid.Position(9, 7), new Grid.Position(9, 8),
           new Grid.Position(9, 9)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -861,7 +875,7 @@ function Lesson03() {
           new Grid.Position(1, 0), new Grid.Position(3, 0),
           new Grid.Position(5, 0)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -914,7 +928,7 @@ function Lesson03() {
         false, // initially_holding
         [new Grid.Position(1, 2)], // components_positions
         [], // machines_positions
-        // [new Grid.Position(1, 2)], // hidden_positions
+        [new Grid.Position(1, 2)], // hidden_positions
         Goals.GET_ALL_COMPONENTS // goal
       ),
       "",  // initialCode
@@ -966,9 +980,9 @@ function Lesson03() {
         [
           new Grid.Position(1, 0), new Grid.Position(2, 2)
         ], // machines_positions
-        // [
-        //   new Grid.Position(0, 2), new Grid.Position(1, 2)
-        // ], // hidden_positions
+        [
+          new Grid.Position(0, 2), new Grid.Position(1, 2)
+        ], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1002,12 +1016,12 @@ function Lesson03() {
         false, // initially_holding
         [new Grid.Position(0, 4)], // components_positions
         [new Grid.Position(2, 9)], // machines_positions
-        // [
-        //   new Grid.Position(0, 1), new Grid.Position(0, 2),
-        //   new Grid.Position(0, 3), new Grid.Position(0, 4),
-        //   new Grid.Position(0, 5), new Grid.Position(0, 6),
-        //   new Grid.Position(0, 7), new Grid.Position(0, 8)
-        // ], // hidden_positions
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2),
+          new Grid.Position(0, 3), new Grid.Position(0, 4),
+          new Grid.Position(0, 5), new Grid.Position(0, 6),
+          new Grid.Position(0, 7), new Grid.Position(0, 8)
+        ], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1059,7 +1073,7 @@ function Lesson03() {
           new Grid.Position(2, 4), new Grid.Position(2, 5),
           new Grid.Position(2, 8)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1098,7 +1112,7 @@ function Lesson03() {
           new Grid.Position(2, 2), new Grid.Position(2, 6),
           new Grid.Position(2, 7), new Grid.Position(2, 8)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1146,7 +1160,7 @@ function Lesson03() {
           new Grid.Position(5, 5), new Grid.Position(5, 6),
           new Grid.Position(5, 8), new Grid.Position(5, 9)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1186,10 +1200,10 @@ function Lesson03() {
         false, // initially_holding
         [new Grid.Position(2, 0)], // components_positions
         [new Grid.Position(0, 2)], // machines_positions
-        // [
-        //   new Grid.Position(0, 1), new Grid.Position(0, 2),
-        //   new Grid.Position(0, 3), new Grid.Position(0, 4)
-        // ], // hidden_positions
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2),
+          new Grid.Position(0, 3), new Grid.Position(0, 4)
+        ], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1228,7 +1242,7 @@ function Lesson03() {
           new Grid.Position(0, 2), new Grid.Position(0, 6),
           new Grid.Position(0, 9)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1263,7 +1277,7 @@ function Lesson03() {
         [
           new Grid.Position(0, 6), new Grid.Position(0, 8)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1299,7 +1313,7 @@ function Lesson03() {
           new Grid.Position(2, 1), new Grid.Position(2, 3),
           new Grid.Position(2, 5), new Grid.Position(2, 9)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1333,7 +1347,7 @@ function Lesson03() {
           new Grid.Position(0, 4), new Grid.Position(0, 8),
           new Grid.Position(2, 2), new Grid.Position(2, 6)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
@@ -1374,7 +1388,7 @@ function Lesson03() {
           new Grid.Position(6, 1), new Grid.Position(6, 3),
           new Grid.Position(6, 8), new Grid.Position(6, 9)
         ], // machines_positions
-        // [], // hidden_positions
+        [], // hidden_positions
         Goals.FIX_ALL_MACHINES // goal
       ),
       "",  // initialCode
