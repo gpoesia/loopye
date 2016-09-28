@@ -5,10 +5,11 @@
 var animator = require("../animator");
 
 var ROBOT_IMAGE_URL = "/static/images/elements/robot.png";
+var ROBOT_HOLDING_IMAGE_URL = "/static/images/elements/robot-with-gear.png";
 var ASTEROIDS_IMAGE_URL = "/static/images/elements/asteroids.png";
-var MACHINE_COMPONENT_URL = "/static/images/elements/cogwheel.png";
-var MACHINE_URL = "/static/images/elements/machine.png";
-var WORKING_MACHINE_URL = "/static/images/elements/working_machine.png";
+var MACHINE_COMPONENT_URL = "/static/images/elements/gear.png";
+var MACHINE_URL = "/static/images/elements/bad-machine.png";
+var WORKING_MACHINE_URL = "/static/images/elements/good-machine.png";
 
 // Calculates the largest size an image can have so that 1) proportions are kept
 // and 2) maximum size constraints are not violated.
@@ -28,6 +29,8 @@ function calculateDimensions(max_width, max_height, image_width, image_height) {
   return [width, height];
 }
 
+var ROBOT_HOLDING_STYLE = "robot_holding";
+
 // Creates an AnimatedImageElement that renders to a robot.
 // It has four animations: walk_down, walk_up, walk_left and
 // walk_right.
@@ -37,6 +40,8 @@ function calculateDimensions(max_width, max_height, image_width, image_height) {
 function createRobot(id, max_width, max_height) {
   var image = new Image();
   image.src = ROBOT_IMAGE_URL;
+  var holding_image = new Image();
+  holding_image.src = ROBOT_HOLDING_IMAGE_URL;
   var IMAGE_WIDTH = 32;
   var IMAGE_HEIGHT = 48;
   var dimensions = calculateDimensions(max_width, max_height,
@@ -51,9 +56,12 @@ function createRobot(id, max_width, max_height) {
   var turn_right_frames = [8];
   var turn_up_frames =    [12];
 
+  var styles = {"default": image};
+  styles[ROBOT_HOLDING_STYLE] = holding_image;
+
   return new animator.AnimatedImageElement(
       id,
-      image,
+      styles,
       [
         new animator.SpriteAnimation("walk_down", walk_down_frames),
         new animator.SpriteAnimation("walk_left", walk_left_frames),
@@ -156,8 +164,8 @@ function createAsteroid(id, max_width, max_height) {
 function createMachineComponent(id, max_width, max_height) {
   var image = new Image();
   image.src = MACHINE_COMPONENT_URL;
-  var IMAGE_WIDTH = 64;
-  var IMAGE_HEIGHT = 64;
+  var IMAGE_WIDTH = 32;
+  var IMAGE_HEIGHT = 32;
 
   var dimensions = calculateDimensions(max_width, max_height,
                                        IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -173,8 +181,8 @@ function createMachine(id, max_width, max_height) {
   default_image.src = MACHINE_URL;
   var working_machine_image = new Image();
   working_machine_image.src = WORKING_MACHINE_URL;
-  var IMAGE_WIDTH = 64;
-  var IMAGE_HEIGHT = 64;
+  var IMAGE_WIDTH = 48;
+  var IMAGE_HEIGHT = 48;
   var dimensions = calculateDimensions(max_width, max_height,
                                        IMAGE_WIDTH, IMAGE_HEIGHT);
   var styles = {"default": default_image};
@@ -189,6 +197,8 @@ module.exports = {
   GOOD_BATTERY_IMAGE_URL: GOOD_BATTERY_IMAGE_URL,
   BAD_BATTERY_IMAGE_URL: BAD_BATTERY_IMAGE_URL,
   ROBOT_IMAGE_URL: ROBOT_IMAGE_URL,
+  ROBOT_HOLDING_IMAGE_URL: ROBOT_HOLDING_IMAGE_URL,
+  ROBOT_HOLDING_STYLE: ROBOT_HOLDING_STYLE,
   createAsteroid: createAsteroid,
   ASTEROIDS_IMAGE_URL: ASTEROIDS_IMAGE_URL,
   MACHINE_COMPONENT_URL: MACHINE_COMPONENT_URL,
