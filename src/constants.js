@@ -31,7 +31,7 @@ module.exports = {
     NO_COMPONENT_TO_GET: "O robô tentou pegar uma peça, mas não havia nenhuma...",
     NO_COMPONENT_TO_PUT: "O robô tentou colocar uma peça na máquina, mas ele não tinha peças em mãos...",
     NO_MACHINE_TO_PUT_COMPONENT_IN: "O robô tentou colocar uma peça, mas não havia uma máquina próxima.",
-    TRIED_HOLDING_TWO_COMPONENTS: "O robô tentou pegar uma peça do chão, mas ele só pode carregar uma de cada vez...",
+    CANNOT_HOLD_TWO_COMPONENTS: "O robô tentou pegar uma peça do chão, mas ele só pode carregar uma de cada vez...",
     MISSION_UNFINISHED: "O robô sobreviveu, mas não completou sua missão. Tente novamente.",
   },
 };
