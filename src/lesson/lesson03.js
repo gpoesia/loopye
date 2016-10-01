@@ -20,7 +20,7 @@ var FailureReasons = {
   NO_COMPONENT_TO_PUT: 2,
   HIT_MACHINE: 3,
   LEFT_GRID: 4,
-  TRIED_HOLDING_TWO_COMPONENTS: 5,
+  CANNOT_HOLD_TWO_COMPONENTS: 5,
   NO_MACHINE_TO_PUT_COMPONENT_IN: 6,
   BROKE_COMPONENT: 7,
   MISSION_UNFINISHED: 8,
@@ -163,12 +163,12 @@ Lesson03Game.prototype = {
 
   /// Tries to get a component in front of the robot.
   /// If the robot is already holding a component,
-  /// returns TRIED_HOLDING_TWO_COMPONENTS.
+  /// returns CANNOT_HOLD_TWO_COMPONENTS.
   /// If there's no component to get in the attempted position, returns
   /// NO_COMPONENT_TO_GET.
   getComponent: function() {
     if (this._holding_component) {
-      return FailureReasons.TRIED_HOLDING_TWO_COMPONENTS;
+      return FailureReasons.CANNOT_HOLD_TWO_COMPONENTS;
     }
     if (this.getComponentSensorValue()) {
       this._holding_component = true;
@@ -526,8 +526,8 @@ Lesson03ExerciseStepPlayer.prototype = {
                FailureReasons.NO_MACHINE_TO_PUT_COMPONENT_IN) {
       return [Constants.Lesson03.NO_MACHINE_TO_PUT_COMPONENT_IN];
     } else if (failure_reason ===
-               FailureReasons.TRIED_HOLDING_TWO_COMPONENTS) {
-      return [Constants.Lesson03.FAILURE_MESSAGE_CANNOT_HOLD_TWO_COMPONENTS];
+               FailureReasons.CANNOT_HOLD_TWO_COMPONENTS) {
+      return [Constants.Lesson03.CANNOT_HOLD_TWO_COMPONENTS];
     } else {
       throw "Unknown failure reason " + failure_reason;
     }
