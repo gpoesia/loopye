@@ -60,9 +60,10 @@ var LessonEnvironment = React.createClass({
     }
 
     this.setState({
-      currentStep: step,
-      sourceCode: this.props.lesson.getStep(step).getInitialSourceCode(),
-    });
+        currentStep: step,
+        sourceCode: this.props.lesson.getStep(step).getInitialSourceCode(),
+      },
+      this._reset);
 
     this._showInstructions(step);
   },
@@ -158,10 +159,6 @@ var LessonEnvironment = React.createClass({
   },
 
   componentDidMount: function() {
-    this._reset();
-  },
-
-  componentDidUpdate: function() {
     this._reset();
   },
 });
