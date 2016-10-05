@@ -30,10 +30,11 @@ Lesson.prototype = {
 };
 
 /// Interface for one step of a lesson.
-function LessonStep(shortInstruction, instructions, player, initialCode,
-                    successMessage, codeSizeLimit) {
+function LessonStep(shortInstruction, instructions, commandReference,
+                    player, initialCode, successMessage, codeSizeLimit) {
   this.shortInstruction = shortInstruction;
   this.instructions = instructions;
+  this.commandReference = commandReference;
   this.player = player;
   this.initialCode = initialCode || "";
   this.successMessage = successMessage || null;
@@ -51,6 +52,12 @@ LessonStep.prototype = {
   /// pop-up when the step starts or when the help button is clicked.
   getInstructions: function() {
     return this.instructions;
+  },
+
+  /// Returns a reference to all the commands that the user needs to
+  /// remember to be able to solve the step.
+  getCommandReference: function() {
+      return this.commandReference;
   },
 
   /// Returns the message to be displayed when the user correctly solves this

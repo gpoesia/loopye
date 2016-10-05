@@ -10,6 +10,7 @@ var RunView = require("./run_view.js");
 var MessagePane = require("./message_pane.js");
 var ResourceLoader = require("../util/resource_loader");
 var Popup = require("react-popup").default;
+var Sidebar = require('react-sidebar').default;
 
 var LessonEnvironment = React.createClass({
   styles: {
@@ -133,30 +134,34 @@ var LessonEnvironment = React.createClass({
   render: function() {
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
 
-    return <div style={{width: "100%", height: "100%"}} ref="containerDiv">
-             <div style={this.styles.editor}>
-               <MessagePane ref="code_messages" />
-               <CodeEditor code={this.state.sourceCode}
-                           onChange={this._updateCode}
-                           limit={currentStep.getCodeSizeLimit()} />
+    return <Sidebar sidebar={currentStep.getCommandReference()}
+                    docked={true}
+                    pullRight={true}>
+             <div style={{width: "100%", height: "95%"}} ref="containerDiv">
+               <div style={this.styles.editor}>
+                 <MessagePane ref="code_messages" />
+                 <CodeEditor code={this.state.sourceCode}
+                             onChange={this._updateCode}
+                             limit={currentStep.getCodeSizeLimit()} />
+               </div>
+               <div style={this.styles.actionSide}>
+                 <div style={this.styles.instructionPane}>
+                   <MessagePane ref="exercise_messages" />
+                   <InstructionPane content={currentStep.getShortInstructions()} />
+                 </div>
+                 <div style={this.styles.buttonBar}>
+                   <ButtonBar onPlay={this._playCode}
+                              onReset={this._reset}
+                              onAdvance={this._advanceStep}
+                              onHelp={this._showInstructions.bind(this, null)}
+                              advanceEnabled={currentStep.canAdvance()} />
+                 </div>
+                 <div style={this.styles.runView}>
+                   <RunView ref="run_view" />
+                 </div>
+               </div>
              </div>
-             <div style={this.styles.actionSide}>
-               <div style={this.styles.instructionPane}>
-                 <MessagePane ref="exercise_messages" />
-                 <InstructionPane content={currentStep.getShortInstructions()} />
-               </div>
-               <div style={this.styles.buttonBar}>
-                 <ButtonBar onPlay={this._playCode}
-                            onReset={this._reset}
-                            onAdvance={this._advanceStep}
-                            onHelp={this._showInstructions.bind(this, null)}
-                            advanceEnabled={currentStep.canAdvance()} />
-               </div>
-               <div style={this.styles.runView}>
-                 <RunView ref="run_view" />
-               </div>
-             </div>
-           </div>;
+           </Sidebar>;
   },
 
   componentDidMount: function() {
