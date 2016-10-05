@@ -132,7 +132,7 @@ var LessonEnvironment = React.createClass({
   render: function() {
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
 
-    return <div style={{width: "100%", height: "100%"}}>
+    return <div style={{width: "100%", height: "100%"}} ref="containerDiv">
              <div style={this.styles.editor}>
                <MessagePane ref="code_messages" />
                <CodeEditor code={this.state.sourceCode}
@@ -160,6 +160,14 @@ var LessonEnvironment = React.createClass({
 
   componentDidMount: function() {
     this._reset();
+
+    // "Cheat code" for quickly advancing steps: Ctrl + "9"
+    var advanceStep = this._advanceStep;
+    this.refs.containerDiv.onkeyup = function(event) {
+      if (!!event.ctrlKey && String.fromCharCode(event.keyCode) === "9") {
+        advanceStep();
+      }
+    };
   },
 });
 
