@@ -1,6 +1,6 @@
 /*
- * Module that loads a list of resources to the browser cache and then calls
- * back.
+ * Module that loads a list of resources (e.g. images) to a local store and
+ * then calls back after all of them have finished loading.
  */
 
 function ResourceLoader() {
@@ -8,9 +8,12 @@ function ResourceLoader() {
 }
 
 ResourceLoader.prototype = {
+  /// Adds a resource to be loaded.
   addImage: function(url) {
     this._images.push(url);
   },
+  /// Loads the registered resources and calls onLoad when all of them have
+  /// finished loading.
   load: function(onLoad) {
     var loaded_images = new Array();
     loaded_images.length = this._images.length;
@@ -20,8 +23,11 @@ ResourceLoader.prototype = {
       return loaded_images.indexOf(false) == -1;
     };
 
-    function createCallback(loaded_images, index, done, onLoad) {
+    this._loaded_resources = {};
+    var loaded_resources = this._loaded_resources;
+    function createCallback(loaded_images, index, done, url, image, onLoad) {
       return function() {
+        loaded_resources[url] = image;
         loaded_images[index] = true;
         if (done()) {
           onLoad();
@@ -34,7 +40,8 @@ ResourceLoader.prototype = {
       var index = new Number(i);
       var url = this._images[i];
 
-      image.onload = createCallback(loaded_images, new Number(i), done, onLoad);
+      image.onload = createCallback(loaded_images, new Number(i), done,
+                                    url, image, onLoad);
 
       image.onerror = function(error) {
         console.error("Error when loading " + url + ": " + error);
@@ -49,6 +56,20 @@ ResourceLoader.prototype = {
       onLoad();
     }
   },
+
+  /// Returns the resource loaded from the given URL.
+  /// If the url was not loaded, either returns null (if ignore_error is true)
+  /// or throws an exception.
+  get: function(url, ignore_error) {
+    if (!this._loaded_resources.hasOwnProperty(url)) {
+      if (ignore_error) {
+        return null;
+      } else {
+        throw "Resource not loaded: " + url;
+      }
+    }
+    return this._loaded_resources[url];
+  },
 };
 
-module.exports = ResourceLoader;
+module.exports = new ResourceLoader();

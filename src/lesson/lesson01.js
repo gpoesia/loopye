@@ -710,11 +710,9 @@ function Lesson01() {
 
 Lesson01.prototype = Object.create(Lesson.Lesson.prototype);
 Object.assign(Lesson01.prototype, {
-  getResourceLoader: function() {
-    var loader = new ResourceLoader();
-    loader.addImage(ElementFactories.ROBOT_IMAGE_URL);
-    loader.addImage(ElementFactories.ASTEROIDS_IMAGE_URL);
-    return loader;
+  populateResourceLoader: function() {
+    ResourceLoader.addImage(ElementFactories.ROBOT_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.ASTEROIDS_IMAGE_URL);
   },
 });
 
