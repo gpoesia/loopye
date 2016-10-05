@@ -25,10 +25,8 @@ Lesson.prototype = {
     return this.steps[i];
   },
 
-  /// Returns a resource loader that loads all resources needed by the lesson.
-  getResourceLoader: function() {
-    return new ResourceLoader();
-  },
+  /// Adds all resources this lesson needs to the ResourceLoader module.
+  populateResourceLoader: function() {}
 };
 
 /// Interface for one step of a lesson.

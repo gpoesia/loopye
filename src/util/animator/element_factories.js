@@ -3,6 +3,7 @@
  */
 
 var animator = require("../animator");
+var ResourceLoader = require("../resource_loader");
 
 var ROBOT_IMAGE_URL = "/static/images/elements/robot.png";
 var ROBOT_HOLDING_IMAGE_URL = "/static/images/elements/robot-with-gear.png";
@@ -38,10 +39,8 @@ var ROBOT_HOLDING_STYLE = "robot_holding";
 // original proportions, and `max_width` and `max_height`, if any are given.
 // If none are given, the image's original size is used.
 function createRobot(id, max_width, max_height) {
-  var image = new Image();
-  image.src = ROBOT_IMAGE_URL;
-  var holding_image = new Image();
-  holding_image.src = ROBOT_HOLDING_IMAGE_URL;
+  var image = ResourceLoader.get(ROBOT_IMAGE_URL);
+  var holding_image = ResourceLoader.get(ROBOT_HOLDING_IMAGE_URL, true);
   var IMAGE_WIDTH = 32;
   var IMAGE_HEIGHT = 48;
   var dimensions = calculateDimensions(max_width, max_height,
@@ -83,14 +82,14 @@ var GOOD_BATTERY_IMAGE_URL = "/static/images/elements/good-battery.png";
 var BAD_BATTERY_IMAGE_URL = "/static/images/elements/bad-battery.png";
 
 function createBattery(id, max_width, max_height, is_good) {
-  var image = new Image();
+  var image = null;
   var IMAGE_WIDTH = 32;
   var IMAGE_HEIGHT = 32;
 
   if (is_good) {
-    image.src = GOOD_BATTERY_IMAGE_URL;
+    image = ResourceLoader.get(GOOD_BATTERY_IMAGE_URL);
   } else {
-    image.src = BAD_BATTERY_IMAGE_URL;
+    image = ResourceLoader.get(BAD_BATTERY_IMAGE_URL);
   }
 
   var dimensions = calculateDimensions(max_width, max_height,
@@ -112,8 +111,7 @@ function createBattery(id, max_width, max_height, is_good) {
 }
 
 function createAsteroid(id, max_width, max_height) {
-  var image = new Image();
-  image.src = ASTEROIDS_IMAGE_URL;
+  var image = ResourceLoader.get(ASTEROIDS_IMAGE_URL);
   var IMAGE_WIDTH = 32;
   var IMAGE_HEIGHT = 32;
   var width = IMAGE_WIDTH;
@@ -162,8 +160,7 @@ function createAsteroid(id, max_width, max_height) {
 }
 
 function createMachineComponent(id, max_width, max_height) {
-  var image = new Image();
-  image.src = MACHINE_COMPONENT_URL;
+  var image = ResourceLoader.get(MACHINE_COMPONENT_URL);
   var IMAGE_WIDTH = 32;
   var IMAGE_HEIGHT = 32;
 
@@ -177,10 +174,8 @@ function createMachineComponent(id, max_width, max_height) {
 var WORKING_MACHINE_STYLE = "working_machine";
 
 function createMachine(id, max_width, max_height) {
-  var default_image = new Image();
-  default_image.src = MACHINE_URL;
-  var working_machine_image = new Image();
-  working_machine_image.src = WORKING_MACHINE_URL;
+  var default_image = ResourceLoader.get(MACHINE_URL);
+  var working_machine_image = ResourceLoader.get(WORKING_MACHINE_URL);
   var IMAGE_WIDTH = 48;
   var IMAGE_HEIGHT = 48;
   var dimensions = calculateDimensions(max_width, max_height,

@@ -8,6 +8,7 @@ var CodeEditor = require("./code_editor.js");
 var InstructionPane = require("./instruction_pane.js");
 var RunView = require("./run_view.js");
 var MessagePane = require("./message_pane.js");
+var ResourceLoader = require("../util/resource_loader");
 var Popup = require("react-popup").default;
 
 var LessonEnvironment = React.createClass({
@@ -170,5 +171,9 @@ var LessonEnvironment = React.createClass({
     };
   },
 });
+
+LessonEnvironment.populateResourceLoader = function() {
+  ButtonBar.populateResourceLoader();
+}
 
 module.exports = LessonEnvironment;

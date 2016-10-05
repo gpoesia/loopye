@@ -5,6 +5,7 @@
 
 var React = require("react");
 var Constants = require("../constants");
+var ResourceLoader = require("../util/resource_loader");
 
 var ButtonBar = React.createClass({
   _styles: {
@@ -59,5 +60,12 @@ var ButtonBar = React.createClass({
            </div>;
   },
 });
+
+ButtonBar.populateResourceLoader = function() {
+  ResourceLoader.addImage(Constants.PLAY_ICON_URL);
+  ResourceLoader.addImage(Constants.ADVANCE_ICON_URL);
+  ResourceLoader.addImage(Constants.HELP_ICON_URL);
+  ResourceLoader.addImage(Constants.RESET_ICON_URL);
+}
 
 module.exports = ButtonBar;

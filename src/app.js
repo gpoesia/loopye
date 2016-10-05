@@ -9,6 +9,7 @@ var Lesson01 = require("./lesson/lesson01");
 var Lesson02 = require("./lesson/lesson02");
 var Lesson03 = require("./lesson/lesson03");
 var LessonEnvironment = require("./view/lesson_environment");
+var ResourceLoader = require("./util/resource_loader")
 var Popup = require("react-popup").default;
 
 var startLesson = function(lesson, domElement) {
@@ -38,4 +39,6 @@ module.exports = {
   Lesson01: Lesson01,
   Lesson02: Lesson02,
   Lesson03: Lesson03,
+  LessonEnvironment: LessonEnvironment,
+  ResourceLoader: ResourceLoader,
 };
