@@ -469,10 +469,15 @@ function Lesson01() {
           pode apertar o {Icons.HelpIcon}. Minha principal lição é: não entre em pânico!
         </p>
       </div>,
+      [],
       new Lesson01ExerciseStepPlayer(false, 3, 3, 1,
                                      [5, 7, 8]),
       "LW",
       Constants.Lesson01.SUCCESS_MESSAGE));
+
+  var commandsReference = [Constants.References.WAIT,
+                           Constants.References.MOVE_LEFT,
+                           Constants.References.MOVE_RIGHT];
 
   this.addStep(
     new Lesson.LessonStep(
@@ -493,6 +498,7 @@ function Lesson01() {
         Você consegue descobrir para que ela serve? Clique em {Icons.PlayIcon} para ver
         o que acontece.
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 3, 3, 1,
                                      [3, 5, 6, 7]),
       "",
@@ -509,6 +515,7 @@ function Lesson01() {
         Eu estou tentando, mas sinto que cometi um erro
         e escrevi o programa errado. Você consegue corrigir o erro?
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 5, 3, 1,
                                      [4, 7, 8, 9, 11, 12, 13]),
       "LWRL",
@@ -525,6 +532,7 @@ function Lesson01() {
         ajudar com os códigos. Acho que você está pronto para conduzir os
         robôs restantes pela chuva de meteoros sozinho.
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 5, 4, 1,
                                      [5, 10, 12, 14, 16, 17, 19]),
       "",
@@ -541,6 +549,7 @@ function Lesson01() {
         ser salvo com qualquer um dos programas seguintes: LWRR, LRWR, RLWR,
         RRWL. Você acha que o mesmo é verdade para este robô?
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 15, 3, 1,
                                      [3, 4, 6, 8, 9, 11, 12, 14, 15, 17,
                                       18, 20, 22, 23, 24, 26, 27, 28, 30, 31,
@@ -560,6 +569,7 @@ function Lesson01() {
         existe um programa que faz com que ele seja salvo sem ser atingido
         por nenhum meteoro.
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 6, 10, 4,
                                      [11, 13, 15, 17, 22, 23, 24, 26,
                                       31, 34, 35, 37, 44, 46, 47, 48,
@@ -577,6 +587,7 @@ function Lesson01() {
         Consegue pensar em alguma maneira de salvar este
         robô com um programa de apenas um comando?
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 5, 8, 1,
                                      [9, 17, 18, 25, 26, 27, 33, 35, 36]),
       "",
@@ -594,6 +605,7 @@ function Lesson01() {
         comandos seguintes forem somente de espera (sequência de Ws).
         Você acha que existe alguma regiao segura para o robô atual?
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 6, 7, 3,
                                      [7, 9, 11, 13, 15, 17, 19,
                                       21, 23, 25, 27, 29, 31, 33,
@@ -610,6 +622,7 @@ function Lesson01() {
         Para o robô anterior, não existia região segura. O que acontece
         se o robô já começar em uma regiao segura?
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 5, 5, 2,
                                      [6, 10, 13, 16, 18, 19, 21, 23]),
       "",
@@ -624,6 +637,7 @@ function Lesson01() {
         Muito bem! Essa foi fácil. Salve este outro robô. Para este novo robô, é fácil se
         confundir. Então programe com bastante atenção!
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 10, 5, 2,
                                      [7, 11, 12, 13, 17, 22, 26, 27, 28, 29,
                                       32, 36, 38, 42, 45, 46, 47, 48]),
@@ -644,6 +658,7 @@ function Lesson01() {
          seja atingido por um meteoro. O único programa que salva os dois
          robôs, ao mesmo tempo, é WRLW (ou WRL).
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayerMulti(true, 2, [5, 5], [5, 5], [2, 2],
                                           [[6, 8, 12, 15, 18], [8, 11, 19]]),
       "WRL",
@@ -657,6 +672,7 @@ function Lesson01() {
       <p>
         Agora é sua vez. Escreva um programa que salve os dois robôs ao mesmo tempo.
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayerMulti(false, 2, [5, 5], [5, 5], [2, 2],
                                           [[6, 12, 13, 15, 19, 21, 23],
                                            [7, 11, 12, 15, 23, 24]]),
@@ -671,6 +687,7 @@ function Lesson01() {
       <p>
         Salve mais estes robôs. Estamos quase salvando todos eles! :)
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayerMulti(false, 2, [6, 6], [8, 8], [1, 4],
                                           [[9, 13, 16, 18, 19, 22, 26, 29, 32, 35,
                                             36, 41, 46], [8, 11, 18, 19, 22, 25, 28,
@@ -688,6 +705,7 @@ function Lesson01() {
         salvos com sucesso, e tudo graças a você! Espero que possamos
         trabalhar juntos novamente, e boa sorte nessa nova jornada!
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayerMulti(false, 2, [10, 10], [5, 5], [2, 2],
                                           [[7, 11, 13, 22, 26, 27, 38, 42, 46, 49],
                                            [11, 12, 13, 17, 25, 28, 32, 36, 47, 48]]),
@@ -703,6 +721,7 @@ function Lesson01() {
         E isso é tudo! Continue se divertindo salvando robôs, ou pode
         descansar por hoje! :)
       </p>,
+      commandsReference,
       new Lesson01ExerciseStepPlayer(false, 10, 10),
       "",
       Constants.Lesson01.SUCCESS_MESSAGE));

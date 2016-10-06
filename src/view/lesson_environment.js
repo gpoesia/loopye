@@ -11,19 +11,20 @@ var MessagePane = require("./message_pane.js");
 var ResourceLoader = require("../util/resource_loader");
 var Popup = require("react-popup").default;
 var Sidebar = require('react-sidebar').default;
+var CommandReferenceSidebar = require('./command_reference_sidebar.js');
 
 var LessonEnvironment = React.createClass({
   styles: {
     instructionPane: {
-      width: "100%",
+      width: "95%",
       height: "20%",
       margin: "0",
     },
     actionSide: {
       width: "70%",
       height: "100%",
-      float: "right",
-      margin: "0",
+      float: "left",
+      marginLeft: "20px",
     },
     editor: {
       float: "left",
@@ -32,7 +33,7 @@ var LessonEnvironment = React.createClass({
       margin: "0px",
     },
     buttonBar: {
-      width: "100%",
+      width: "95%",
       height: "5%",
       margin: "0",
     },
@@ -47,6 +48,7 @@ var LessonEnvironment = React.createClass({
     return {
       sourceCode: "",
       currentStep: 0,
+      docked: true,
     };
   },
 
@@ -131,11 +133,44 @@ var LessonEnvironment = React.createClass({
     this._startStep(0);
   },
 
+  _closeSidebar: function() {
+    this.setState({docked: false});
+  },
+  
+  _openSidebar: function() {
+    this.setState({docked: true});
+  },
+
+  showButton: function() {
+    if (!this.state.docked) {      
+      return <div style={{width: "20px",
+                          float: "right",
+                          backgroundColor: '#03a9f4'}}>
+               <a href='#'
+                  onClick={this._openSidebar}
+                  style={{textDecoration: 'none', color: 'white'}}> 
+                 C
+                 O
+                 M
+                 A
+                 N
+                 D
+                 O
+                 S
+               </a>
+             </div>;
+    }
+    return <div> </div>;
+  },
+
   render: function() {
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
 
-    return <Sidebar sidebar={currentStep.getCommandReference()}
-                    docked={true}
+    var commandReferenceSidebar = <CommandReferenceSidebar onClose={this._closeSidebar} 
+                                                             content={currentStep.getCommandReference()} />;
+
+    return <Sidebar sidebar={commandReferenceSidebar}
+                    docked={this.state.docked}
                     pullRight={true}>
              <div style={{width: "100%", height: "95%"}} ref="containerDiv">
                <div style={this.styles.editor}>
@@ -160,6 +195,7 @@ var LessonEnvironment = React.createClass({
                    <RunView ref="run_view" />
                  </div>
                </div>
+               {this.showButton()}
              </div>
            </Sidebar>;
   },

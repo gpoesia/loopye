@@ -2,6 +2,8 @@
  * Named constants.
  */
 
+var React = require("react");
+
 module.exports = {
   PLAY_ICON_URL: "/static/images/icons/play.png",
   RESET_ICON_URL: "/static/images/icons/reset.png",
@@ -33,5 +35,18 @@ module.exports = {
     NO_MACHINE_TO_PUT_COMPONENT_IN: "O robô tentou colocar uma peça, mas não havia uma máquina próxima.",
     CANNOT_HOLD_TWO_COMPONENTS: "O robô tentou pegar uma peça do chão, mas ele só pode carregar uma de cada vez...",
     MISSION_UNFINISHED: "O robô sobreviveu, mas não completou sua missão. Tente novamente.",
+  },
+  
+  References: {
+    WAIT: <p> <b>W</b>: esperar </p>,
+    MOVE_LEFT: <p> <b>L</b>: mover o robô para a esquerda </p>,
+    MOVE_RIGHT: <p> <b>R</b>: mover o robô para a direita </p>,
+    MOVE_FORWARD: <p> <b>F</b>: mover o robô para frente </p>,
+    TURN_LEFT: <p> <b>L</b>: girar o robô para a esquerda </p>,
+    TURN_RIGHT: <p> <b>R</b>: girar o robô para a direita </p>,
+    PUT_COMPONENT: <p> <b>P</b>: colocar engrenagem na máquina </p>,
+    GET_COMPONENT: <p> <b>G</b>: pegar engrenagem </p>,
+    COMPONENT_SENSOR: <p> <div> <b>eng?&#123; &#125;</b>: fazer o que está entre </div> <div> chaves apenas se houver uma </div> <div> engrenagem à frente </div> </p>,
+    MACHINE_SENSOR: <p> <div> <b>maq?&#123; &#125;</b>: fazer o que está entre  </div> <div> chaves apenas se houver uma </div> <div> máquina à frente </div> </p>,
   },
 };

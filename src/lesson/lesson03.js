@@ -551,18 +551,10 @@ Lesson03ExerciseStepPlayer.prototype = {
 function Lesson03() {
   Lesson.Lesson.call(this);
 
-  var commandsReference = <div>
-                            <div> <b> Comandos </b> </div>
-                            <div> <b>F</b>: se mover para o frente </div>
-                            <div> <b>L</b>: rotar o robô para a esquerda </div>
-                            <div> <b>R</b>: rotar o robô para a direita  </div>
-                            <div> <b>P</b>: pegar engranagem </div>
-                            <div> <b>G</b>: colocar engranagem em máquina </div>
-                            <div> <b>eng?{ }</b>: fazer o que está entre chaves </div>
-                            <div> só se tem uma engranagem na frente </div>
-                            <div> <b>maq?{ }</b>: fazer o que está entre chaves </div>
-                            <div>  só se tem uma máquina na frente </div>
-                          </div>;
+  var commandsReference = [Constants.References.MOVE_FORWARD,
+                           Constants.References.TURN_LEFT,
+                           Constants.References.TURN_RIGHT,
+                           Constants.References.GET_COMPONENT];
 
   // Step 1
   this.addStep(
@@ -612,6 +604,9 @@ function Lesson03() {
       null
     )
   );
+
+  commandsReference = [commandsReference,
+                       Constants.References.PUT_COMPONENT];
 
   // Step 2
   this.addStep(
@@ -905,6 +900,9 @@ function Lesson03() {
     )
   );
 
+  commandsReference = [commandsReference,
+                       Constants.References.COMPONENT_SENSOR];
+
   // Step 9
   this.addStep(
     new Lesson.LessonStep(
@@ -1195,6 +1193,9 @@ function Lesson03() {
       null
     )
   );
+
+  commandsReference = [commandsReference,
+                       Constants.References.MACHINE_SENSOR];
 
   // Step 15
   this.addStep(
