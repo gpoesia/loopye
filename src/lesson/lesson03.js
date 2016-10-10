@@ -551,6 +551,11 @@ Lesson03ExerciseStepPlayer.prototype = {
 function Lesson03() {
   Lesson.Lesson.call(this);
 
+  var commandsReference = [Constants.References.MOVE_FORWARD,
+                           Constants.References.TURN_LEFT,
+                           Constants.References.TURN_RIGHT,
+                           Constants.References.GET_COMPONENT];
+
   // Step 1
   this.addStep(
     new Lesson.LessonStep(
@@ -582,6 +587,7 @@ function Lesson03() {
           significa <b>pegar</b>) para o robô pegar a engrenagem.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         3, // cols
@@ -598,6 +604,9 @@ function Lesson03() {
       null
     )
   );
+
+  commandsReference = [commandsReference,
+                       Constants.References.PUT_COMPONENT];
 
   // Step 2
   this.addStep(
@@ -620,6 +629,7 @@ function Lesson03() {
           direita o comando “<b>R</b>” (do inglês, <i>Right</i>).
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         3, // cols
@@ -653,6 +663,7 @@ function Lesson03() {
           “<b>G</b>” (<i>Get</i>), e para colocar é “<b>P</b>” (<i>Put</i>).
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         3, // cols
@@ -689,6 +700,7 @@ function Lesson03() {
           você vai precisar utilizar um laço agora.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         10, // cols
@@ -721,6 +733,7 @@ function Lesson03() {
           máquina.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         4, // rows
         3, // cols
@@ -758,6 +771,7 @@ function Lesson03() {
           Vamos tentar?
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         4, // rows
         10, // cols
@@ -806,6 +820,7 @@ function Lesson03() {
           ser útil agora.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         10, // rows
         10, // cols
@@ -849,6 +864,7 @@ function Lesson03() {
           de repetição aqui também.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         9, // rows
         9, // cols
@@ -883,6 +899,9 @@ function Lesson03() {
       15
     )
   );
+
+  commandsReference = [commandsReference,
+                       Constants.References.COMPONENT_SENSOR];
 
   // Step 9
   this.addStep(
@@ -920,6 +939,7 @@ function Lesson03() {
           Senão o comando “G” não vai ser executado.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         3, // cols
@@ -970,6 +990,7 @@ function Lesson03() {
           Então vamos lá, vai ser fácil.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         3, // cols
@@ -1008,6 +1029,7 @@ function Lesson03() {
           todos eles!
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         10, // cols
@@ -1057,6 +1079,7 @@ function Lesson03() {
           Acho que usando um laço vai ficar fácil.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         10, // cols
@@ -1098,6 +1121,7 @@ function Lesson03() {
           com a sala anterior? Pense um pouco e resolva.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         10, // cols
@@ -1140,6 +1164,7 @@ function Lesson03() {
           nessa sala também.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         6, // rows
         10, // cols
@@ -1169,6 +1194,9 @@ function Lesson03() {
     )
   );
 
+  commandsReference = [commandsReference,
+                       Constants.References.MACHINE_SENSOR];
+
   // Step 15
   this.addStep(
     new Lesson.LessonStep(
@@ -1192,6 +1220,7 @@ function Lesson03() {
           frente a uma máquina.
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         5, // cols
@@ -1228,6 +1257,7 @@ function Lesson03() {
           como fazer para consertar todas as máquinas dessa sala?
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         2, // rows
         10, // cols
@@ -1265,6 +1295,7 @@ function Lesson03() {
           programa vai fazer o robô resolver o problema nessa sala?
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         2, // rows
         10, // cols
@@ -1299,6 +1330,7 @@ function Lesson03() {
           e logo logo toda a nossa base estará funcionando!
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         10, // cols
@@ -1333,6 +1365,7 @@ function Lesson03() {
           Um novo desafio, mas tenho certeza que você consegue resolvê-lo!
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         3, // rows
         10, // cols
@@ -1370,6 +1403,7 @@ function Lesson03() {
           chaves do condicional, inclusive laços!
         </p>
       </div>,
+      commandsReference,
       new Lesson03ExerciseStepPlayer(
         8, // rows
         10, // cols

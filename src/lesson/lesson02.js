@@ -385,6 +385,7 @@ function Lesson02() {
           pegarmos esta bateria.
         </p>
       </div>,
+      [Constants.References.MOVE_FORWARD],
       new Lesson02ExerciseStepPlayer(
         false, 3, 3, new Grid.Position(0, 0), Grid.Directions.RIGHT,
         [new Grid.Position(0, 2)],
@@ -408,6 +409,8 @@ function Lesson02() {
           como você já fez antes.
         </p>
       </div>,
+      [Constants.References.MOVE_FORWARD,
+       Constants.References.TURN_RIGHT],
       new Lesson02ExerciseStepPlayer(
         false, 3, 3, new Grid.Position(0, 0), Grid.Directions.UP,
         [new Grid.Position(0, 2)],
@@ -415,6 +418,10 @@ function Lesson02() {
       "",
       Constants.Lesson02.SUCCESS_MESSAGE,
       null));
+
+  var commandsReference = [Constants.References.MOVE_FORWARD,
+                           Constants.References.TURN_LEFT,
+                           Constants.References.TURN_RIGHT];
 
   this.addStep(
     new Lesson.LessonStep(
@@ -430,6 +437,7 @@ function Lesson02() {
           Para isso, use o comando "L" (de left, que é esquerda em inglês).
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 5, 3, new Grid.Position(4, 1), Grid.Directions.UP,
         [new Grid.Position(1, 1), new Grid.Position(1, 0)],
@@ -450,6 +458,7 @@ function Lesson02() {
           Mas tenho certeza de que você já pode ajudá-lo.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 5, 3, new Grid.Position(4, 1), Grid.Directions.LEFT,
         [new Grid.Position(3, 1), new Grid.Position(2, 1),
@@ -475,6 +484,7 @@ function Lesson02() {
           Você consegue pegar as duas baterias verdes sem passar pela estragada?
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 4, 3, new Grid.Position(3, 1), Grid.Directions.UP,
         [new Grid.Position(2, 1), new Grid.Position(0, 1)],
@@ -501,6 +511,7 @@ function Lesson02() {
           Lembre-se de não tocar as baterias vermelhas.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 10, new Grid.Position(0, 0), Grid.Directions.DOWN,
         [new Grid.Position(0, 7), new Grid.Position(0, 8),
@@ -540,6 +551,7 @@ function Lesson02() {
           que é a mesma coisa. O robô não se importa, e fica mais fácil de entender.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 10, new Grid.Position(0, 0), Grid.Directions.DOWN,
         [new Grid.Position(0, 7), new Grid.Position(0, 8),
@@ -570,6 +582,7 @@ function Lesson02() {
           Vamos lá, eu já comecei para você.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 10, new Grid.Position(5, 0), Grid.Directions.DOWN,
         [new Grid.Position(0, 7),
@@ -618,6 +631,7 @@ function Lesson02() {
           e usar laços.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 6, new Grid.Position(0, 0), Grid.Directions.RIGHT,
         [new Grid.Position(0, 5), new Grid.Position(5, 5)],
@@ -653,6 +667,7 @@ function Lesson02() {
           ou melhor, sem bateria.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 5, 5, new Grid.Position(0, 0), Grid.Directions.RIGHT,
         [new Grid.Position(0, 4), new Grid.Position(4, 4)],
@@ -678,6 +693,7 @@ function Lesson02() {
           Você consegue ver como fazer o trajeto usando só 8 caracteres?
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 5, 5, new Grid.Position(0, 0), Grid.Directions.RIGHT,
         [new Grid.Position(0, 4), new Grid.Position(4, 4),
@@ -705,6 +721,7 @@ function Lesson02() {
           uma escada? Sei que você consegue!
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 7, new Grid.Position(5, 0), Grid.Directions.UP,
         [new Grid.Position(4, 0), new Grid.Position(3, 1),
@@ -734,6 +751,7 @@ function Lesson02() {
           Escolha bem a ordem em que você vai pegá-las.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 5, new Grid.Position(5, 0), Grid.Directions.RIGHT,
         [new Grid.Position(4, 0), new Grid.Position(2, 0),
@@ -766,6 +784,7 @@ function Lesson02() {
           já que você já é profissional agora :)
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 6, new Grid.Position(5, 0), Grid.Directions.UP,
         [new Grid.Position(2, 0), new Grid.Position(1, 0),
@@ -796,6 +815,7 @@ function Lesson02() {
           uma ordem diferente. Acredito que você vai conseguir. Vamos lá!
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 6, 7, new Grid.Position(5, 0), Grid.Directions.UP,
         [
@@ -840,6 +860,7 @@ function Lesson02() {
           com pouco código. Experimente você mesmo!
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 10, 10, new Grid.Position(0, 0), Grid.Directions.RIGHT,
         [
@@ -880,6 +901,7 @@ function Lesson02() {
           Você pode fazer isso com laços aninhados :)
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 10, 10, new Grid.Position(9, 9), Grid.Directions.UP,
         [
@@ -933,6 +955,7 @@ function Lesson02() {
           Não se preocupe: na hora certa você vai descobrir.
         </p>
       </div>,
+      commandsReference,
       new Lesson02ExerciseStepPlayer(
         false, 10, 10, new Grid.Position(9, 9), Grid.Directions.UP,
         [
