@@ -416,12 +416,9 @@ Lesson03ExerciseStepPlayer.prototype = {
   _parseAction: function(literal) {
     for (var action in Actions) {
       if (Actions.hasOwnProperty(action)) {
-        console.log("Comparing " + literal + " to " + Actions[action]);
         if (Actions[action] == literal) {
-          console.log("Match");
           return action;
         }
-        console.log("No match");
       }
     }
     return null;
@@ -932,6 +929,8 @@ function Lesson03() {
 
   commandsReference = [commandsReference,
                        Constants.References.COMPONENT_SENSOR];
+
+  this._first_step_with_conditionals = this.getNumberOfSteps();
 
   // Step 9
   this.addStep(
@@ -1475,6 +1474,13 @@ Object.assign(Lesson03.prototype, {
     ResourceLoader.addImage(ElementFactories.MACHINE_COMPONENT_URL);
     ResourceLoader.addImage(ElementFactories.MACHINE_URL);
     ResourceLoader.addImage(ElementFactories.WORKING_MACHINE_URL);
+  },
+
+  /// Returns the index of the first step in the lesson that requires the use
+  /// of conditionals to be solved.
+  getFirstStepWithConditionals: function() {
+    var ret = this._first_step_with_conditionals;
+    return ret;
   },
 });
 

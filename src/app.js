@@ -12,7 +12,9 @@ var LessonEnvironment = require("./view/lesson_environment");
 var ResourceLoader = require("./util/resource_loader")
 var Popup = require("react-popup").default;
 
-var startLesson = function(lesson, domElement) {
+var startLesson = function(lesson, domElement, initialStep) {
+  initialStep = initialStep || 0;
+
   var lessonInstance = null;
   if (typeof(lesson) === 'function') {
     lessonInstance = new lesson();
@@ -29,7 +31,8 @@ var startLesson = function(lesson, domElement) {
   body.appendChild(container);
   ReactDOM.render(<Popup />, container);
 
-  ReactDOM.render(<LessonEnvironment lesson={lessonInstance} />,
+  ReactDOM.render(<LessonEnvironment lesson={lessonInstance}
+                                     initialStep={initialStep} />,
                   domElement)
 };
 

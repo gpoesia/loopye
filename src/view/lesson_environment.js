@@ -47,7 +47,7 @@ var LessonEnvironment = React.createClass({
   getInitialState: function() {
     return {
       sourceCode: "",
-      currentStep: 0,
+      currentStep: this.props.initialStep,
       docked: true,
     };
   },
@@ -130,25 +130,25 @@ var LessonEnvironment = React.createClass({
   },
 
   componentWillMount: function() {
-    this._startStep(0);
+    this._startStep(this.state.currentStep);
   },
 
   _closeSidebar: function() {
     this.setState({docked: false});
   },
-  
+
   _openSidebar: function() {
     this.setState({docked: true});
   },
 
   showButton: function() {
-    if (!this.state.docked) {      
+    if (!this.state.docked) {
       return <div style={{width: "20px",
                           float: "right",
                           backgroundColor: '#03a9f4'}}>
                <a href='#'
                   onClick={this._openSidebar}
-                  style={{textDecoration: 'none', color: 'white'}}> 
+                  style={{textDecoration: 'none', color: 'white'}}>
                  C
                  O
                  M
@@ -166,7 +166,7 @@ var LessonEnvironment = React.createClass({
   render: function() {
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
 
-    var commandReferenceSidebar = <CommandReferenceSidebar onClose={this._closeSidebar} 
+    var commandReferenceSidebar = <CommandReferenceSidebar onClose={this._closeSidebar}
                                                              content={currentStep.getCommandReference()} />;
 
     return <Sidebar sidebar={commandReferenceSidebar}
