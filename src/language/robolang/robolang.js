@@ -12,6 +12,30 @@ var Scope = require("../scope");
 var LOOPS = 1 << 0;
 var CONDITIONAL_LOOPS = 1 << 1;
 
+function RobolangProgram(ast_root) {
+  this._ast_root = ast_root;
+}
+
+RobolangProgram.prototype = {
+  /// Returns the root node of the program's AST, if it has been parsed yet.
+  getASTRoot: function() {
+    return this._ast_root;
+  },
+};
+
+/// Parses a Robolang program. If successful, returns a RobolangProgram.
+/// Otherwise, returns a list of errors.
+function ParseRobolangProgram(code) {
+  try {
+    var tokens = Lexer.tokenize(code);
+    var token_stream = new Lexer.TokenStream(tokens);
+    var parser = new Parser.ASTProgramNodeParser();
+    return new RobolangProgram(parser.parse(token_stream));
+  } catch (e) {
+    return [e];
+  }
+}
+
 function Robolang(actions, flags) {
   Interpreter.call(this);
   this.actions = actions;
@@ -31,21 +55,25 @@ function InterpreterState(globalScope) {
 
 Robolang.prototype = Object.create(Interpreter.prototype);
 Object.assign(Robolang.prototype, {
+  /// Parses the given source code and initializes the interpreter for
+  /// executing the program. If compilation fails, returns an array of errors.
+  /// Otherwise, returns null.
   parse: function(code) {
-    try {
-      var tokens = Lexer.tokenize(code);
-      var parserState = new Lexer.TokenStream(tokens);
-      var parser = new Parser.ASTProgramNodeParser();
-      this.program = parser.parse(parserState);
+    var program_or_errors = ParseRobolangProgram(code);
 
-      this.state = new InterpreterState(this.getGlobalScope());
-      this.state.nodes.push(this.program);
-      this.state.nextChildIndex.push(0);
-    } catch (e) {
-      return [e];
+    if (program_or_errors instanceof Array) {
+      return program_or_errors;
+    } else {
+      this.initialize(program_or_errors);
     }
 
     return null;
+  },
+  /// Initializes the interpreter for running the given program.
+  initialize: function(program) {
+    this.state = new InterpreterState(this.getGlobalScope());
+    this.state.nodes.push(program.getASTRoot());
+    this.state.nextChildIndex.push(0);
   },
   runUntilNextAction: function() {
     var nodes = this.state.nodes;
@@ -151,4 +179,6 @@ Object.assign(Robolang.prototype, {
 
 module.exports = {
   Interpreter: Robolang,
+  RobolangProgram: RobolangProgram,
+  ParseRobolangProgram: ParseRobolangProgram,
 };

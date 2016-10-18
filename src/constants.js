@@ -35,8 +35,9 @@ module.exports = {
     NO_MACHINE_TO_PUT_COMPONENT_IN: "O robô tentou colocar uma peça, mas não havia uma máquina próxima.",
     CANNOT_HOLD_TWO_COMPONENTS: "O robô tentou pegar uma peça do chão, mas ele só pode carregar uma de cada vez...",
     MISSION_UNFINISHED: "O robô sobreviveu, mas não completou sua missão. Tente novamente.",
+    DID_NOT_USE_CONDITIONALS: "O seu código deve usar condicionais neste nível (por exemplo, eng?{G} é um código com um condicional). Leia as instruções e veja a referência de comandos para entender como fazer.",
   },
-  
+
   References: {
     WAIT: <p> <b>W</b>: esperar </p>,
     MOVE_LEFT: <p> <b>L</b>: mover o robô para a esquerda </p>,
