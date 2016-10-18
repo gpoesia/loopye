@@ -10,6 +10,8 @@ var ResourceLoader = require("../util/resource_loader");
 var AnimationFactories = require("../util/animator/animation_factories");
 var ElementFactories = require("../util/animator/element_factories");
 var Robolang = require("../language/robolang/robolang");
+var Parser = require("../language/robolang/parser");
+var Analysis = require("../language/robolang/analysis")
 var Constants = require("../constants");
 var Icons = require("../view/icons");
 var Grid = require("./utils/grid");
@@ -257,7 +259,8 @@ function Lesson03ExerciseStepPlayer(rows, cols, robot_position,
                                     components_positions,
                                     machines_positions,
                                     hidden_positions,
-                                    goal) {
+                                    goal,
+                                    require_conditionals) {
   Lesson.LessonStepPlayer.call(this);
   this._game = new Lesson03Game(rows, cols,
                                 robot_position, robot_direction,
@@ -267,6 +270,7 @@ function Lesson03ExerciseStepPlayer(rows, cols, robot_position,
   this._goal = goal || Goals.FIX_ALL_MACHINES;
   this._hidden_positions = hidden_positions || [];
   this._solved = false;
+  this._require_conditionals = !!require_conditionals;
 }
 
 Lesson03ExerciseStepPlayer.prototype = {
@@ -280,15 +284,26 @@ Lesson03ExerciseStepPlayer.prototype = {
     }
   },
 
-  play: function(sourceCode) {
+  play: function(source_code) {
     this.reset();
 
-    var interpreter = new Robolang.Interpreter();
-    var compilation_errors = interpreter.parse(sourceCode);
+    var program = null;
+    var program_or_errors = Robolang.ParseRobolangProgram(source_code);
 
-    if (compilation_errors) {
-      return {compilation_errors: compilation_errors};
+    if (program_or_errors instanceof Array) {
+      return {compilation_errors: program_or_errors};
+    } else {
+      program = program_or_errors;
     }
+
+    var errors = this._validateProgram(program);
+
+    if (!!errors.length) {
+      return {compilation_errors: errors};
+    }
+
+    var interpreter = new Robolang.Interpreter();
+    interpreter.initialize(program);
 
     var runtime_errors = this._render(interpreter);
 
@@ -300,6 +315,21 @@ Lesson03ExerciseStepPlayer.prototype = {
       runtime_errors: runtime_errors,
       animator: this._animator,
     };
+  },
+
+  // Checks if the program is a valid attempt at solving the step,
+  // returning a list of errors.
+  // Basically, if this._require_conditionals is true, returns an error if the
+  // code does not contain any conditionals.
+  // Otherwise, doesn't check anything.
+  _validateProgram: function(program) {
+    if (this._require_conditionals) {
+      var counts = Analysis.countNodeTypes(program);
+      if (!counts[Parser.ASTNodeTypes.CONDITIONAL.name]) {
+        return [Constants.Lesson03.DID_NOT_USE_CONDITIONALS];
+      }
+    }
+    return [];
   },
 
   isInAcceptingState: function() {
@@ -949,7 +979,8 @@ function Lesson03() {
         [new Grid.Position(1, 2)], // components_positions
         [], // machines_positions
         [new Grid.Position(1, 2)], // hidden_positions
-        Goals.GET_ALL_COMPONENTS // goal
+        Goals.GET_ALL_COMPONENTS, // goal
+        true // require_conditionals
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
@@ -1004,7 +1035,8 @@ function Lesson03() {
         [
           new Grid.Position(0, 2), new Grid.Position(1, 2)
         ], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
@@ -1044,7 +1076,8 @@ function Lesson03() {
           new Grid.Position(0, 5), new Grid.Position(0, 6),
           new Grid.Position(0, 7), new Grid.Position(0, 8)
         ], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
@@ -1097,7 +1130,8 @@ function Lesson03() {
           new Grid.Position(2, 8)
         ], // machines_positions
         [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,

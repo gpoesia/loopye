@@ -207,11 +207,6 @@ Object.assign(ASTActionNodeParser.prototype, {
 
 ASTNodeParser.nodeParsers.push(ASTActionNodeParser);
 
-module.exports = {
-  ASTProgramNodeParser: ASTProgramNodeParser,
-  ASTNodeTypes: ASTNodeTypes,
-};
-
 function ASTConditionalLoopNodeParser() { }
 ASTConditionalLoopNodeParser.prototype = Object.create(ASTNodeParser.prototype);
 Object.assign(ASTConditionalLoopNodeParser.prototype, {
@@ -238,3 +233,7 @@ Object.assign(ASTConditionalLoopNodeParser.prototype, {
 
 ASTNodeParser.nodeParsers.push(ASTConditionalLoopNodeParser);
 
+module.exports = {
+  ASTProgramNodeParser: ASTProgramNodeParser,
+  ASTNodeTypes: ASTNodeTypes,
+};
