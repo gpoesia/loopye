@@ -991,8 +991,7 @@ function Lesson03() {
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Você vai precisar verificar se a engrenagem está em dois
-        locais diferentes.
+        Agora é só colocar a engrenagem na máquina.
       </p>,
       <div>
         <p>
@@ -1006,16 +1005,43 @@ function Lesson03() {
         </p>
         <p>
           Agora, a engrenagem que achamos na sala anterior pertence
-          a uma máquina nessa sala. A primeira missão aqui é
-          colocá-la em uma das máquinas.
+          à máquina dessa sala. Coloque a engrenagem na máquina.
         </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        3, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        true, // initially_holding
+        [], // components_positions
+        [new Grid.Position(2, 2)], // machines_positions
+        [], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        false // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 11
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Você vai precisar verificar se a engrenagem está em dois
+        locais diferentes. Utilize o condicional nos dois.
+      </p>,
+      <div>
         <p>
-          Porém aqui também temos lugares em que a câmera está
+          Nessa sala temos dois lugares em que a câmera está
           danificada, e não conseguimos ver o que tem ali. A
           engrenagem da outra máquina deve estar escondida em
           um desses lugares. Você agora tem que verificar se a
           engrenagem está em cada um deles, utilizando o sensor
-          de engrenagens, do mesmo jeito que fizemos na sala anterior.
+          de engrenagens, do mesmo jeito que fizemos antes.
           Depois de achar a engrenagem, é só colocar na outra máquina.
           Então vamos lá, vai ser fácil.
         </p>
@@ -1026,11 +1052,9 @@ function Lesson03() {
         3, // cols
         new Grid.Position(0, 0), // robot_position
         Grid.Directions.DOWN, // robot_direction
-        true, // initially_holding
+        false, // initially_holding
         [new Grid.Position(1, 2)], // components_positions
-        [
-          new Grid.Position(1, 0), new Grid.Position(2, 2)
-        ], // machines_positions
+        [new Grid.Position(2, 2)], // machines_positions
         [
           new Grid.Position(0, 2), new Grid.Position(1, 2)
         ], // hidden_positions
@@ -1043,7 +1067,42 @@ function Lesson03() {
     )
   );
 
-  // Step 11
+  // Step 12
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Verifique se a engrenagem está em cada área escura e conserte
+        a máquina.
+      </p>,
+      <div>
+        <p>
+          Outra sala com a câmera estragada! A engrenagem está escondida
+          em alguma área escura, mas não sabemos qual. Verifique cada uma.
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        3, // cols
+        new Grid.Position(0, 2), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(2, 0)], // components_positions
+        [new Grid.Position(0, 0)], // machines_positions
+        [
+          new Grid.Position(2, 0), new Grid.Position(2, 1),
+          new Grid.Position(2, 2)
+        ], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 13
   this.addStep(
     new Lesson.LessonStep(
       <p>
@@ -1058,6 +1117,9 @@ function Lesson03() {
           A engrenagem tem que estar em algum lugar. Você
           terá que programar o nosso robô para verificar
           todos eles!
+        </p>
+        <p>
+          Dica: aqui vai ser muito mais fácil se você utilizar um laço!
         </p>
       </div>,
       commandsReference,
@@ -1078,13 +1140,48 @@ function Lesson03() {
         Goals.FIX_ALL_MACHINES, // goal
         true // require_conditionals
       ),
-      "",  // initialCode
+      "8{}",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      null
+      20
     )
   );
 
-  // Step 12
+  // Step 14
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Encontre a engrenagem, pegue ela e coloque na máquina dessa sala.
+      </p>,
+      <div>
+        <p>
+          Parece que muitas câmeras foram danificadas. Você vai ter que
+          procurar a engrenagem novamente.
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        6, // rows
+        3, // cols
+        new Grid.Position(0, 1), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(3, 0)], // components_positions
+        [new Grid.Position(5, 2)], // machines_positions
+        [
+          new Grid.Position(1, 0), new Grid.Position(2, 0),
+          new Grid.Position(3, 0), new Grid.Position(4, 0),
+          new Grid.Position(5, 0)
+        ], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      20
+    )
+  );
+
+  // Step 15
   this.addStep(
     new Lesson.LessonStep(
       <p>
@@ -1134,11 +1231,11 @@ function Lesson03() {
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      20
+      22
     )
   );
 
-  // Step 13
+  // Step 16
   this.addStep(
     new Lesson.LessonStep(
       <p>
@@ -1170,15 +1267,250 @@ function Lesson03() {
           new Grid.Position(2, 7), new Grid.Position(2, 8)
         ], // machines_positions
         [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      20
+      22
     )
   );
 
-  // Step 14
+  commandsReference = [commandsReference,
+                       Constants.References.MACHINE_SENSOR];
+
+  // Step 17
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Você vai precisar encontrar a máquina na área escura dessa vez.
+      </p>,
+      <div>
+        <p>
+          Mais uma sala com a câmera defeituosa. Mas olha só,
+          desta vez conseguimos ver uma engrenagem solta, porém
+          não sabemos onde está a máquina. Pode ser que ela
+          esteja em qualquer área que não conseguimos ver.
+        </p>
+        <p>
+          Para descobrir onde está a máquina, o nosso robô também
+          conta com um sensor de máquinas, que indica se existe
+          uma máquina na frente dele. Você pode utilizar esse
+          sensor através do condicional <b>{"maq?{P}"}</b>.
+          Ele funciona como o sensor de engrenagens. Esse código
+          irá executar o comando P somente se o robô estiver em
+          frente a uma máquina.
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        3, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(2, 0)], // components_positions
+        [new Grid.Position(0, 2)], // machines_positions
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2)
+        ], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      null
+    )
+  );
+
+  // Step 18
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Você vai precisar encontrar a máquina na área escura de novo.
+      </p>,
+      <div>
+        <p>
+          De novo a máquina está escondida em uma área escura.
+          Talvez seja melhor usar um loop para achar onde ela está.
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        6, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.DOWN, // robot_direction
+        false, // initially_holding
+        [new Grid.Position(2, 0)], // components_positions
+        [new Grid.Position(2, 2)], // machines_positions
+        [
+          new Grid.Position(2, 1), new Grid.Position(2, 2),
+          new Grid.Position(2, 3), new Grid.Position(2, 4),
+          new Grid.Position(2, 5)
+        ], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      18
+    )
+  );
+
+  // Step 19
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Os espaços entre as engrenagens e as máquinas são diferentes.
+        Condicionais vão ajudar a resolver esse problema.
+      </p>,
+      <div>
+        <p>
+          Agora sabemos utilizar condicionais para saber se
+          existem engrenagens ou máquinas na frente do robô. E
+          também não precisamos utilizar um só, podemos utilizar
+          os dois condicionais no mesmo código. Pensando nisso,
+          como fazer para consertar todas as máquinas dessa sala?
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        2, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 4),
+          new Grid.Position(0, 8)
+        ], // components_positions
+        [
+          new Grid.Position(0, 2), new Grid.Position(0, 6),
+          new Grid.Position(0, 9)
+        ], // machines_positions
+        [], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      22
+    )
+  );
+
+  // Step 20
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        De novo, esse problema é parecido com o anterior.
+      </p>,
+      <div>
+        <p>
+          Lembre-se que condicionais ajudam a deixar o código
+          genérico, e que isso significa que o mesmo código
+          serve para várias situações diferentes. Então qual
+          programa vai fazer o robô resolver o problema nessa sala?
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        2, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 2), new Grid.Position(0, 7)
+        ], // components_positions
+        [
+          new Grid.Position(0, 6), new Grid.Position(0, 8)
+        ], // machines_positions
+        [], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      22
+    )
+  );
+
+  // Step 21
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Conserte todas essas máquinas.
+      </p>,
+      <div>
+        <p>
+          A partir de agora temos só mais algumas salas com
+          máquinas para consertar. Utilize todo o seu conhecimento
+          e logo logo toda a nossa base estará funcionando!
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 2),
+          new Grid.Position(0, 4), new Grid.Position(0, 6)
+        ], // components_positions
+        [
+          new Grid.Position(2, 1), new Grid.Position(2, 3),
+          new Grid.Position(2, 5), new Grid.Position(2, 9)
+        ], // machines_positions
+        [], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      22
+    )
+  );
+
+  // Step 22
+  this.addStep(
+    new Lesson.LessonStep(
+      <p>
+        Estamos quase lá, conserte as máquinas dessa sala também.
+      </p>,
+      <div>
+        <p>
+          Um novo desafio, mas tenho certeza que você consegue resolvê-lo!
+        </p>
+      </div>,
+      commandsReference,
+      new Lesson03ExerciseStepPlayer(
+        3, // rows
+        10, // cols
+        new Grid.Position(1, 0), // robot_position
+        Grid.Directions.RIGHT, // robot_direction
+        false, // initially_holding
+        [
+          new Grid.Position(0, 1), new Grid.Position(0, 5),
+          new Grid.Position(2, 3), new Grid.Position(2, 7)
+        ], // components_positions
+        [
+          new Grid.Position(0, 4), new Grid.Position(0, 8),
+          new Grid.Position(2, 2), new Grid.Position(2, 6)
+        ], // machines_positions
+        [], // hidden_positions
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
+      ),
+      "",  // initialCode
+      Constants.Lesson03.SUCCESS_MESSAGE,
+      40
+    )
+  );
+
+  // Step 23
   this.addStep(
     new Lesson.LessonStep(
       <p>
@@ -1219,210 +1551,16 @@ function Lesson03() {
           new Grid.Position(5, 8), new Grid.Position(5, 9)
         ], // machines_positions
         [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      null
+      40
     )
   );
 
-  commandsReference = [commandsReference,
-                       Constants.References.MACHINE_SENSOR];
-
-  // Step 15
-  this.addStep(
-    new Lesson.LessonStep(
-      <p>
-        Você vai precisar encontrar a máquina na área escura dessa vez.
-      </p>,
-      <div>
-        <p>
-          Mais uma sala com a câmera defeituosa. Mas olha só,
-          desta vez conseguimos ver uma engrenagem solta, porém
-          não sabemos onde está a máquina. Pode ser que ela
-          esteja em qualquer área que não conseguimos ver.
-        </p>
-        <p>
-          Para descobrir onde está a máquina, o nosso robô também
-          conta com um sensor de máquinas, que indica se existe
-          uma máquina na frente dele. Você pode utilizar esse
-          sensor através do condicional <b>{"maq?{P}"}</b>.
-          Ele funciona como o sensor de engrenagens. Esse código
-          irá executar o comando P somente se o robô estiver em
-          frente a uma máquina.
-        </p>
-      </div>,
-      commandsReference,
-      new Lesson03ExerciseStepPlayer(
-        3, // rows
-        5, // cols
-        new Grid.Position(1, 0), // robot_position
-        Grid.Directions.DOWN, // robot_direction
-        false, // initially_holding
-        [new Grid.Position(2, 0)], // components_positions
-        [new Grid.Position(0, 2)], // machines_positions
-        [
-          new Grid.Position(0, 1), new Grid.Position(0, 2),
-          new Grid.Position(0, 3), new Grid.Position(0, 4)
-        ], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
-      ),
-      "",  // initialCode
-      Constants.Lesson03.SUCCESS_MESSAGE,
-      null
-    )
-  );
-
-  // Step 16
-  this.addStep(
-    new Lesson.LessonStep(
-      <p>
-        Os espaços entre as engrenagens e as máquinas são diferentes.
-        Condicionais vão ajudar a resolver esse problema.
-      </p>,
-      <div>
-        <p>
-          Agora sabemos utilizar condicionais para saber se
-          existem engrenagens ou máquinas na frente do robô. E
-          também não precisamos utilizar um só, podemos utilizar
-          os dois condicionais no mesmo código. Pensando nisso,
-          como fazer para consertar todas as máquinas dessa sala?
-        </p>
-      </div>,
-      commandsReference,
-      new Lesson03ExerciseStepPlayer(
-        2, // rows
-        10, // cols
-        new Grid.Position(1, 0), // robot_position
-        Grid.Directions.RIGHT, // robot_direction
-        false, // initially_holding
-        [
-          new Grid.Position(0, 1), new Grid.Position(0, 4),
-          new Grid.Position(0, 8)
-        ], // components_positions
-        [
-          new Grid.Position(0, 2), new Grid.Position(0, 6),
-          new Grid.Position(0, 9)
-        ], // machines_positions
-        [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
-      ),
-      "",  // initialCode
-      Constants.Lesson03.SUCCESS_MESSAGE,
-      null
-    )
-  );
-
-  // Step 17
-  this.addStep(
-    new Lesson.LessonStep(
-      <p>
-        De novo, esse problema é parecido com o anterior.
-      </p>,
-      <div>
-        <p>
-          Lembre-se que condicionais ajudam a deixar o código
-          genérico, e que isso significa que o mesmo código
-          serve para várias situações diferentes. Então qual
-          programa vai fazer o robô resolver o problema nessa sala?
-        </p>
-      </div>,
-      commandsReference,
-      new Lesson03ExerciseStepPlayer(
-        2, // rows
-        10, // cols
-        new Grid.Position(1, 0), // robot_position
-        Grid.Directions.RIGHT, // robot_direction
-        false, // initially_holding
-        [
-          new Grid.Position(0, 2), new Grid.Position(0, 7)
-        ], // components_positions
-        [
-          new Grid.Position(0, 6), new Grid.Position(0, 8)
-        ], // machines_positions
-        [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
-      ),
-      "",  // initialCode
-      Constants.Lesson03.SUCCESS_MESSAGE,
-      null
-    )
-  );
-
-  // Step 18
-  this.addStep(
-    new Lesson.LessonStep(
-      <p>
-        Conserte todas essas máquinas.
-      </p>,
-      <div>
-        <p>
-          A partir de agora temos só mais algumas salas com
-          máquinas para consertar. Utilize todo o seu conhecimento
-          e logo logo toda a nossa base estará funcionando!
-        </p>
-      </div>,
-      commandsReference,
-      new Lesson03ExerciseStepPlayer(
-        3, // rows
-        10, // cols
-        new Grid.Position(1, 0), // robot_position
-        Grid.Directions.RIGHT, // robot_direction
-        false, // initially_holding
-        [
-          new Grid.Position(0, 1), new Grid.Position(0, 2),
-          new Grid.Position(0, 4), new Grid.Position(0, 6)
-        ], // components_positions
-        [
-          new Grid.Position(2, 1), new Grid.Position(2, 3),
-          new Grid.Position(2, 5), new Grid.Position(2, 9)
-        ], // machines_positions
-        [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
-      ),
-      "",  // initialCode
-      Constants.Lesson03.SUCCESS_MESSAGE,
-      null
-    )
-  );
-
-  // Step 19
-  this.addStep(
-    new Lesson.LessonStep(
-      <p>
-        Estamos quase lá, conserte as máquinas dessa sala também.
-      </p>,
-      <div>
-        <p>
-          Um novo desafio, mas tenho certeza que você consegue resolvê-lo!
-        </p>
-      </div>,
-      commandsReference,
-      new Lesson03ExerciseStepPlayer(
-        3, // rows
-        10, // cols
-        new Grid.Position(1, 0), // robot_position
-        Grid.Directions.RIGHT, // robot_direction
-        false, // initially_holding
-        [
-          new Grid.Position(0, 1), new Grid.Position(0, 5),
-          new Grid.Position(2, 3), new Grid.Position(2, 7)
-        ], // components_positions
-        [
-          new Grid.Position(0, 4), new Grid.Position(0, 8),
-          new Grid.Position(2, 2), new Grid.Position(2, 6)
-        ], // machines_positions
-        [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
-      ),
-      "",  // initialCode
-      Constants.Lesson03.SUCCESS_MESSAGE,
-      null
-    )
-  );
-
-  // Step 20
+  // Step 24
   this.addStep(
     new Lesson.LessonStep(
       <p>
@@ -1456,11 +1594,12 @@ function Lesson03() {
           new Grid.Position(6, 8), new Grid.Position(6, 9)
         ], // machines_positions
         [], // hidden_positions
-        Goals.FIX_ALL_MACHINES // goal
+        Goals.FIX_ALL_MACHINES, // goal
+        true // require_conditionals
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      null
+      50
     )
   );
 
