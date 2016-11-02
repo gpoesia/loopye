@@ -9,6 +9,7 @@ var TokenTypes = {
   BEGIN_BLOCK: {name: "begin_block"},
   END_BLOCK: {name: "end_block"},
   CONDITION_SIGN: {name: "condition_sign"},
+  ELSE_SIGN: {name: "else_sign"},
   INTEGER: {name: "int"},
   CONDITIONAL_LOOP_KEYWORD: {name: "conditional_loop_keyword"},
   BEGIN_EXPRESSION: {name: "begin_expression"},
@@ -106,6 +107,13 @@ var tokenize = function(code) {
     // Condition sign: '?'
     if (/\?/.test(code[i])) {
       tokens.push(new Token(TokenTypes.CONDITION_SIGN, code[i]));
+      ++i;
+      continue;
+    }
+
+    // Else sign: ':'
+    if (/:/.test(code[i])) {
+      tokens.push(new Token(TokenTypes.ELSE_SIGN, code[i]));
       ++i;
       continue;
     }

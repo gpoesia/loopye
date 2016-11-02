@@ -81,6 +81,44 @@ function testConditionalLoopInitiallyTrueCondition(){
   assert.equal(actions.join(""), "ABCDECDECDEFG");
 }
 
+// Test that the 'else' part of the conditional statement is executed when the
+// condition is false
+function testElseFalseCondition() {
+  var interpreter = new Robolang.Interpreter();
+  var parseErrors = interpreter.parse("A B sensor ? { C D } : { E F } G H");
+  assert.equal(parseErrors, null);
+
+  interpreter.getGlobalScope().set("sensor", false);
+  var actions = interpreter.run();
+
+  assert.equal(actions.join(" "), "A B E F G H");
+}
+
+// Test that the 'else' part of the conditional statement is not executed when
+// the condition is true
+function testElseTrueCondition() {
+  var interpreter = new Robolang.Interpreter();
+  var parseErrors = interpreter.parse("A B sensor ? { C D } : { E F } G H");
+  assert.equal(parseErrors, null);
+
+  interpreter.getGlobalScope().set("sensor", true);
+  var actions = interpreter.run();
+
+  assert.equal(actions.join(" "), "A B C D G H");
+}
+
+// Test that the conditional at end of the code is properly parsed and executed
+function testConditionalStatementAtTheEnd() {
+  var interpreter = new Robolang.Interpreter();
+  var parseErrors = interpreter.parse("A B sensor ? { C D }");
+  assert.equal(parseErrors, null);
+
+  interpreter.getGlobalScope().set("sensor", true);
+  var actions = interpreter.run();
+
+  assert.equal(actions.join(" "), "A B C D");
+}
+
 // Test that the code inside a conditional loop is not executed when the
 // condition is false.
 function testConditionalLoopInitiallyFalseCondition(){
@@ -99,6 +137,9 @@ module.exports = {
     testBasicSyntax,
     testConditionalStatementTrueCondition,
     testConditionalStatementFalseCondition,
+    testConditionalStatementAtTheEnd,
+    testElseFalseCondition,
+    testElseTrueCondition,
     testConditionalLoopInitiallyTrueCondition,
     testConditionalLoopInitiallyFalseCondition,
   ],
