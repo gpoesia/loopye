@@ -93,8 +93,12 @@ Object.assign(Robolang.prototype, {
           nodes.pop();
 
           if (value) {
-            // A conditional has only one child: a block with the 'then' body.
+            // A conditional has at least one child: a block with the 'then' body.
             nodes.push(currentNode.children[0]);
+            this.state.nextChildIndex.push(0);
+          } else if (currentNode.children.length > 1) {
+            // A conditional may have a second child: a block with the 'else' body.
+            nodes.push(currentNode.children[1]);
             this.state.nextChildIndex.push(0);
           }
         }

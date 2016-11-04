@@ -184,6 +184,13 @@ Object.assign(ASTConditionalNodeParser.prototype, {
         parserState.consumeToken(Lexer.TokenTypes.IDENTIFIER).value;
     parserState.consumeToken(Lexer.TokenTypes.CONDITION_SIGN);
     node.children.push(new ASTBlockNodeParser().parse(parserState));
+
+    if (parserState.lookahead() && 
+        parserState.lookahead().type === Lexer.TokenTypes.ELSE_SIGN) {
+      parserState.consumeToken(Lexer.TokenTypes.ELSE_SIGN);
+      node.children.push(new ASTBlockNodeParser().parse(parserState));
+    }
+
     return node;
   },
 });
