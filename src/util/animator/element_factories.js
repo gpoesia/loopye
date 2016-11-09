@@ -12,6 +12,20 @@ var MACHINE_COMPONENT_URL = "/static/images/elements/gear.png";
 var MACHINE_URL = "/static/images/elements/bad-machine.png";
 var WORKING_MACHINE_URL = "/static/images/elements/good-machine.png";
 var ASTEROIDS_BACKGROUND_URL = "/static/images/elements/asteroids-background.png";
+var ROBOTIC_ARM_IMAGE_URL = "/static/images/elements/robotic-arm.png";
+var ROBOTIC_ARM_HOLDING_IRON_IMAGE_URL = "/static/images/elements/robotic-arm-iron.png";
+var ROBOTIC_ARM_HOLDING_GLASS_IMAGE_URL = "/static/images/elements/robotic-arm-glass.png";
+var ROBOTIC_ARM_HOLDING_FUEL_IMAGE_URL = "/static/images/elements/robotic-arm-fuel.png";
+var SPACESHIP_FACTORY_BACKGROUND_URL = "/static/images/elements/spaceship-factory-background.png";
+
+var IRON_DEPOSIT_URL = "/static/images/elements/iron-deposit.png";
+var GLASS_DEPOSIT_URL = "/static/images/elements/glass-deposit.png";
+var FUEL_DEPOSIT_URL = "/static/images/elements/fuel-deposit.png";
+var SHIP_HEAD_DEPOSIT_URL = "/static/images/elements/ship-head-deposit.png";
+var SHIP_TAIL_DEPOSIT_URL = "/static/images/elements/ship-tail-deposit.png";
+var SHIP_BODY_DEPOSIT_URL = "/static/images/elements/ship-body-deposit.png";
+
+var SOURCE_IMAGE_URL = "/static/images/elements/source.png"
 
 // Calculates the largest size an image can have so that 1) proportions are kept
 // and 2) maximum size constraints are not violated.
@@ -54,7 +68,112 @@ function createAsteroidsBackground(id, max_width, max_height,
       id, image, dimensions[0], dimensions[1],
       cut_x, cut_y,
       cut_width, cut_height
+    );
+}
+
+function createSource(id, max_width, max_height) {
+  var image = ResourceLoader.get(SOURCE_IMAGE_URL);
+
+  var IMAGE_WIDTH = 48;
+  var IMAGE_HEIGHT = 3 * 48;
+  var dimensions = calculateDimensions(max_width, max_height, IMAGE_WIDTH, IMAGE_HEIGHT);
+
+  return new animator.AnimatedImageElement(
+      id,
+      {"default": image},
+      [
+        new animator.SpriteAnimation("source_of_nothing", [0]),
+        new animator.SpriteAnimation("source_of_iron", [1]),
+        new animator.SpriteAnimation("source_of_glass", [2]),
+        new animator.SpriteAnimation("source_of_fuel", [3]),
+        new animator.SpriteAnimation("source_of_ship_head", [4]),
+        new animator.SpriteAnimation("source_of_ship_body", [5]),
+        new animator.SpriteAnimation("source_of_ship_tail", [6])
+      ],
+      7,
+      1,
+      dimensions[0],
+      dimensions[1]
       );
+
+}
+
+var ROBOTIC_ARM_HOLDING_IRON_STYLE = "robotic_arm_holding_iron";
+var ROBOTIC_ARM_HOLDING_GLASS_STYLE = "robotic_arm_holding_glass";
+var ROBOTIC_ARM_HOLDING_FUEL_STYLE = "robotic_arm_holding_fuel";
+
+//Creates an AnimatedImageElement that renders to a robotic arm
+function createRoboticArm(id, max_width, max_height) {
+  var robotic_arm_image = ResourceLoader.get(ROBOTIC_ARM_IMAGE_URL);
+
+  var robotic_arm_holding_iron_image = ResourceLoader.get(
+      ROBOTIC_ARM_HOLDING_IRON_IMAGE_URL);
+
+  var robotic_arm_holding_glass_image = ResourceLoader.get(
+      ROBOTIC_ARM_HOLDING_GLASS_IMAGE_URL);
+
+  var robotic_arm_holding_fuel_image = ResourceLoader.get(
+      ROBOTIC_ARM_HOLDING_FUEL_IMAGE_URL);
+
+  var styles = {"default": robotic_arm_image};
+  styles[ROBOTIC_ARM_HOLDING_IRON_STYLE] = robotic_arm_holding_iron_image;
+  styles[ROBOTIC_ARM_HOLDING_GLASS_STYLE] = robotic_arm_holding_glass_image;
+  styles[ROBOTIC_ARM_HOLDING_FUEL_STYLE] = robotic_arm_holding_fuel_image;
+
+  var IMAGE_WIDTH = 48;
+  var IMAGE_HEIGHT = 3 * 48;
+  var dimensions = calculateDimensions(max_width, max_height, IMAGE_WIDTH, IMAGE_HEIGHT);
+
+  var move_right_frames = [0, 1, 2, 3];
+  var move_left_frames = [3, 2, 1, 0];
+  var move_up_frames = [4, 5, 6, 7];
+  var move_down_frames = [7, 6, 5, 4, 0];
+
+  var move_right_animation = new animator.SpriteAnimation(
+      "move_right", move_right_frames);
+
+  var move_left_animation = new animator.SpriteAnimation(
+      "move_left", move_left_frames);
+
+  var move_up_animation = new animator.SpriteAnimation(
+      "move_up", move_up_frames);
+
+  var move_down_animation = new animator.SpriteAnimation(
+      "move_down", move_down_frames);
+
+  return new animator.AnimatedImageElement(
+      id,
+      styles,
+      [
+        move_up_animation,
+        move_down_animation,
+        move_right_animation,
+        move_left_animation
+      ],
+      4,
+      2,
+      dimensions[0],
+      dimensions[1]
+      );
+}
+
+// Creates an AnimatedImageElement that renders to the static background of the
+// spaceship factory.
+function createSpaceshipFactoryBackground(id, max_width, max_height) {
+  var image = ResourceLoader.get(SPACESHIP_FACTORY_BACKGROUND_URL);
+  var IMAGE_WIDTH = 48 * 10;
+  var IMAGE_HEIGHT = 48 * 10;
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+  return new animator.AnimatedImageElement(
+      id,
+      image,
+      [],
+      1,
+      1,
+      dimensions[0],
+      dimensions[1]
+    );
 }
 
 var ROBOT_HOLDING_STYLE = "robot_holding";
@@ -213,6 +332,49 @@ function createMachine(id, max_width, max_height) {
       id, styles, [], 1, 1, dimensions[0], dimensions[1]);
 }
 
+function createDeposit (id, max_width, max_height) {
+  return new animator.RectangleElement(id, max_width, max_height, "green", "black", 2);
+};
+
+function createMachine2 (id, max_width, max_height) {
+  return new animator.RectangleElement(id, max_width, max_height, "blue", "black", 2);
+};
+
+function createArm (id, max_width, max_height) {
+  return new animator.RectangleElement(id, max_width, max_height, "orange", "black", 2);
+};
+
+function future_createDeposit(id, capacity, item_type, max_width, max_height) {
+  var IMAGE_WIDTH = 48;
+  var IMAGE_HEIGHT = 5 * 48;
+  var actual_dimensions = calculateDimensions(
+    max_width, max_height, IMAGE_WIDTH, IMAGE_HEIGHT);
+  var width = actual_dimensions[0];
+  var height = actual_dimensions[1];
+
+  var styles = {default: ResourceLoader.get(IRON_DEPOSIT_URL)};
+  styles['IRON'] = styles.default;
+  styles['GLASS'] = ResourceLoader.get(GLASS_DEPOSIT_URL);
+  styles['FUEL'] = ResourceLoader.get(FUEL_DEPOSIT_URL);
+  styles['SHIP_HEAD'] = styles.default; //SHIP_HEAD_DEPOSIT_URL;
+  styles['SHIP_BODY'] = styles.default; //SHIP_BODY_DEPOSIT_URL;
+  styles['SHIP_TAIL'] = styles.default; //SHIP_TAIL_DEPOSIT_URL;
+
+  var animations = new Array();
+  for (var i = 0; i <= 4; ++i) {
+    animations.push(new animator.SpriteAnimation('fill_' + i, [(capacity-1)*5 + i]));
+  }
+  return new animator.AnimatedImageElement(
+    id,
+    styles,
+    animations,
+    5,
+    4,
+    width,
+    height
+  );
+};
+
 module.exports = {
   createRobot: createRobot,
   createBattery: createBattery,
@@ -227,8 +389,27 @@ module.exports = {
   MACHINE_URL: MACHINE_URL,
   WORKING_MACHINE_URL: WORKING_MACHINE_URL,
   WORKING_MACHINE_STYLE: WORKING_MACHINE_STYLE,
+  IRON_DEPOSIT_URL: IRON_DEPOSIT_URL,
+  GLASS_DEPOSIT_URL: GLASS_DEPOSIT_URL,
+  FUEL_DEPOSIT_URL: FUEL_DEPOSIT_URL,
   createMachineComponent: createMachineComponent,
   createMachine: createMachine,
-  createAsteroidsBackground,
+  createAsteroidsBackground: createAsteroidsBackground,
   ASTEROIDS_BACKGROUND_URL: ASTEROIDS_BACKGROUND_URL,
+  createSource: createSource,
+  createDeposit: createDeposit,
+  future_createDeposit: future_createDeposit,
+  createMachine2: createMachine2,
+  createArm: createArm,
+  createRoboticArm: createRoboticArm,
+  createSpaceshipFactoryBackground: createSpaceshipFactoryBackground,
+  ROBOTIC_ARM_IMAGE_URL: ROBOTIC_ARM_IMAGE_URL,
+  ROBOTIC_ARM_HOLDING_IRON_IMAGE_URL: ROBOTIC_ARM_HOLDING_IRON_IMAGE_URL,
+  ROBOTIC_ARM_HOLDING_GLASS_IMAGE_URL: ROBOTIC_ARM_HOLDING_GLASS_IMAGE_URL,
+  ROBOTIC_ARM_HOLDING_FUEL_IMAGE_URL: ROBOTIC_ARM_HOLDING_FUEL_IMAGE_URL,
+  ROBOTIC_ARM_HOLDING_IRON_STYLE: ROBOTIC_ARM_HOLDING_IRON_STYLE,
+  ROBOTIC_ARM_HOLDING_GLASS_STYLE: ROBOTIC_ARM_HOLDING_GLASS_STYLE,
+  ROBOTIC_ARM_HOLDING_FUEL_STYLE: ROBOTIC_ARM_HOLDING_FUEL_STYLE,
+  SPACESHIP_FACTORY_BACKGROUND_URL: SPACESHIP_FACTORY_BACKGROUND_URL,
+  SOURCE_IMAGE_URL: SOURCE_IMAGE_URL,
 };

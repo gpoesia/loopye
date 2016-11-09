@@ -38,6 +38,26 @@ module.exports = {
     DID_NOT_USE_CONDITIONALS: "O seu código deve usar condicionais neste nível (por exemplo, eng?{G} é um código com um condicional). Leia as instruções e veja a referência de comandos para entender como fazer.",
   },
 
+  Lesson04: {
+    IRON_CODE: "IRON",
+    GLASS_CODE: "GLASS",
+    FUEL_CODE: "FUEL",
+    SHIP_HEAD_CODE: "SHIP_HEAD",
+    SHIP_BODY_CODE: "SHIP_BODY",
+    SHIP_TAIL_CODE: "SHIP_TAIL",
+    SUCCESS_MESSAGE: "É isso aí! Nossa nave está quase pronta!",
+    MOVED_OUT_OF_LIMITS: "Oh não, o braço mecânico saiu da área de controle e se quebrou! Tente novamente.",
+    COLLECTED_FROM_EMPTY_SOURCE: "O braço mecânico tentou coletar de uma fonte vazia. Tente novamente.",
+    COLLECTED_FROM_NO_SOURCE: "O braço mecânico tentou coletar neste local, mas não existe uma fonte aqui. Tente novamente.",
+    COLLECTED_WHILE_HOLDING_ITEM: "O braço mecânico tentou coletar material nesse local, mas ele só pode transportar um material por vez.",
+    DEPOSITED_ON_INVALID_LOCATION: "O braço mecânico tentou depositar material em uma posição que não contém nenhum depósito.",
+    NOTHING_TO_DEPOSIT: "O braço mecânico está vazio, não é possível depositar. Tente novamente.",
+    ITEM_TYPE_NOT_ACCEPTED: "O depósito em que o braço mecânico tentou depositar não aceita materiais desse tipo. Encontre o depósito correto para este material.",
+    CAPACITY_EXCEEDED: "O depósito está cheio! Certifique-se de não estourar a capacidade de nenhum depósito!",
+    INVALID_DEPOSIT_POSITION: "O braço mecânico tentou depositar material em uma posição que não contém nenhum depósito.",
+    MISSION_UNFINISHED: "Parece que ainda restaram tarefas a serem feitas. Tente novamente.",
+  },
+
   References: {
     WAIT: <p> <b>W</b>: esperar </p>,
     MOVE_LEFT: <p> <b>L</b>: mover o robô para a esquerda </p>,
@@ -49,5 +69,10 @@ module.exports = {
     GET_COMPONENT: <p> <b>G</b>: pegar engrenagem </p>,
     COMPONENT_SENSOR: <p> <div> <b>eng?&#123; &#125;</b>: fazer o que está entre </div> <div> chaves apenas se houver uma </div> <div> engrenagem à frente </div> </p>,
     MACHINE_SENSOR: <p> <div> <b>maq?&#123; &#125;</b>: fazer o que está entre  </div> <div> chaves apenas se houver uma </div> <div> máquina à frente </div> </p>,
+    MOVE_ARM_LEFT: <p><b>L</b>: mover o braço robótico para a esquerda.</p>,
+    MOVE_ARM_RIGHT: <p><b>R</b>: mover o braço robótico para a direita.</p>,
+    GET_MATERIAL: <p><b>G</b>: pegar o material que estiver à frente do braço robótico.</p>,
+    PUT_MATERIAL: <p><b>P</b>: colocar o material que o braço robótico estiver segurando.</p>,
+    IRON_SENSOR: <p><b>ferro? { }</b>: executa o que está entre chaves somente se o braço estiver segurando ferro.</p>
   },
 };
