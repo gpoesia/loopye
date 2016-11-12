@@ -143,15 +143,26 @@ Lesson01ExerciseStepPlayer.prototype = {
     // Offsets that centralize the canvas.
     var offset_x = (Constants.RUN_VIEW_SQUARE_DIMENSION / 2 -
                     grid_cell_size * this.game.n_cols / 2);
-    var offset_y = (Constants.RUN_VIEW_SQUARE_DIMENSION / 2 -
-                    grid_cell_size * this.game.n_rows / 2);
+    var offset_y = (Constants.RUN_VIEW_SQUARE_DIMENSION -
+                    grid_cell_size * this.game.n_rows);
     this._animator.setOrigin(offset_x, offset_y);
 
+    var background = ElementFactories.createAsteroidsBackground(
+        "background",
+        Constants.RUN_VIEW_SQUARE_DIMENSION,
+        Constants.RUN_VIEW_SQUARE_DIMENSION,
+        this.game.n_rows,
+        this.game.n_cols
+        );
+    background.x = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_x;
+    background.y = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_y;
+    this._animator.addElement(background);
 
     this.game.character_position = this.game.initial_character_position
     var grid = new Animator.SimpleGridElement(
         'grid', grid_cell_size, this.game.n_rows,
-         grid_cell_size, this.game.n_cols);
+         grid_cell_size, this.game.n_cols,
+         'white');
     this._animator.addElement(grid);
 
     var character = new ElementFactories.createRobot(
@@ -287,6 +298,18 @@ Lesson01ExerciseStepPlayerMulti.prototype = Object.create(
 Object.assign(Lesson01ExerciseStepPlayerMulti.prototype, {
   _initializeElements: function() {
     var nPlayers = this.lessonStepPlayers.length;
+
+    var background = ElementFactories.createAsteroidsBackground(
+      "background",
+      Constants.RUN_VIEW_SQUARE_DIMENSION,
+      Constants.RUN_VIEW_SQUARE_DIMENSION,
+      15,
+      15
+    );
+    background.x = Constants.RUN_VIEW_SQUARE_DIMENSION / 2;
+    background.y = Constants.RUN_VIEW_SQUARE_DIMENSION / 2;
+    this._animator.addElement(background);
+
     for (var sp = 0; sp < this.lessonStepPlayers.length; ++sp) {
       stepPlayer = this.lessonStepPlayers[sp];
       var grid_cell_size = stepPlayer.game.gridCellSize() / nPlayers;
@@ -295,16 +318,19 @@ Object.assign(Lesson01ExerciseStepPlayerMulti.prototype, {
       var offset_x = (Constants.RUN_VIEW_SQUARE_DIMENSION / (2 * nPlayers) +
                       Constants.RUN_VIEW_SQUARE_DIMENSION / nPlayers * sp -
                       grid_cell_size * stepPlayer.game.n_cols / 2);
-      var offset_y = (Constants.RUN_VIEW_SQUARE_DIMENSION / 2 -
-                      grid_cell_size * stepPlayer.game.n_rows / 2);
+      var offset_y = (Constants.RUN_VIEW_SQUARE_DIMENSION -
+                      grid_cell_size * stepPlayer.game.n_rows);
+
+
 
       stepPlayer.game.character_position =
           stepPlayer.game.initial_character_position;
       var grid = new Animator.SimpleGridElement(
           'grid' + sp, grid_cell_size, stepPlayer.game.n_rows,
-          grid_cell_size, stepPlayer.game.n_cols);
+          grid_cell_size, stepPlayer.game.n_cols, 'white');
       grid.x = offset_x;
       grid.y = offset_y;
+      grid.stroke_color = "#FFFFFF";
       this._animator.addElement(grid);
 
       var character = new ElementFactories.createRobot(
@@ -732,6 +758,7 @@ Object.assign(Lesson01.prototype, {
   populateResourceLoader: function() {
     ResourceLoader.addImage(ElementFactories.ROBOT_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.ASTEROIDS_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.ASTEROIDS_BACKGROUND_URL);
   },
 });
 

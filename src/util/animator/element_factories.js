@@ -11,6 +11,7 @@ var ASTEROIDS_IMAGE_URL = "/static/images/elements/asteroids.png";
 var MACHINE_COMPONENT_URL = "/static/images/elements/gear.png";
 var MACHINE_URL = "/static/images/elements/bad-machine.png";
 var WORKING_MACHINE_URL = "/static/images/elements/good-machine.png";
+var ASTEROIDS_BACKGROUND_URL = "/static/images/elements/asteroids-background.png";
 
 // Calculates the largest size an image can have so that 1) proportions are kept
 // and 2) maximum size constraints are not violated.
@@ -28,6 +29,32 @@ function calculateDimensions(max_width, max_height, image_width, image_height) {
     }
   }
   return [width, height];
+}
+
+// Creates an StaticImageElement that renders to the static background of the
+// asteroids falling.
+function createAsteroidsBackground(id, max_width, max_height,
+                                   grid_width, grid_height) {
+  var image = ResourceLoader.get(ASTEROIDS_BACKGROUND_URL);
+  var IMAGE_WIDTH = 48 * 15;
+  var IMAGE_HEIGHT = 48 * 15;
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+  var cut_x = 0;
+  var cut_y = 7 * 48;
+  var cut_width = 8 * 48;
+  var cut_height = 8 * 48;
+  var max_grid = (grid_width > grid_height) ? grid_width : grid_height;
+  if (max_grid > 8) {
+    cut_y = (15 - max_grid) * 48;
+    cut_width = max_grid * 48;
+    cut_height = max_grid * 48;
+  }
+  return new animator.StaticImageElement(
+      id, image, dimensions[0], dimensions[1],
+      cut_x, cut_y,
+      cut_width, cut_height
+      );
 }
 
 var ROBOT_HOLDING_STYLE = "robot_holding";
@@ -202,4 +229,6 @@ module.exports = {
   WORKING_MACHINE_STYLE: WORKING_MACHINE_STYLE,
   createMachineComponent: createMachineComponent,
   createMachine: createMachine,
+  createAsteroidsBackground,
+  ASTEROIDS_BACKGROUND_URL: ASTEROIDS_BACKGROUND_URL,
 };

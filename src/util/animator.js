@@ -141,7 +141,7 @@ Object.assign(SimpleGridElement.prototype, {
                      origin_y + this.y + this.cell_width * y);
     }
     context.lineWidth = this.line_width;
-    context.strokeStyle = context.stroke_color;
+    context.strokeStyle = this.stroke_color;
     context.closePath();
     context.stroke();
   },
@@ -254,6 +254,35 @@ AnimatedImageElement.prototype = {
                       origin_x + this.x - (rendered_tile_width / 2),
                       origin_y + this.y - (rendered_tile_height / 2),
                       rendered_tile_width, rendered_tile_height);
+  },
+};
+
+// An element that can render only a certain portion of an image defined by
+// cut_x and cut_y as the coordinates of the beginning of the cut in the image
+// and cut_width and cut_height the size of the cut.
+var StaticImageElement = function(id, image,
+                                  rendered_width, rendered_height,
+                                  cut_x, cut_y,
+                                  cut_width, cut_height) {
+  Element.apply(this, [id]);
+  this.image = image;
+  this.cut_x = cut_x || 0;
+  this.cut_y = cut_y || 0;
+  this.cut_width = cut_width || image.width - this.cut_x;
+  this.cut_height = cut_height || image.height - this.cut_y;
+  this.rendered_width = rendered_width || this.cut_width;
+  this.rendered_height = rendered_height || this.cut_height;
+};
+
+StaticImageElement.prototype = {
+  render: function(canvas, origin_x, origin_y) {
+    var context = canvas.getContext('2d');
+    context.drawImage(this.image,
+                      this.cut_x, this.cut_y,
+                      this.cut_width, this.cut_height,
+                      origin_x + this.x - (this.rendered_width / 2),
+                      origin_y + this.y - (this.rendered_height / 2),
+                      this.rendered_width, this.rendered_height);
   },
 };
 
@@ -442,5 +471,6 @@ module.exports = {
   Animation: Animation,
   Animator: Animator,
   AnimatedImageElement: AnimatedImageElement,
+  StaticImageElement: StaticImageElement,
   SpriteAnimation: SpriteAnimation,
 };
