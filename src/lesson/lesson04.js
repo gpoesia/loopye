@@ -6,6 +6,7 @@ var React = require("react");
 var Lesson = require("./lesson");
 var Interpreter = require("../language/interpreter")
 var Animator = require("../util/animator");
+var Random = require("../util/random");
 var ResourceLoader = require("../util/resource_loader");
 var AnimationFactories = require("../util/animator/animation_factories");
 var ElementFactories = require("../util/animator/element_factories");
@@ -76,20 +77,40 @@ SourceType = {
 //  `parameter`: The set of parameters required by the chosen type. This will
 //    vary accordingly with the `type`, and therefore more usage details can
 //    be found for each type of source.
-var SourceFactory = function(position, limit, type, parameters) {
+var SourceFactory = function(position, type, parameters) {
   switch (type) {
     case SourceType.RANDOM_FROM_SET:
-      var items = new Array(limit);
-      for (var i = 0; i < limit; ++i) {
+      var items = new Array(parameters.limit);
+      for (var i = 0; i < parameters.limit; ++i) {
         items[i] = parameters.item_set[Math.floor(Math.random() *
                                        parameters.item_set.length)]
       }
       return new Source(position, items);
     case SourceType.FROM_LIST:
-      var items = new Array(limit);
-      for (var i = 0; i < limit; ++i) {
+      var items = new Array(parameters.limit);
+      for (var i = 0; i < parameters.limit; ++i) {
         items[i] = parameters.item_list[i % parameters.item_list.length];
       }
+      return new Source(position, items);
+    case SourceType.RANDOM:
+      var number_of_chunks = Random.randomInt(parameters.min_chunks,
+                                              parameters.max_chunks);
+      var chunk = new Array();
+      for (item in parameters.item_list) {
+        var min_multiplicity = parameters[item]["min"];
+        var max_multiplicity = parameters[item]["max"];
+        var multiplicity = randomInt(min_multiplicity, max_multiplicity);
+        for (var i = 0; i < multiplicity; ++i) {
+          chunk.push(item);
+        }
+      }
+      
+      var items = new Array();
+      for (var i = 0; i < number_of_chunks, ++i) {
+        randomShuffle(chunk);
+        items = items.concat(chunk);
+      }
+      
       return new Source(position, items);
     default:
       throw new Error("Invalid source type for this SourceFactory.");
@@ -834,7 +855,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         2,
-        [SourceFactory(4, 1, SourceType.RANDOM_FROM_SET, {item_set: ["GLASS"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET, {limit: 1, item_set: ["GLASS"]})],
         [],
         [new Deposit(0, {GLASS: 1})]
       ),
@@ -863,7 +884,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         2,
-        [SourceFactory(4, 3, SourceType.RANDOM_FROM_SET, {item_set: ["IRON"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET, {limit: 3, item_set: ["IRON"]})],
         [],
         [new Deposit(0, {IRON: 3})]
       ),
@@ -890,7 +911,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         2,
-        [SourceFactory(4, 2, SourceType.RANDOM_FROM_SET, {item_set: ["FUEL"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET, {limit: 2, item_set: ["FUEL"]})],
         [],
         [new Deposit(0, {FUEL: 2})]
       ),
@@ -934,7 +955,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 4, SourceType.FROM_LIST, {item_list: ["GLASS", "IRON"]})],
+        [SourceFactory(4, SourceType.FROM_LIST, {limit: 4, item_list: ["GLASS", "IRON"]})],
         [],
         [new Deposit(0, {IRON: 2}), new Deposit(2, {GLASS: 2})]
       ),
@@ -962,8 +983,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 4, SourceType.FROM_LIST,
-                       {item_list: ["IRON", "IRON", "FUEL", "IRON"]})],
+        [SourceFactory(4, SourceType.FROM_LIST,
+                       {limit: 4, item_list: ["IRON", "IRON", "FUEL", "IRON"]})],
         [],
         [new Deposit(0, {FUEL: 1}), new Deposit(2, {IRON: 3})]
       ),
@@ -996,8 +1017,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 4, SourceType.FROM_LIST,
-                       {item_list: ["FUEL", "GLASS", "GLASS", "FUEL"]})],
+        [SourceFactory(4, SourceType.FROM_LIST,
+                       {limit: 4, item_list: ["FUEL", "GLASS", "GLASS", "FUEL"]})],
         [],
         [new Deposit(0, {GLASS: 2}), new Deposit(2, {FUEL: 2})]
       ),
@@ -1026,8 +1047,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 6, SourceType.FROM_LIST,
-                       {item_list: ["IRON", "GLASS", "FUEL",
+        [SourceFactory(4, SourceType.FROM_LIST,
+                       {limit: 6, item_list: ["IRON", "GLASS", "FUEL",
                                     "GLASS", "FUEL", "IRON"]})],
         [],
         [new Deposit(0, {IRON: 2}), new Deposit(1, {GLASS: 2}),
@@ -1058,8 +1079,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         4,
         2,
-        [SourceFactory(3, 3, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["IRON"]})],
+        [SourceFactory(3, SourceType.RANDOM_FROM_SET,
+                       {limit: 3, item_set: ["IRON"]})],
         [new Machine(
           [new Deposit(1, {IRON: 3})],
           0,
@@ -1100,10 +1121,10 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         6,
         3,
-        [SourceFactory(5, 3, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["IRON"]}),
-         SourceFactory(4, 2, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["GLASS"]})],
+        [SourceFactory(5, SourceType.RANDOM_FROM_SET,
+                       {limit: 3, item_set: ["IRON"]}),
+         SourceFactory(4, SourceType.RANDOM_FROM_SET,
+                       {limit: 2, item_set: ["GLASS"]})],
         [new Machine(
           [new Deposit(1, {IRON: 3}), new Deposit(2, {GLASS: 2})],
           0,
@@ -1136,10 +1157,10 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         6,
         3,
-        [SourceFactory(4, 4, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["FUEL"]}),
-         SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["IRON"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET,
+                       {limit: 4, item_set: ["FUEL"]}),
+         SourceFactory(5, SourceType.RANDOM_FROM_SET,
+                       {limit: 2, item_set: ["IRON"]})],
         [new Machine(
           [new Deposit(1, {FUEL: 4}), new Deposit(2, {IRON: 2})],
           0,
