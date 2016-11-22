@@ -15,32 +15,55 @@ var CommandReferenceSidebar = require('./command_reference_sidebar.js');
 
 var LessonEnvironment = React.createClass({
   styles: {
-    instructionPane: {
-      width: "95%",
-      height: "20%",
-      margin: "0",
-    },
-    actionSide: {
-      width: "70%",
+    container: {
+      width: "100%",
       height: "100%",
-      float: "left",
-      marginLeft: "20px",
+      background: "#FFFFFF",
     },
-    editor: {
+    leftPanel: {
       float: "left",
-      width: "25%",
+      width: "540px",
       height: "100%",
-      margin: "0px",
+      padding: "20px",
+    },
+    gameWindow: {
+      width: "500px",
+      height: "500px",
+    },
+    centerPanel: {
+      position: "relative",
+      marginLeft: "540px",
+      marginRight: "50px",
+      height: "100%",
+      padding: "20px 20px 90px 0",
+    },
+    centerPanelDocked: {
+      position: "relative",
+      marginLeft: "540px",
+      height: "100%",
+      padding: "20px 20px 90px 0",
+    },
+    codeEditor: {
+      height: "100%",
     },
     buttonBar: {
-      width: "95%",
-      height: "5%",
-      margin: "0",
-    },
-    runView: {
+      position: "absolute",
+      bottom: "20px",
+      height: "50px",
       width: "100%",
-      height: "75%",
-      margin: "0",
+      paddingRight: "20px",
+    },
+    commandsButton: {
+      width: "50px",
+      textAlign: "center",
+      position: "absolute",
+      top: "20px",
+      right: "0",
+      backgroundColor: "#03a9f4",
+      color: "#FFFFFF",
+      padding: "10px",
+      cursor: "pointer",
+      borderRadius: "5px 0 0 5px",
     },
   },
 
@@ -143,61 +166,63 @@ var LessonEnvironment = React.createClass({
 
   showButton: function() {
     if (!this.state.docked) {
-      return <div style={{width: "20px",
-                          float: "right",
-                          backgroundColor: '#03a9f4'}}>
-               <a href='#'
-                  onClick={this._openSidebar}
-                  style={{textDecoration: 'none', color: 'white'}}>
-                 C
-                 O
-                 M
-                 A
-                 N
-                 D
-                 O
-                 S
-               </a>
-             </div>;
+      return  <div style={this.styles.commandsButton}
+                   onClick={this._openSidebar}>
+                C<br/>
+                O<br/>
+                M<br/>
+                A<br/>
+                N<br/>
+                D<br/>
+                O<br/>
+                S
+              </div>;
     }
-    return <div> </div>;
+    return <div></div>;
   },
 
   render: function() {
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
 
-    var commandReferenceSidebar = <CommandReferenceSidebar onClose={this._closeSidebar}
-                                                             content={currentStep.getCommandReference()} />;
+    var commandReferenceSidebar = <CommandReferenceSidebar
+          onClose={this._closeSidebar}
+          content={currentStep.getCommandReference()} />;
 
-    return <Sidebar sidebar={commandReferenceSidebar}
+    return  <Sidebar sidebar={commandReferenceSidebar}
                     docked={this.state.docked}
-                    pullRight={true}>
-             <div style={{width: "100%", height: "95%"}} ref="containerDiv">
-               <div style={this.styles.editor}>
-                 <MessagePane ref="code_messages" />
-                 <CodeEditor code={this.state.sourceCode}
-                             onChange={this._updateCode}
-                             limit={currentStep.getCodeSizeLimit()} />
-               </div>
-               <div style={this.styles.actionSide}>
-                 <div style={this.styles.instructionPane}>
-                   <MessagePane ref="exercise_messages" />
-                   <InstructionPane content={currentStep.getShortInstructions()} />
-                 </div>
-                 <div style={this.styles.buttonBar}>
-                   <ButtonBar onPlay={this._playCode}
-                              onReset={this._reset}
-                              onAdvance={this._advanceStep}
-                              onHelp={this._showInstructions.bind(this, null)}
-                              advanceEnabled={currentStep.canAdvance()} />
-                 </div>
-                 <div style={this.styles.runView}>
-                   <RunView ref="run_view" />
-                 </div>
-               </div>
-               {this.showButton()}
-             </div>
-           </Sidebar>;
+                    pullRight={true}
+                    touch={false}>
+              <div style={this.styles.container} ref="containerDiv">
+                <div style={this.styles.leftPanel}>
+                  <div style={this.styles.gameWindow}>
+                    <RunView ref="run_view" />
+                  </div>
+                  <MessagePane ref="exercise_messages" />
+                  <MessagePane ref="code_messages" />
+                  <InstructionPane content={
+                    currentStep.getShortInstructions()
+                  } />
+                </div>
+                <div style={this.state.docked ?
+                              this.styles.centerPanelDocked :
+                              this.styles.centerPanel}>
+                  <div style={this.styles.codeEditor}>
+                    <CodeEditor code={this.state.sourceCode}
+                                onChange={this._updateCode}
+                                limit={currentStep.getCodeSizeLimit()} />
+                  </div>
+                  <div style={this.styles.buttonBar}>
+                    <ButtonBar onPlay={this._playCode}
+                                onReset={this._reset}
+                                onAdvance={this._advanceStep}
+                                onHelp={this._showInstructions.bind(this, null)}
+                                advanceEnabled={currentStep.canAdvance()} />
+
+                  </div>
+                </div>
+                {this.showButton()}
+              </div>
+            </Sidebar>;
   },
 
   componentDidMount: function() {
