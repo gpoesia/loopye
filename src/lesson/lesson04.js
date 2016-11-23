@@ -310,8 +310,9 @@ var Lesson04Game = function(size, arm_pos, sources, machines, deposits, goal) {
 };
 
 Lesson04Game.Goals = {
-  FILL_EVERY_DEPOSIT: 0,
-  EVERY_MACHINE_SOURCE_NOT_EMPTY: 1,
+  FILL_EVERY_DEPOSIT: 1,
+  EVERY_MACHINE_SOURCE_NOT_EMPTY: 2,
+  EVERY_SOURCE_AND_ARM_EMPTY: 3,
 };
 
 Lesson04Game.Error = function(code) {
@@ -402,6 +403,13 @@ Lesson04Game.prototype = {
           if (!this.deposits[i].isFull())
             return false;
         return true;
+      case Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY:
+        for (var i = 0; i < this.sources.length; ++i)
+          if (!this.sources[i].peek() instanceof SourceEnd)
+            return false;
+        if (this.holding_item !== null)
+          return false;
+        return true;
       default:
         throw new Error("Invalid goal for this game.");
     }
@@ -435,6 +443,9 @@ var Sensors = {
     accept_list: ["IRON", "GLASS"],
     variable_name: "solido"
   },
+  SOURCE_NOT_EMPTY: {
+    variable_name: "material",
+  }
 };
 
 // Actions supported in this lesson.
@@ -595,6 +606,9 @@ Lesson04ExerciseStepPlayer.prototype = {
     scope.set(
       Sensors.SOLID.variable_name,
       Sensors.SOLID.accept_list.indexOf(this._game.peek()) !== -1);
+    scope.set(
+      Sensors.SOURCE_NOT_EMPTY.variable_name,
+      !this._game.peek() instanceof SourceEnd);
   },
 
   // Parses an action literal into a value from Actions.
