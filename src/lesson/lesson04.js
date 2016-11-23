@@ -81,47 +81,53 @@ SourceType = {
 var SourceFactory = function(position, type, parameters) {
   switch (type) {
     case SourceType.RANDOM_FROM_SET:
-      var items = new Array(parameters.limit);
-      for (var i = 0; i < parameters.limit; ++i) {
-        items[i] = parameters.item_set[Math.floor(Math.random() *
-                                       parameters.item_set.length)]
-      }
-      return new Source(position, items);
-    case SourceType.FROM_LIST:
-      var items = new Array(parameters.limit);
-      for (var i = 0; i < parameters.limit; ++i) {
-        items[i] = parameters.item_list[i % parameters.item_list.length];
-      }
-      return new Source(position, items);
-    case SourceType.RANDOM:
-      var number_of_chunks = Random.randomInt(parameters.min_chunks,
-                                              parameters.max_chunks);
-      var chunk = new Array();
-      for (item in parameters.item_list) {
-        var min_multiplicity = parameters.item_list[item]["min"];
-        var max_multiplicity = parameters.item_list[item]["max"];
-        var multiplicity = Random.randomInt(min_multiplicity, max_multiplicity);
-        for (var i = 0; i < multiplicity; ++i) {
-          chunk.push(item);
+      return function() {
+        var items = new Array(parameters.limit);
+        for (var i = 0; i < parameters.limit; ++i) {
+          items[i] = parameters.item_set[Math.floor(Math.random() *
+                                         parameters.item_set.length)]
         }
-      }
-      console.log("Chunk{")
-      console.log(chunk);
-      console.log("Chunk}")
+        return new Source(position, items);
+      }.bind(this);
+    case SourceType.FROM_LIST:
+      return function() {
+        var items = new Array(parameters.limit);
+        for (var i = 0; i < parameters.limit; ++i) {
+          items[i] = parameters.item_list[i % parameters.item_list.length];
+        }
+        return new Source(position, items);
+      }.bind(this);
+    case SourceType.RANDOM:
+      return function() {
+        var number_of_chunks = Random.randomInt(parameters.min_chunks,
+                                                parameters.max_chunks);
+        var chunk = new Array();
+        for (item in parameters.item_list) {
+          var min_multiplicity = parameters.item_list[item]["min"];
+          var max_multiplicity = parameters.item_list[item]["max"];
+          var multiplicity = Random.randomInt(min_multiplicity, max_multiplicity);
+          for (var i = 0; i < multiplicity; ++i) {
+            chunk.push(item);
+          }
+        }
+        console.log("Chunk{")
+        console.log(chunk);
+        console.log("Chunk}")
 
-      var items = new Array();
-      for (var i = 0; i < number_of_chunks; ++i) {
-        Random.randomShuffle(chunk);
-        items = items.concat(chunk);
-      }
-      console.log("Chunk{")
-      console.log(chunk);
-      console.log("Chunk}")
-      console.log("Items{")
-      console.log(items);
-      console.log("Items}")
+        var items = new Array();
+        for (var i = 0; i < number_of_chunks; ++i) {
+          Random.randomShuffle(chunk);
+          items = items.concat(chunk);
+        }
+        console.log("Chunk{")
+        console.log(chunk);
+        console.log("Chunk}")
+        console.log("Items{")
+        console.log(items);
+        console.log("Items}")
 
-      return new Source(position, items);
+        return new Source(position, items);
+      }.bind(this);
     default:
       throw new Error("Invalid source type for this SourceFactory.");
   };
@@ -273,7 +279,8 @@ Machine.prototype = {
 var Lesson04Game = function(size, arm_pos, sources, machines, deposits, goal) {
   this._size = size;
   this._initial_arm_pos = arm_pos;
-  this.sources = sources;
+  this.sources = new Array();
+  this._initial_sources = sources;
   this.machines = machines;
   this.deposits = deposits;
   this.inverted_object_index = new Array(this._size);
@@ -430,8 +437,13 @@ Lesson04Game.prototype = {
     this.holding_item = null;
     for (var i = 0; i < this.deposits.length; ++i)
       this.deposits[i].reset();
-    for (var i = 0; i < this.sources.length; ++i)
-      this.sources[i].reset()
+    this.sources = new Array();
+    for (var i = 0; i < this._initial_sources.length; ++i) {
+      this.sources.push(this._initial_sources[i]());
+    }
+    for (var i = 0; i < this.sources.length; ++i) {
+      this.inverted_object_index[this.sources[i].position] = this.sources[i];
+    }
     for (var i = 0; i < this.machines.length; ++i)
       this.machines[i].reset();
   },
