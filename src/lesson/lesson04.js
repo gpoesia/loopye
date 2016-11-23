@@ -59,6 +59,7 @@ Source.prototype = {
 SourceType = {
   RANDOM_FROM_SET: 1,
   FROM_LIST: 2,
+  RANDOM: 3
 };
 
 // A factory for predefined Source behaviors.
@@ -97,19 +98,28 @@ var SourceFactory = function(position, type, parameters) {
                                               parameters.max_chunks);
       var chunk = new Array();
       for (item in parameters.item_list) {
-        var min_multiplicity = parameters[item]["min"];
-        var max_multiplicity = parameters[item]["max"];
-        var multiplicity = randomInt(min_multiplicity, max_multiplicity);
+        var min_multiplicity = parameters.item_list[item]["min"];
+        var max_multiplicity = parameters.item_list[item]["max"];
+        var multiplicity = Random.randomInt(min_multiplicity, max_multiplicity);
         for (var i = 0; i < multiplicity; ++i) {
           chunk.push(item);
         }
       }
+      console.log("Chunk{")
+      console.log(chunk);
+      console.log("Chunk}")
       
       var items = new Array();
-      for (var i = 0; i < number_of_chunks, ++i) {
-        randomShuffle(chunk);
+      for (var i = 0; i < number_of_chunks; ++i) {
+        Random.randomShuffle(chunk);
         items = items.concat(chunk);
       }
+      console.log("Chunk{")
+      console.log(chunk);
+      console.log("Chunk}")
+      console.log("Items{")
+      console.log(items);
+      console.log("Items}")
       
       return new Source(position, items);
     default:
@@ -829,6 +839,7 @@ function Lesson04() {
                            Constants.References.MOVE_ARM_RIGHT,
                            Constants.References.GET_MATERIAL,
                            Constants.References.PUT_MATERIAL];
+
 
   // Step 1
   this.addStep(
