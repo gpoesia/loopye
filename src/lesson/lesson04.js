@@ -108,7 +108,7 @@ var SourceFactory = function(position, type, parameters) {
       console.log("Chunk{")
       console.log(chunk);
       console.log("Chunk}")
-      
+
       var items = new Array();
       for (var i = 0; i < number_of_chunks; ++i) {
         Random.randomShuffle(chunk);
@@ -120,7 +120,7 @@ var SourceFactory = function(position, type, parameters) {
       console.log("Items{")
       console.log(items);
       console.log("Items}")
-      
+
       return new Source(position, items);
     default:
       throw new Error("Invalid source type for this SourceFactory.");
@@ -415,7 +415,7 @@ Lesson04Game.prototype = {
         return true;
       case Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY:
         for (var i = 0; i < this.sources.length; ++i)
-          if (!this.sources[i].peek() instanceof SourceEnd)
+          if (!(this.sources[i].peek() instanceof SourceEnd))
             return false;
         if (this.holding_item !== null)
           return false;
@@ -618,7 +618,7 @@ Lesson04ExerciseStepPlayer.prototype = {
       Sensors.SOLID.accept_list.indexOf(this._game.peek()) !== -1);
     scope.set(
       Sensors.SOURCE_NOT_EMPTY.variable_name,
-      !this._game.peek() instanceof SourceEnd);
+      !(this._game.peek() instanceof SourceEnd));
   },
 
   // Parses an action literal into a value from Actions.
@@ -1244,11 +1244,12 @@ function Lesson04() {
         new Lesson04ExerciseStepPlayer(
           5,
           2,
-          [SourceFactory(4, 1, SourceType.RANDOM_FROM_SET,
-                         {item_set: ["GLASS"]})],
+          [SourceFactory(4, SourceType.RANDOM,
+                         {limit: 1, min_chunks: 1, max_chunks: 1,
+                          item_list: {GLASS: {min:1, max:1}}})],
           [],
           [new Deposit(0, {GLASS: 1})],
-          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
         ),
         "RR\nENQ(material) {\n  G\n  4{L}\n  P\n  4{R}\n}",  // initialCode
         Constants.Lesson04.SUCCESS_MESSAGE,
@@ -1281,11 +1282,12 @@ function Lesson04() {
         new Lesson04ExerciseStepPlayer(
           5,
           2,
-          [SourceFactory(4, 4, SourceType.RANDOM_FROM_SET,
-                         {item_set: ["GLASS"]})],
+          [SourceFactory(4, SourceType.RANDOM,
+                         {min_chunks: 1, max_chunks: 1,
+                          item_list: {GLASS: {min:1, max:4}}})],
           [],
           [new Deposit(0, {GLASS: 4})],
-          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
         ),
         "",  // initialCode
         Constants.Lesson04.SUCCESS_MESSAGE,
@@ -1311,7 +1313,7 @@ function Lesson04() {
         não funciona para esta lição).
         </p>
         <p>
-        O objetivo é retirar materiais da fonte e colocá-los em seu
+        O objetivo é retirar materiais da fonte e colocá-los em seus
         depósitos <b>até que a fonte se esgote</b>. Quando a fonte
         se esgotar, o sensor “<b>material</b>” não mais será ativado
         quando o braço fizer a leitura em frente à fonte.
@@ -1321,14 +1323,16 @@ function Lesson04() {
         new Lesson04ExerciseStepPlayer(
           6,
           3,
-          [SourceFactory(5, 4, SourceType.RANDOM_FROM_SET,
-                         {item_set: ["GLASS"]})],
+          [SourceFactory(5, SourceType.RANDOM,
+                         {min_chunks: 1, max_chunks: 1,
+                          item_list: {GLASS: {min:1, max:4},
+                                      IRON: {min:1, max:3}}})],
           [],
           [
             new Deposit(0, {IRON: 4}),
             new Deposit(1, {GLASS: 4})
           ],
-          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
         ),
         "",  // initialCode
         Constants.Lesson04.SUCCESS_MESSAGE,
@@ -1355,16 +1359,18 @@ function Lesson04() {
           6,
           2,
           [
-            SourceFactory(4, 2, SourceType.RANDOM_FROM_SET,
-                          {item_set: ["GLASS"]}),
-            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
-                          {item_set: ["GLASS"]})
+            SourceFactory(4, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                            item_list: {"GLASS": {min: 1, max: 2}}}),
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                            item_list: {"GLASS": {min: 1, max: 2}}}),
           ],
           [],
           [
             new Deposit(0, {GLASS: 4})
           ],
-          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
         ),
         "",  // initialCode
         Constants.Lesson04.SUCCESS_MESSAGE,
@@ -1397,17 +1403,21 @@ function Lesson04() {
           7,
           3,
           [
-            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
-                          {item_set: ["GLASS"]}),
-            SourceFactory(6, 2, SourceType.RANDOM_FROM_SET,
-                          {item_set: ["GLASS"]})
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                           item_list: {GLASS: {min: 1, max: 2},
+                                       IRON: {min: 1, max: 2}}}),
+            SourceFactory(6, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                           item_list: {GLASS: {min: 1, max: 2},
+                                       IRON: {min: 1, max: 2}}}),
           ],
           [],
           [
             new Deposit(0, {GLASS: 4}),
             new Deposit(1, {IRON: 4})
           ],
-          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
         ),
         "",  // initialCode
         Constants.Lesson04.SUCCESS_MESSAGE,
@@ -1436,8 +1446,9 @@ function Lesson04() {
           6,
           3,
           [
-            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
-                          {item_set: ["IRON"]})
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 2, max_chunks: 4,
+                           item_list: {IRON: {min: 3, max: 3}}})
           ],
           [
             new Machine([
@@ -1445,7 +1456,7 @@ function Lesson04() {
             ], 0, "SHIP_HEAD")
           ],
           [],
-          Lesson04Game.Goals.EVERY_MACHINE_SOURCE_NOT_EMPTY
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
         ),
         "",  // initialCode
         Constants.Lesson04.SUCCESS_MESSAGE,
@@ -1475,8 +1486,10 @@ function Lesson04() {
           6,
           3,
           [
-            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
-                          {item_set: ["IRON"]})
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 2, max_chunks: 4,
+                            item_list: {IRON: {min:3, max: 3},
+                                        GLASS: {min:2, max: 2}}})
           ],
           [
             new Machine([
@@ -1512,8 +1525,10 @@ function Lesson04() {
           6,
           3,
           [
-            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
-                          {item_set: ["IRON"]})
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 2, max_chunks: 4,
+                           item_list: {IRON: {min: 2, max: 2},
+                                       FUEL: {min: 4, max: 4}}})
           ],
           [
             new Machine([
