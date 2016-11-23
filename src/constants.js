@@ -69,10 +69,11 @@ module.exports = {
     GET_COMPONENT: <p> <b>G</b>: pegar engrenagem </p>,
     COMPONENT_SENSOR: <p> <div> <b>eng?&#123; &#125;</b>: fazer o que está entre </div> <div> chaves apenas se houver uma </div> <div> engrenagem à frente </div> </p>,
     MACHINE_SENSOR: <p> <div> <b>maq?&#123; &#125;</b>: fazer o que está entre  </div> <div> chaves apenas se houver uma </div> <div> máquina à frente </div> </p>,
-    MOVE_ARM_LEFT: <p><b>L</b>: mover o braço robótico para a esquerda.</p>,
-    MOVE_ARM_RIGHT: <p><b>R</b>: mover o braço robótico para a direita.</p>,
-    GET_MATERIAL: <p><b>G</b>: pegar o material que estiver à frente do braço robótico.</p>,
-    PUT_MATERIAL: <p><b>P</b>: colocar o material que o braço robótico estiver segurando.</p>,
-    IRON_SENSOR: <p><b>ferro? { }</b>: executa o que está entre chaves somente se o braço estiver segurando ferro.</p>
+    MOVE_ARM_LEFT: <p> <div> <b>L</b>: mover o braço robótico </div> <div> para a esquerda. </div> </p>,
+    MOVE_ARM_RIGHT: <p> <div> <b>R</b>: mover o braço robótico </div> <div> para a direita.</div> </p>,
+    GET_MATERIAL: <p> <div> <b>G</b>: pegar o material que estiver </div> <div> à frente do braço robótico. </div> </p>,
+    PUT_MATERIAL: <p> <div> <b>P</b>: colocar o material que o braço </div> <div> robótico estiver segurando. </div> </p>,
+    IRON_SENSOR: <p> <div> <b>ferro? {"{ }"}</b>: executa o que está entre </div> <div> chaves somente se o braço </div> <div> estiver segurando ferro. </div> </p>,
+    MATERIAL_SENSOR: <p> <div> <b>ENQ (material) {"{ }"}</b>: executa o que </div> <div> está entre chaves enquanto </div> <div> houver um material na fonte. </div> </p>
   },
 };

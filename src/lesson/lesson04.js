@@ -1152,6 +1152,338 @@ function Lesson04() {
       null
     )
   );
+
+  this._first_step_with_while = this.getNumberOfSteps();
+
+  commandsReference =
+    commandsReference.concat([Constants.References.MATERIAL_SENSOR]);
+
+    // Step 11
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+          Neste passo, em que existe apenas um item a ser movido, o
+          comando ENQ poderia ser ignorado. Mas é importante entender
+          como ele funciona para resolver os passos seguintes.
+        </p>,
+        <div>
+        <p>
+          Olá, aventureiro! Nossas últimas tarefas envolviam transportar
+          materiais de suas fontes para os seus respectivos depósitos.
+          Hoje, continuaremos a construção das naves, porém iremos
+          executar os comandos de uma forma um pouco diferente.
+        </p>
+        <p>
+          Na lição anterior, as fontes de materiais os produziam em
+          quantidades e sequências fixas. Para esta lição, a quantidade
+          de materiais a serem produzidos, bem como a sequência em que
+          eles são produzidos, é desconhecida.
+        </p>
+        <p>
+          Para resolver este problema, introduzimos o
+          comando <b>enquanto</b>. Ele se baseia em um sensor para funcionar.
+          A ideia é bem simples: enquanto o sensor estiver ativo,
+          o comando dentro do bloco enquanto será executado repetidamente.
+        </p>
+        <p>
+          Nesta lição, usaremos o comando <b>enquanto</b> baseado
+          no sensor <b>material</b>. O sensor tem indica se a fonte em
+          frente ao braço mecânico tem algum item a ser produzido.
+          Se tiver, o sensor é ativado. Se não tiver, o sensor não
+          é ativado. O comando <b>{"ENQ(material){ comandos }"}</b> executa
+          os <b>comandos</b> enquanto o sensor <b>material</b> estiver ativo.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          5,
+          2,
+          [SourceFactory(4, 1, SourceType.RANDOM_FROM_SET,
+                         {item_set: ["GLASS"]})],
+          [],
+          [new Deposit(0, {GLASS: 1})],
+          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+        ),
+        "RR\nENQ(material) {\n  G\n  4{L}\n  P\n  4{R}\n}",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 12
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+          Resolver este é moleza!
+        </p>,
+        <div>
+        <p>
+          Neste passo, o braço mecânico está em uma situação parecida
+          com o passo anterior: é preciso levar algumas unidades de
+          ferro da fonte para o depósito. Você acredita que é
+          possível resolver este problema exatamente como foi
+          resolvido o do passo anterior?
+        </p>
+        <p>
+          <b>{"RR ENQ(tem) { G 4{L} P 4{R} }"}</b>
+        </p>
+        <p>
+          Consegue explicar o porquê?
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          5,
+          2,
+          [SourceFactory(4, 4, SourceType.RANDOM_FROM_SET,
+                         {item_set: ["GLASS"]})],
+          [],
+          [new Deposit(0, {GLASS: 4})],
+          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 13
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize o comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        Para este passo, é preciso transportar materiais diferentes
+        (<b>FERRO</b> e <b>VIDRO</b>) saindo da mesma fonte, para seus
+        respectivos depósitos. Porém, de forma diferente das lições
+        anteriores, o objetivo <b>não</b> é completar todos os
+        depósitos, portanto, o código
+        <b>{"8{ RR ferro?{ G 5{L} P 5{R} }:{ G 4{L} P 4{R} } }"}</b>,
+        que funcionaria para as lições anteriores,
+        não funciona para esta lição).
+        </p>
+        <p>
+        O objetivo é retirar materiais da fonte e colocá-los em seu
+        depósitos <b>até que a fonte se esgote</b>. Quando a fonte
+        se esgotar, o sensor “<b>material</b>” não mais será ativado
+        quando o braço fizer a leitura em frente à fonte.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [SourceFactory(5, 4, SourceType.RANDOM_FROM_SET,
+                         {item_set: ["GLASS"]})],
+          [],
+          [
+            new Deposit(0, {IRON: 4}),
+            new Deposit(1, {GLASS: 4})
+          ],
+          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 14
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize o enquanto (<b>ENQ</b>) quantas vezes for necessário
+        para resolver este problema.
+        </p>,
+        <div>
+        <p>
+        A solução deste problema é bem similar à do passo
+        anterior. Entretanto, todas as fontes de objetos precisam
+        ser completamente consumidas para que esse passo seja completado.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          2,
+          [
+            SourceFactory(4, 2, SourceType.RANDOM_FROM_SET,
+                          {item_set: ["GLASS"]}),
+            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
+                          {item_set: ["GLASS"]})
+          ],
+          [],
+          [
+            new Deposit(0, {GLASS: 4})
+          ],
+          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 15
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize os sensores <b>material</b> e <b>ferro</b>, e o
+        comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        Para este problema, cada uma das fontes produz dois materiais
+        diferentes (<b>FERRO</b> e <b>VIDRO</b>). A solução, então, é
+        parecida com as dos dois passos anteriores.
+        </p>
+        <p>
+        É preciso verificar, para cada uma das fontes, se ela já
+        terminou de produzir materiais e, antes de tomar a decisão
+        de como depositar cada material extraído da fonte, se ele
+        é o material correto para o depósito.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          7,
+          3,
+          [
+            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
+                          {item_set: ["GLASS"]}),
+            SourceFactory(6, 2, SourceType.RANDOM_FROM_SET,
+                          {item_set: ["GLASS"]})
+          ],
+          [],
+          [
+            new Deposit(0, {GLASS: 4}),
+            new Deposit(1, {IRON: 4})
+          ],
+          Lesson04Game.Goals.FILL_EVERY_DEPOSIT
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 16
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Para este passo, produza tantas peças da nave quanto for possível.
+        </p>,
+        <div>
+        <p>
+        Para este passo, temos que construir uma quantidade
+        desconhecida de peças da frente da nave (podemos colocar
+        3 unidades de <b>FERRO</b> para produzir uma peça de frente
+        da nave). Para isso, coloque todas as peças produzidas pela
+        fonte na entrada da máquina, até que não haja mais material
+        na fonte.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [
+            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
+                          {item_set: ["IRON"]})
+          ],
+          [
+            new Machine([
+              new Deposit(1, {IRON: 3})
+            ], 0, "SHIP_HEAD")
+          ],
+          [],
+          Lesson04Game.Goals.EVERY_MACHINE_SOURCE_NOT_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 17
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize os sensores <b>ferro</b> e <b>material</b>, em conjunto
+        com o comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        Este passo é bem similar ao passo anterior, com a diferença
+        que, para gerar o meio da nave, é necessário completar a
+        entrada da máquina com dois tipos diferentes de materiais.
+        A quantidade de peças produzidas também é desconhecido:
+        enquanto existirem peças produzidas na fonte, elas devem ser
+        colocadas na máquina para produzir peças.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [
+            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
+                          {item_set: ["IRON"]})
+          ],
+          [
+            new Machine([
+              new Deposit(1, {IRON: 3}),
+              new Deposit(2, {GLASS: 2})
+            ], 0, "SHIP_BODY")
+          ],
+          [],
+          Lesson04Game.Goals.EVERY_MACHINE_SOURCE_NOT_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 18
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize os sensores <b>ferro</b> e <b>material</b>, em conjunto
+        com o comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        A resolução deste passo é bem similar à do passo anterior.
+        Quais as modificações necessárias para que o código
+        anterior resolva este problema?
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [
+            SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
+                          {item_set: ["IRON"]})
+          ],
+          [
+            new Machine([
+              new Deposit(1, {FUEL: 4}),
+              new Deposit(2, {IRON: 2})
+            ], 0, "SHIP_TAIL")
+          ],
+          [],
+          Lesson04Game.Goals.EVERY_MACHINE_SOURCE_NOT_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
 };
 
 Lesson04.prototype = Object.create(Lesson.Lesson.prototype);
@@ -1166,6 +1498,13 @@ Object.assign(Lesson04.prototype, {
     ResourceLoader.addImage(ElementFactories.ROBOTIC_ARM_HOLDING_GLASS_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.ROBOTIC_ARM_HOLDING_FUEL_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.SPACESHIP_FACTORY_BACKGROUND_URL);
+  },
+
+  /// Returns the index of the first step in the lesson that requires the use
+  /// of conditionals to be solved.
+  getFirstStepWithWhile: function() {
+    var ret = this._first_step_with_while;
+    return ret;
   },
 });
 module.exports = {Lesson04: Lesson04,
