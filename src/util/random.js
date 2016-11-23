@@ -8,7 +8,12 @@ function randomShuffle(sequence) {
   for (var i  = 0; i < sequence.length; ++i) {
     var j = randomInt(i, sequence.length - 1);
     var aux = sequence[j];
-    sequence[j] = i;
+    sequence[j] = sequence[i];
     sequence[i] = aux;
   }
 }
+
+module.exports = {
+    randomInt: randomInt,
+    randomShuffle: randomShuffle,
+};
