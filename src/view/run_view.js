@@ -8,11 +8,10 @@ var Constants = require("../constants");
 var RunView = React.createClass({
   styles: {
     canvas: {
-      height: "100%",
-      marginLeft: "auto",
-      marginRight: "auto",
+      height: "500px",
       display: "block",
-      border: "1px solid black",
+      border: "1px solid #999999",
+      borderRadius: "5px",
     },
   },
 

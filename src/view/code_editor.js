@@ -12,8 +12,10 @@ var CodeEditor = React.createClass({
       height: "100%",
       fontSize: "3em",
       margin: "0px",
-      border: "2px solid green",
+      border: "1px solid #999999",
       resize: "none",
+      padding: "10px",
+      borderRadius: "5px",
     },
     containingDiv: {
       width: "100%",

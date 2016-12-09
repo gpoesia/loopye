@@ -1,5 +1,5 @@
 /*
- * Component that shows a sidebar explaining the commands used in 
+ * Component that shows a sidebar explaining the commands used in
  * a lesson step
  */
 
@@ -11,7 +11,7 @@ var Sidebar = require('react-sidebar').default;
 var CommandReferenceSidebar = React.createClass({
   styles: {
     root: {
-      fontWeight: 300,
+      fontWeight: "300",
     },
     header: {
       backgroundColor: '#03a9f4',
@@ -20,11 +20,11 @@ var CommandReferenceSidebar = React.createClass({
       fontSize: '1.5em',
     },
     content: {
-      marginLeft: '16px',
-      marginRight: '16px',
+      width: "250px",
+      padding: "15px",
       height: '100%',
+      lineHeight: "150%",
       backgroundColor: 'white',
-      marginBottom: "4%",
     },
     link: {
       textDecoration: 'none',
@@ -38,16 +38,16 @@ var CommandReferenceSidebar = React.createClass({
     for (var i = 0; i < this.props.content.length; i++) {
       commandReference.push(this.props.content[i]);
     }
-      
+
     return <div style={{width: "100%", height: "100%"}}>
               <div style={this.styles.root}>
-                <div style={this.styles.header}> 
-                  <span> Comandos </span> 
+                <div style={this.styles.header}>
+                  <span> Comandos </span>
                   <span style={{float: "right"}}>
                     <a href='#'
                        onClick={this.props.onClose}
-                       style={this.styles.link}> 
-                      X 
+                       style={this.styles.link}>
+                      X
                     </a>
                   </span>
                 </div>

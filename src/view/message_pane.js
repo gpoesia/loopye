@@ -7,11 +7,23 @@ var React = require("react");
 
 var MessagePane = React.createClass({
   styles: {
-    error: {
-      backgroundColor: 'rgb(255, 100, 100)',
-    },
     success: {
-      backgroundColor: 'rgb(100, 255, 100)',
+      backgroundColor: "#85E085",
+      width: "100%",
+      padding: "20px",
+      marginTop: "20px",
+      borderRadius: "10px",
+      lineHeight: "150%",
+      listStyleType: "none",
+    },
+    error: {
+      backgroundColor: "#FF9999",
+      width: "100%",
+      padding: "20px",
+      marginTop: "20px",
+      borderRadius: "10px",
+      lineHeight: "150%",
+      listStyleType: "none",
     },
   },
 
@@ -41,16 +53,20 @@ var MessagePane = React.createClass({
     for (var i = 0; i < this.state.errors.length; i++) {
       errors.push(<li key={i}>{this.state.errors[i]}</li>);
     }
-    var error_messages = React.createElement('ul', {style: this.styles.error},
-                                             errors);
-
+    if (errors.length > 0) {
+      var error_messages = React.createElement('ul',
+                                               {style: this.styles.error},
+                                               errors);
+    }
     var successes = []
     for (var i = 0; i < this.state.successes.length; i++) {
       successes.push(<li key={i}>{this.state.successes[i]}</li>);
     }
-    var success_messages = React.createElement('ul',
-                                               {style: this.styles.success},
-                                               successes);
+    if (successes.length > 0) {
+      var success_messages = React.createElement('ul',
+                                                 {style: this.styles.success},
+                                                 successes);
+    }
     return <div>
              {error_messages}
              {success_messages}

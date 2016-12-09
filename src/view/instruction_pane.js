@@ -6,10 +6,19 @@
 var React = require("react");
 
 var InstructionPane = React.createClass({
+  styles: {
+    instructionBox: {
+      backgroundColor: "#CEE3EA",
+      width: "100%",
+      padding: "20px",
+      marginTop: "20px",
+      borderRadius: "10px",
+      lineHeight: "150%",
+    },
+  },
   render: function() {
-    return <div style={{backgroundColor: "#eeeeff", width: "100%",
-                        height: "100%"}}>
-              <p style={{margin: "0"}}>{this.props.content}</p>
+    return <div style={this.styles.instructionBox}>
+              <p>{this.props.content}</p>
            </div>;
   },
 });
