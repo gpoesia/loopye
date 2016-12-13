@@ -43,9 +43,17 @@ var MessagePane = React.createClass({
     this.setState({errors: errors.concat([error])});
   },
 
+  setErrors: function(errors) {
+    this.setState({errors: errors});
+  },
+
   addSuccess: function(success) {
     var successes = this.state.successes;
     this.setState({successes: successes.concat([success])});
+  },
+
+  setSuccesses: function(successes) {
+    this.setState({successes: successes});
   },
 
   render: function() {
