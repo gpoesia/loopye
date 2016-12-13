@@ -112,7 +112,7 @@ var LessonEnvironment = React.createClass({
     var result = currentStep.play(this.state.sourceCode);
 
     if (!!result.compilation_errors) {
-      result.compilation_errors.map(this.refs.code_messages.addError);
+      this.refs.code_messages.setErrors(result.compilation_errors);
     } else {
       var animator = result.animator;
       var runtime_errors = result.runtime_errors;
