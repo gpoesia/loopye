@@ -1,22 +1,75 @@
 /*
  * Component that contains the code editor.
- * TODO find a code editor component that works.
  */
 
 var React = require("react");
+var CodeEditorBase = require("codeeditor");
+
+var DEFAULT_KEYWORDS = [
+  "\\?",
+  ":",
+  "[0-9]+",
+  "ENQ",
+];
+
+var DEFAULT_SENSORS = [
+  "solido",
+  "ferro",
+  "material",
+  "maq",
+  "eng",
+];
+
+var DEFAULT_ACTIONS = [
+  "[A-Z]",
+];
+
+function joinRegexes(regexes) {
+  return regexes.join("|");
+}
+
+function buildCodeEditorParameters(keywords, sensors, actions, onChange, code) {
+  keywords = keywords || DEFAULT_KEYWORDS;
+  sensors = sensors || DEFAULT_SENSORS;
+  actions = actions || DEFAULT_ACTIONS;
+
+  return {
+    style: {
+      width: "100%",
+      height: "100%",
+      fontSize: "2em",
+      margin: "0px",
+      border: "1px solid #999999",
+      padding: "10px",
+      borderRadius: "5px",
+      fontFamily: "monospace",
+    },
+    autoIndent: true,
+    autoCloseBlocks: true,
+    highlightingRules: [
+      // Keywords.
+      {
+        regex: joinRegexes(keywords),
+        style: {fontWeight: "bold", color: "#000099"},
+      },
+      // Sensors.
+      {
+        regex: joinRegexes(sensors),
+        style: {textDecoration: "underline", color: "#009900"},
+      },
+      // Actions.
+      {
+        regex: joinRegexes(actions),
+        style: {fontStyle: "italic"},
+      },
+    ],
+    onChange: onChange,
+    initialCode: code,
+  };
+}
 
 var CodeEditor = React.createClass({
   _styles: {
-    editor: {
-      width: "100%",
-      height: "100%",
-      fontSize: "3em",
-      margin: "0px",
-      border: "1px solid #999999",
-      resize: "none",
-      padding: "10px",
-      borderRadius: "5px",
-    },
     containingDiv: {
       width: "100%",
       height: "100%",
@@ -29,30 +82,33 @@ var CodeEditor = React.createClass({
     }
     return l;
   },
+  getInitialState: function() {
+    return {
+      code: this.props.code || "",
+    };
+  },
   _callOnChange: function(callback) {
     var limit = this.props.limit;
     var length = this._length;
 
-    return function(event) {
-      if (!!limit &&
-          length(event.target.value) > limit) {
-        event.preventDefault();
-        return;
-      }
-      if (callback) {
-        return callback(event.target.value);
+    return function(code) {
+      if (!!limit && length(code) > limit) {
+        this.forceUpdate();
+      } else if (callback) {
+        this.setState({code: code});
+        return callback(code);
       };
-    };
+    }.bind(this);
   },
   render: function() {
     var limit_text = null;
-    var code_length = this._length(this.props.code);
+    var code_length = this._length(this.state.code);
 
     if (!!this.props.limit) {
       var color = (code_length == this.props.limit) ? "red" : "black";
       limit_text =
         <p style={{color: color}}>
-          Tamanho do código: {this._length(this.props.code)}/{this.props.limit}
+          Tamanho do código: {this._length(this.state.code)}/{this.props.limit}
         </p>;
     } else {
       limit_text = <span></span>;
@@ -60,9 +116,13 @@ var CodeEditor = React.createClass({
 
     return <div style={this._styles.containingDiv}>
              {limit_text}
-             <textarea style={this._styles.editor}
-                       onChange={this._callOnChange(this.props.onChange)}
-                       value={this.props.code} />
+             <CodeEditorBase parameters={buildCodeEditorParameters(
+                                           this.props.keywords,
+                                           this.props.sensors,
+                                           this.props.actions,
+                                           this._callOnChange(this.props.onChange),
+                                           this.state.code)}
+               />
            </div>;
   },
 });
