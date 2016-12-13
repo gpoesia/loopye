@@ -68,6 +68,8 @@ var LessonEnvironment = React.createClass({
   },
 
   getInitialState: function() {
+    this.currentAnimator = null;
+
     return {
       sourceCode: "",
       currentStep: this.props.initialStep,
@@ -105,6 +107,8 @@ var LessonEnvironment = React.createClass({
   },
 
   _playCode: function() {
+    this._stopCurrentAnimation();
+
     this.refs.exercise_messages.clear();
     this.refs.code_messages.clear();
 
@@ -121,24 +125,36 @@ var LessonEnvironment = React.createClass({
       animator.start();
 
       if (Array.isArray(runtime_errors) && runtime_errors.length) {
-        animator.onStop(function() {
-          runtime_errors.map(exercise_messages.addError);
+        animator.onStop(function(ok) {
+          if (ok) {
+            runtime_errors.map(exercise_messages.addError);
+          }
         });
       } else {
         var forceUpdate = this.forceUpdate.bind(this);
-        animator.onStop(function() {
-          exercise_messages.addSuccess(currentStep.getSuccessMessage());
-          forceUpdate();
+        animator.onStop(function(ok) {
+          if (ok) {
+            exercise_messages.addSuccess(currentStep.getSuccessMessage());
+            forceUpdate();
+          }
         });
       }
 
       animator.play(this.refs.run_view.getCanvas());
+      this.currentAnimator = animator;
     }
   },
 
   _reset: function() {
+    this._stopCurrentAnimation();
     var currentStep = this.props.lesson.getStep(this.state.currentStep);
     currentStep.reset(this.refs.run_view.getCanvas());
+  },
+
+  _stopCurrentAnimation: function() {
+    if (this.currentAnimator) {
+      this.currentAnimator.stop();
+    }
   },
 
   _showInstructions: function(step) {

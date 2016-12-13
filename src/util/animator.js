@@ -365,8 +365,8 @@ var Animator = function() {
       canvas.height = this.height;
 
     function playUntilEnd() {
-      animator.render(canvas);
       if (animator.playing) {
+        animator.render(canvas);
         window.requestAnimationFrame(playUntilEnd);
       }
     }
@@ -374,14 +374,17 @@ var Animator = function() {
   };
 
   // Registers a function to be called when the animation stops.
+  // The function can optionally take one argument, which is a boolean
+  // that indicates whether the animation finished (true) or was stopped
+  // prematurely (false).
   this.onStop = function(callback) {
     this.stop_callback = callback;
   }
 
   // Stops the current animation.
-  this.stop = function(canvas) {
+  this.stop = function(finished) {
     this.playing = false;
-    this.stop_callback();
+    this.stop_callback(!!finished);
   };
 
   // Renders the current state of the animation in a canvas.
@@ -442,7 +445,7 @@ var Animator = function() {
     }
 
     if (shouldStop) {
-      this.stop();
+      this.stop(true);
       return;
     }
 
