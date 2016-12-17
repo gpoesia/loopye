@@ -9,7 +9,7 @@ var assert = require("assert");
 
 function testNodeTypeCountAnalysis() {
   var program =
-    Robolang.ParseRobolangProgram("2{ ENQ(x){Q} 3{XY} a?{b?{ZW} K c?{X}}}");
+    Robolang.ParseRobolangProgram("2{ enquanto x {Q} 3{XY} se a{se b{ZW} K se c{X}}}");
   assert.equal(true, program instanceof Robolang.RobolangProgram);
 
   var counts = Analysis.countNodeTypes(program);

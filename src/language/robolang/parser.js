@@ -172,22 +172,22 @@ function ASTConditionalNodeParser() { }
 ASTConditionalNodeParser.prototype = Object.create(ASTNodeParser.prototype);
 Object.assign(ASTConditionalNodeParser.prototype, {
   lookahead: function(parserState) {
-    var next = parserState.lookahead(2);
-    return (next.length == 2 &&
-            next[0].type === Lexer.TokenTypes.IDENTIFIER &&
-            next[1].type === Lexer.TokenTypes.CONDITION_SIGN);
+    return parserState.lookahead() &&
+           parserState.lookahead().type === Lexer.TokenTypes.IF_KEYWORD;
   },
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.CONDITIONAL);
+    parserState.consumeToken(Lexer.TokenTypes.IF_KEYWORD);
+
     node.attributes.variable =
         parserState.consumeToken(Lexer.TokenTypes.IDENTIFIER).value;
-    parserState.consumeToken(Lexer.TokenTypes.CONDITION_SIGN);
+
     node.children.push(new ASTBlockNodeParser().parse(parserState));
 
-    if (parserState.lookahead() && 
-        parserState.lookahead().type === Lexer.TokenTypes.ELSE_SIGN) {
-      parserState.consumeToken(Lexer.TokenTypes.ELSE_SIGN);
+    if (parserState.lookahead() &&
+        parserState.lookahead().type === Lexer.TokenTypes.ELSE_KEYWORD) {
+      parserState.consumeToken(Lexer.TokenTypes.ELSE_KEYWORD);
       node.children.push(new ASTBlockNodeParser().parse(parserState));
     }
 
@@ -218,21 +218,15 @@ function ASTConditionalLoopNodeParser() { }
 ASTConditionalLoopNodeParser.prototype = Object.create(ASTNodeParser.prototype);
 Object.assign(ASTConditionalLoopNodeParser.prototype, {
   lookahead: function(parserState) {
-    var next = parserState.lookahead(4);
-    return (next.length == 4 &&
-            next[0].type === Lexer.TokenTypes.CONDITIONAL_LOOP_KEYWORD &&
-            next[1].type === Lexer.TokenTypes.BEGIN_EXPRESSION &&
-            next[2].type === Lexer.TokenTypes.IDENTIFIER &&
-            next[3].type === Lexer.TokenTypes.END_EXPRESSION);
+    return parserState.lookahead() &&
+           parserState.lookahead().type === Lexer.TokenTypes.CONDITIONAL_LOOP_KEYWORD;
   },
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.CONDITIONAL_LOOP);
     parserState.consumeToken(Lexer.TokenTypes.CONDITIONAL_LOOP_KEYWORD);
-    parserState.consumeToken(Lexer.TokenTypes.BEGIN_EXPRESSION);
     node.attributes.variable =
         parserState.consumeToken(Lexer.TokenTypes.IDENTIFIER).value;
-    parserState.consumeToken(Lexer.TokenTypes.END_EXPRESSION);
     node.children.push(new ASTBlockNodeParser().parse(parserState));
     return node;
   },

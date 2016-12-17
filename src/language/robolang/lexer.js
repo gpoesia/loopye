@@ -8,13 +8,19 @@ var TokenTypes = {
   IDENTIFIER: {name: "identifier"},
   BEGIN_BLOCK: {name: "begin_block"},
   END_BLOCK: {name: "end_block"},
-  CONDITION_SIGN: {name: "condition_sign"},
-  ELSE_SIGN: {name: "else_sign"},
+  IF_KEYWORD: {name: "if", value: "se"},
+  ELSE_KEYWORD: {name: "else", value: "senao"},
   INTEGER: {name: "int"},
-  CONDITIONAL_LOOP_KEYWORD: {name: "conditional_loop_keyword"},
+  CONDITIONAL_LOOP_KEYWORD: {name: "conditional_loop", value: "enquanto"},
   BEGIN_EXPRESSION: {name: "begin_expression"},
   END_EXPRESSION: {name: "end_expression"},
 };
+
+function isKeyword(token) {
+  return (token === TokenTypes.IF_KEYWORD.value ||
+          token === TokenTypes.ELSE_KEYWORD.value ||
+          token === TokenTypes.CONDITIONAL_LOOP_KEYWORD.value);
+}
 
 /// Token strings.
 const BEGIN_BLOCK_TOKEN = "{";
@@ -104,24 +110,39 @@ var tokenize = function(code) {
       continue;
     }
 
-    // Condition sign: '?'
-    if (/\?/.test(code[i])) {
-      tokens.push(new Token(TokenTypes.CONDITION_SIGN, code[i]));
-      ++i;
+    // Identifier.
+    if (/[a-z]/.test(code[i])) {
+      var id = "";
+      var j = i;
+      while (j < code.length && /[a-zA-Z0-9_]/.test(code[j])) {
+        id += code[j];
+        ++j;
+      }
+      if (!isKeyword(id)) {
+        i = j;
+        tokens.push(new Token(TokenTypes.IDENTIFIER, id));
+        continue;
+      }
+    }
+
+    // 'else'.
+    if (code.substr(i).startsWith(TokenTypes.ELSE_KEYWORD.value)) {
+      tokens.push(new Token(TokenTypes.ELSE_KEYWORD, code[i]));
+      i += TokenTypes.ELSE_KEYWORD.value.length;
       continue;
     }
 
-    // Else sign: ':'
-    if (/:/.test(code[i])) {
-      tokens.push(new Token(TokenTypes.ELSE_SIGN, code[i]));
-      ++i;
+    // 'if'.
+    if (code.substr(i).startsWith(TokenTypes.IF_KEYWORD.value)) {
+      tokens.push(new Token(TokenTypes.IF_KEYWORD, code[i]));
+      i += TokenTypes.IF_KEYWORD.value.length;
       continue;
     }
 
-    // Conditional loop keyword: "ENQ"
-    if (code.substr(i, 3) === "ENQ") {
+    // Conditional loop keyword.
+    if (code.substr(i).startsWith(TokenTypes.CONDITIONAL_LOOP_KEYWORD.value)) {
       tokens.push(new Token(TokenTypes.CONDITIONAL_LOOP_KEYWORD));
-      i += 3;
+      i += TokenTypes.CONDITIONAL_LOOP_KEYWORD.value.length;
       continue;
     }
 
@@ -129,17 +150,6 @@ var tokenize = function(code) {
     if (/[A-Z]/.test(code[i])) {
       tokens.push(new Token(TokenTypes.ACTION_IDENTIFIER, code[i]));
       ++i;
-      continue;
-    }
-
-    // Identifier.
-    if (/[a-z]/.test(code[i])) {
-      var id = "";
-      while (i < code.length && /[a-zA-Z0-9_]/.test(code[i])) {
-        id += code[i];
-        ++i;
-      }
-      tokens.push(new Token(TokenTypes.IDENTIFIER, id));
       continue;
     }
 

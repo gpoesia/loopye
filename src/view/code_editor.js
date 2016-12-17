@@ -6,10 +6,10 @@ var React = require("react");
 var CodeEditorBase = require("codeeditor");
 
 var DEFAULT_KEYWORDS = [
-  "\\?",
-  ":",
+  "senao",
+  "se",
+  "enquanto",
   "[0-9]+",
-  "ENQ",
 ];
 
 var DEFAULT_SENSORS = [
