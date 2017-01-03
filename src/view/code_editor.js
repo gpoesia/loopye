@@ -87,6 +87,10 @@ var CodeEditor = React.createClass({
       code: this.props.code || "",
     };
   },
+  focus: function() {
+      if (this.refs.base)
+          this.refs.base.focus();
+  },
   _callOnChange: function(callback) {
     var limit = this.props.limit;
     var length = this._length;
@@ -100,6 +104,7 @@ var CodeEditor = React.createClass({
       };
     }.bind(this);
   },
+
   render: function() {
     var limit_text = null;
     var code_length = this._length(this.state.code);
@@ -122,6 +127,7 @@ var CodeEditor = React.createClass({
                                            this.props.actions,
                                            this._callOnChange(this.props.onChange),
                                            this.state.code)}
+                             ref="base"
                />
            </div>;
   },
