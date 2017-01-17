@@ -225,7 +225,9 @@ var LessonEnvironment = React.createClass({
                   <div style={this.styles.codeEditor}>
                     <CodeEditor code={this.state.sourceCode}
                                 onChange={this._updateCode}
-                                limit={currentStep.getCodeSizeLimit()} />
+                                limit={currentStep.getCodeSizeLimit()}
+                                ref={function(editor){
+                                       return editor && editor.focus(); }}/>
                   </div>
                   <div style={this.styles.buttonBar}>
                     <ButtonBar onPlay={this._playCode}
