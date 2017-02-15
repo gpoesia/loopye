@@ -7,6 +7,8 @@ var Interpreter = require("../interpreter");
 var Lexer = require("./lexer");
 var Parser = require("./parser");
 var Scope = require("../scope");
+var Analysis = require("./analysis");
+var Constants = require("../../constants");
 
 /// Feature flags: control which language constructs are enabled.
 var LOOPS = 1 << 0;
@@ -23,14 +25,22 @@ RobolangProgram.prototype = {
   },
 };
 
-/// Parses a Robolang program. If successful, returns a RobolangProgram.
-/// Otherwise, returns a list of errors.
-function ParseRobolangProgram(code) {
+/// Compiles a Robolang program. It first parses the program and if
+/// unsuccessful, it returns a list of errors. If successful, runs
+/// semantic checks and returns a RobolangProgram in case these checks pass.
+/// Otherwise, it returns an error.
+function CompileRobolangProgram(code) {
   try {
     var tokens = Lexer.tokenize(code);
     var token_stream = new Lexer.TokenStream(tokens);
     var parser = new Parser.ASTProgramNodeParser();
-    return new RobolangProgram(parser.parse(token_stream));
+
+    var program = new RobolangProgram(parser.parse(token_stream));
+    if (Analysis.getMaxLoopTripCount(program) > Constants.MAX_LOOP_TRIPS) {
+      return [Constants.SemanticAnalysisErrors.TOO_MANY_LOOP_TRIPS];
+    }
+
+    return program;
   } catch (e) {
     return [e];
   }
@@ -59,7 +69,7 @@ Object.assign(Robolang.prototype, {
   /// executing the program. If compilation fails, returns an array of errors.
   /// Otherwise, returns null.
   parse: function(code) {
-    var program_or_errors = ParseRobolangProgram(code);
+    var program_or_errors = CompileRobolangProgram(code);
 
     if (program_or_errors instanceof Array) {
       return program_or_errors;
@@ -184,5 +194,5 @@ Object.assign(Robolang.prototype, {
 module.exports = {
   Interpreter: Robolang,
   RobolangProgram: RobolangProgram,
-  ParseRobolangProgram: ParseRobolangProgram,
+  CompileRobolangProgram: CompileRobolangProgram,
 };

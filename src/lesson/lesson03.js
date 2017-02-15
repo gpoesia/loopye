@@ -288,7 +288,7 @@ Lesson03ExerciseStepPlayer.prototype = {
     this.reset();
 
     var program = null;
-    var program_or_errors = Robolang.ParseRobolangProgram(source_code);
+    var program_or_errors = Robolang.CompileRobolangProgram(source_code);
 
     if (program_or_errors instanceof Array) {
       return {compilation_errors: program_or_errors};

@@ -12,6 +12,11 @@ module.exports = {
 
   RUN_VIEW_SQUARE_DIMENSION: 1000,
 
+  MAX_LOOP_TRIPS: 20,
+  SemanticAnalysisErrors: {
+    TOO_MANY_LOOP_TRIPS: "O seu laço tem uma repetição muito grande. O seu robô vai ficar andando para sempre!",
+  },
+
   Lesson01: {
     FAILURE_MESSAGE_HIT_BY_ASTEROID: "Que pena! O robô foi atingido! Tente novamente.",
     FAILURE_MESSAGE_LEFT_GRID: "Oh, o robô saiu da área de controle e ficou perdido! Ajude-o novamente.",
