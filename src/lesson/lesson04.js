@@ -418,10 +418,10 @@ var Sensors = {
 
 // Actions supported in this lesson.
 var Actions = {
-  MOVE_LEFT: "L",
-  MOVE_RIGHT: "R",
-  GET_ITEM: "G",
-  PUT_ITEM: "P",
+  MOVE_LEFT: "E",
+  MOVE_RIGHT: "D",
+  GET_ITEM: "P",
+  PUT_ITEM: "C",
 };
 
 // Possible runtine errors.
@@ -823,10 +823,10 @@ function Lesson04() {
         </p>
         <p>
           O braço robótico se movimenta apenas horizontalmente.
-          Os comandos <b>L</b> e <b>R</b> fazem
+          Os comandos <b>E</b> e <b>D</b> fazem
           com que o braço se mova para a esquerda e para a direita,
-          respectivamente. O comando <b>W</b> faz com que o braço fique parado.
-          Os comandos <b>G</b> e <b>P</b> fazem com que o braço pegue o que estiver
+          respectivamente.
+          Os comandos <b>P</b> e <b>C</b> fazem com que o braço pegue o que estiver
           na sua frente ou largue o que estiver carregando, respectivamente.
         </p>
       </div>,
@@ -904,6 +904,7 @@ function Lesson04() {
     commandsReference.concat([Constants.References.IRON_SENSOR]);
 
   // Step 4
+  // TODO: explain "senao"
   this.addStep(
     new Lesson.LessonStep(
       <p>
@@ -920,14 +921,14 @@ function Lesson04() {
       A tarefa do
       robô é separar os materiais e encher o depósito de ferro com 2
       blocos de ferro e o depósito de vidro com 2 placas de vidro.
-      Felizmente, o braço robótico está equipado com um sensor chamado
-      <b>ferro</b> capaz de determinar se ele está segurando um bloco de ferro.
+      Felizmente, o braço robótico está equipado com um sensor 
+      chamado <b>ferro</b> capaz de determinar se ele está segurando um bloco de ferro.
       </p>
       <p>
       Lembra-se de condicionais? Com esse sensor, você pode escrever um código
-      que apenas executa se o material que o braço estiver segurando for ferro.
-      Por exemplo: <b>ferro? {"{ LL P RR }"}</b> executará <b>LL P RR</b> apenas
-      no caso de o braço estar segurando ferro.
+      que apenas executa se o material que o braço tiver na frente for ferro.
+      Por exemplo: <b>se ferro {"{ EE C DD }"}</b> executará <b>EE C DD</b> apenas
+      no caso de o braço ter ferro na frente dele.
       </p>
       </div>,
       commandsReference,
@@ -972,6 +973,9 @@ function Lesson04() {
       null
     )
   );
+
+  commandsReference =
+    commandsReference.concat([Constants.References.SOLID_SENSOR]);
 
   // Step 6
   this.addStep(
