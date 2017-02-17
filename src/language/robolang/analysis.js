@@ -1,6 +1,7 @@
 /*
  * Static analyses on Robolang code (in the AST level).
  */
+var Parser = require("./parser");
 
 /// Traverses the AST in post-order, applying the visitor function to each node.
 function traverseAST(root, visitor) {
@@ -14,21 +15,34 @@ function traverseAST(root, visitor) {
 /// Can be used to determine whether the programmer has used the feature being
 /// taught (e.g. conditionals).
 function countNodeTypes(program) {
-    var root = program.getASTRoot();
-    var counts = {};
+  var root = program.getASTRoot();
+  var counts = {};
 
-    traverseAST(root,
-                function(root) {
-                  if (!counts.hasOwnProperty(root.type.name)) {
-                    counts[root.type.name] = 1;
-                  } else {
-                    counts[root.type.name]++;
-                  }
-                });
+  traverseAST(root,
+              function(node) {
+                if (!counts.hasOwnProperty(node.type.name)) {
+                  counts[node.type.name] = 1;
+                } else {
+                  counts[node.type.name]++;
+                }
+              });
 
-    return counts;
+  return counts;
+}
+
+function getMaxLoopTripCount(program) {
+  var maxLoop = 0;
+  traverseAST(program.getASTRoot(),
+              function(node) {
+                if (node.type.name == Parser.ASTNodeTypes.LOOP.name) {
+                  maxLoop = Math.max(maxLoop, node.attributes.tripCount);
+                }
+              });
+
+  return maxLoop;
 }
 
 module.exports = {
   countNodeTypes: countNodeTypes,
+  getMaxLoopTripCount: getMaxLoopTripCount,
 };
