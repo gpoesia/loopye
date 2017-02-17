@@ -6,6 +6,7 @@ var React = require("react");
 var Lesson = require("./lesson");
 var Interpreter = require("../language/interpreter")
 var Animator = require("../util/animator");
+var Random = require("../util/random");
 var ResourceLoader = require("../util/resource_loader");
 var AnimationFactories = require("../util/animator/animation_factories");
 var ElementFactories = require("../util/animator/element_factories");
@@ -58,6 +59,7 @@ Source.prototype = {
 SourceType = {
   RANDOM_FROM_SET: 1,
   FROM_LIST: 2,
+  RANDOM: 3
 };
 
 // A factory for predefined Source behaviors.
@@ -76,20 +78,49 @@ SourceType = {
 //  `parameter`: The set of parameters required by the chosen type. This will
 //    vary accordingly with the `type`, and therefore more usage details can
 //    be found for each type of source.
-var SourceFactory = function(position, limit, type, parameters) {
+var SourceFactory = function(position, type, parameters) {
   switch (type) {
     case SourceType.RANDOM_FROM_SET:
-      var items = new Array(limit);
-      for (var i = 0; i < limit; ++i) {
+      var items = new Array(parameters.limit);
+      for (var i = 0; i < parameters.limit; ++i) {
         items[i] = parameters.item_set[Math.floor(Math.random() *
                                        parameters.item_set.length)]
       }
       return new Source(position, items);
     case SourceType.FROM_LIST:
-      var items = new Array(limit);
-      for (var i = 0; i < limit; ++i) {
+      var items = new Array(parameters.limit);
+      for (var i = 0; i < parameters.limit; ++i) {
         items[i] = parameters.item_list[i % parameters.item_list.length];
       }
+      return new Source(position, items);
+    case SourceType.RANDOM:
+      var number_of_chunks = Random.randomInt(parameters.min_chunks,
+                                              parameters.max_chunks);
+      var chunk = new Array();
+      for (item in parameters.item_list) {
+        var min_multiplicity = parameters.item_list[item]["min"];
+        var max_multiplicity = parameters.item_list[item]["max"];
+        var multiplicity = Random.randomInt(min_multiplicity, max_multiplicity);
+        for (var i = 0; i < multiplicity; ++i) {
+          chunk.push(item);
+        }
+      }
+      console.log("Chunk{")
+      console.log(chunk);
+      console.log("Chunk}")
+
+      var items = new Array();
+      for (var i = 0; i < number_of_chunks; ++i) {
+        Random.randomShuffle(chunk);
+        items = items.concat(chunk);
+      }
+      console.log("Chunk{")
+      console.log(chunk);
+      console.log("Chunk}")
+      console.log("Items{")
+      console.log(items);
+      console.log("Items}")
+
       return new Source(position, items);
     default:
       throw new Error("Invalid source type for this SourceFactory.");
@@ -289,8 +320,9 @@ var Lesson04Game = function(size, arm_pos, sources, machines, deposits, goal) {
 };
 
 Lesson04Game.Goals = {
-  FILL_EVERY_DEPOSIT: 0,
-  EVERY_MACHINE_SOURCE_NOT_EMPTY: 1,
+  FILL_EVERY_DEPOSIT: 1,
+  EVERY_MACHINE_SOURCE_NOT_EMPTY: 2,
+  EVERY_SOURCE_AND_ARM_EMPTY: 3,
 };
 
 Lesson04Game.Error = function(code) {
@@ -381,6 +413,13 @@ Lesson04Game.prototype = {
           if (!this.deposits[i].isFull())
             return false;
         return true;
+      case Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY:
+        for (var i = 0; i < this.sources.length; ++i)
+          if (!(this.sources[i].peek() instanceof SourceEnd))
+            return false;
+        if (this.holding_item !== null)
+          return false;
+        return true;
       default:
         throw new Error("Invalid goal for this game.");
     }
@@ -414,6 +453,9 @@ var Sensors = {
     accept_list: ["IRON", "GLASS"],
     variable_name: "solido"
   },
+  SOURCE_NOT_EMPTY: {
+    variable_name: "material",
+  }
 };
 
 // Actions supported in this lesson.
@@ -574,6 +616,9 @@ Lesson04ExerciseStepPlayer.prototype = {
     scope.set(
       Sensors.SOLID.variable_name,
       Sensors.SOLID.accept_list.indexOf(this._game.peek()) !== -1);
+    scope.set(
+      Sensors.SOURCE_NOT_EMPTY.variable_name,
+      !(this._game.peek() instanceof SourceEnd));
   },
 
   // Parses an action literal into a value from Actions.
@@ -795,6 +840,7 @@ function Lesson04() {
                            Constants.References.GET_MATERIAL,
                            Constants.References.PUT_MATERIAL];
 
+
   // Step 1
   this.addStep(
     new Lesson.LessonStep(
@@ -834,7 +880,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         2,
-        [SourceFactory(4, 1, SourceType.RANDOM_FROM_SET, {item_set: ["GLASS"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET, {limit: 1, item_set: ["GLASS"]})],
         [],
         [new Deposit(0, {GLASS: 1})]
       ),
@@ -863,7 +909,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         2,
-        [SourceFactory(4, 3, SourceType.RANDOM_FROM_SET, {item_set: ["IRON"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET, {limit: 3, item_set: ["IRON"]})],
         [],
         [new Deposit(0, {IRON: 3})]
       ),
@@ -890,7 +936,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         2,
-        [SourceFactory(4, 2, SourceType.RANDOM_FROM_SET, {item_set: ["FUEL"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET, {limit: 2, item_set: ["FUEL"]})],
         [],
         [new Deposit(0, {FUEL: 2})]
       ),
@@ -934,7 +980,7 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 4, SourceType.FROM_LIST, {item_list: ["GLASS", "IRON"]})],
+        [SourceFactory(4, SourceType.FROM_LIST, {limit: 4, item_list: ["GLASS", "IRON"]})],
         [],
         [new Deposit(0, {IRON: 2}), new Deposit(2, {GLASS: 2})]
       ),
@@ -962,8 +1008,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 4, SourceType.FROM_LIST,
-                       {item_list: ["IRON", "IRON", "FUEL", "IRON"]})],
+        [SourceFactory(4, SourceType.FROM_LIST,
+                       {limit: 4, item_list: ["IRON", "IRON", "FUEL", "IRON"]})],
         [],
         [new Deposit(0, {FUEL: 1}), new Deposit(2, {IRON: 3})]
       ),
@@ -996,8 +1042,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 4, SourceType.FROM_LIST,
-                       {item_list: ["FUEL", "GLASS", "GLASS", "FUEL"]})],
+        [SourceFactory(4, SourceType.FROM_LIST,
+                       {limit: 4, item_list: ["FUEL", "GLASS", "GLASS", "FUEL"]})],
         [],
         [new Deposit(0, {GLASS: 2}), new Deposit(2, {FUEL: 2})]
       ),
@@ -1026,8 +1072,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         5,
         3,
-        [SourceFactory(4, 6, SourceType.FROM_LIST,
-                       {item_list: ["IRON", "GLASS", "FUEL",
+        [SourceFactory(4, SourceType.FROM_LIST,
+                       {limit: 6, item_list: ["IRON", "GLASS", "FUEL",
                                     "GLASS", "FUEL", "IRON"]})],
         [],
         [new Deposit(0, {IRON: 2}), new Deposit(1, {GLASS: 2}),
@@ -1058,8 +1104,8 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         4,
         2,
-        [SourceFactory(3, 3, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["IRON"]})],
+        [SourceFactory(3, SourceType.RANDOM_FROM_SET,
+                       {limit: 3, item_set: ["IRON"]})],
         [new Machine(
           [new Deposit(1, {IRON: 3})],
           0,
@@ -1100,10 +1146,10 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         6,
         3,
-        [SourceFactory(5, 3, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["IRON"]}),
-         SourceFactory(4, 2, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["GLASS"]})],
+        [SourceFactory(5, SourceType.RANDOM_FROM_SET,
+                       {limit: 3, item_set: ["IRON"]}),
+         SourceFactory(4, SourceType.RANDOM_FROM_SET,
+                       {limit: 2, item_set: ["GLASS"]})],
         [new Machine(
           [new Deposit(1, {IRON: 3}), new Deposit(2, {GLASS: 2})],
           0,
@@ -1136,10 +1182,10 @@ function Lesson04() {
       new Lesson04ExerciseStepPlayer(
         6,
         3,
-        [SourceFactory(4, 4, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["FUEL"]}),
-         SourceFactory(5, 2, SourceType.RANDOM_FROM_SET,
-                       {item_set: ["IRON"]})],
+        [SourceFactory(4, SourceType.RANDOM_FROM_SET,
+                       {limit: 4, item_set: ["FUEL"]}),
+         SourceFactory(5, SourceType.RANDOM_FROM_SET,
+                       {limit: 2, item_set: ["IRON"]})],
         [new Machine(
           [new Deposit(1, {FUEL: 4}), new Deposit(2, {IRON: 2})],
           0,
@@ -1152,6 +1198,353 @@ function Lesson04() {
       null
     )
   );
+
+  this._first_step_with_while = this.getNumberOfSteps();
+
+  commandsReference =
+    commandsReference.concat([Constants.References.MATERIAL_SENSOR]);
+
+    // Step 11
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+          Neste passo, em que existe apenas um item a ser movido, o
+          comando ENQ poderia ser ignorado. Mas é importante entender
+          como ele funciona para resolver os passos seguintes.
+        </p>,
+        <div>
+        <p>
+          Olá, aventureiro! Nossas últimas tarefas envolviam transportar
+          materiais de suas fontes para os seus respectivos depósitos.
+          Hoje, continuaremos a construção das naves, porém iremos
+          executar os comandos de uma forma um pouco diferente.
+        </p>
+        <p>
+          Na lição anterior, as fontes de materiais os produziam em
+          quantidades e sequências fixas. Para esta lição, a quantidade
+          de materiais a serem produzidos, bem como a sequência em que
+          eles são produzidos, é desconhecida.
+        </p>
+        <p>
+          Para resolver este problema, introduzimos o
+          comando <b>enquanto</b>. Ele se baseia em um sensor para funcionar.
+          A ideia é bem simples: enquanto o sensor estiver ativo,
+          o comando dentro do bloco enquanto será executado repetidamente.
+        </p>
+        <p>
+          Nesta lição, usaremos o comando <b>enquanto</b> baseado
+          no sensor <b>material</b>. O sensor tem indica se a fonte em
+          frente ao braço mecânico tem algum item a ser produzido.
+          Se tiver, o sensor é ativado. Se não tiver, o sensor não
+          é ativado. O comando <b>{"ENQ(material){ comandos }"}</b> executa
+          os <b>comandos</b> enquanto o sensor <b>material</b> estiver ativo.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          5,
+          2,
+          [SourceFactory(4, SourceType.RANDOM,
+                         {limit: 1, min_chunks: 1, max_chunks: 1,
+                          item_list: {GLASS: {min:1, max:1}}})],
+          [],
+          [new Deposit(0, {GLASS: 1})],
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
+        ),
+        "RR\nENQ(material) {\n  G\n  4{L}\n  P\n  4{R}\n}",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 12
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+          Resolver este é moleza!
+        </p>,
+        <div>
+        <p>
+          Neste passo, o braço mecânico está em uma situação parecida
+          com o passo anterior: é preciso levar algumas unidades de
+          ferro da fonte para o depósito. Você acredita que é
+          possível resolver este problema exatamente como foi
+          resolvido o do passo anterior?
+        </p>
+        <p>
+          <b>{"RR ENQ(tem) { G 4{L} P 4{R} }"}</b>
+        </p>
+        <p>
+          Consegue explicar o porquê?
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          5,
+          2,
+          [SourceFactory(4, SourceType.RANDOM,
+                         {min_chunks: 1, max_chunks: 1,
+                          item_list: {GLASS: {min:1, max:4}}})],
+          [],
+          [new Deposit(0, {GLASS: 4})],
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 13
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize o comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        Para este passo, é preciso transportar materiais diferentes
+        (<b>FERRO</b> e <b>VIDRO</b>) saindo da mesma fonte, para seus
+        respectivos depósitos. Porém, de forma diferente das lições
+        anteriores, o objetivo <b>não</b> é completar todos os
+        depósitos, portanto, o código
+        <b>{"8{ RR ferro?{ G 5{L} P 5{R} }:{ G 4{L} P 4{R} } }"}</b>,
+        que funcionaria para as lições anteriores,
+        não funciona para esta lição).
+        </p>
+        <p>
+        O objetivo é retirar materiais da fonte e colocá-los em seus
+        depósitos <b>até que a fonte se esgote</b>. Quando a fonte
+        se esgotar, o sensor “<b>material</b>” não mais será ativado
+        quando o braço fizer a leitura em frente à fonte.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [SourceFactory(5, SourceType.RANDOM,
+                         {min_chunks: 1, max_chunks: 1,
+                          item_list: {GLASS: {min:1, max:4},
+                                      IRON: {min:1, max:3}}})],
+          [],
+          [
+            new Deposit(0, {IRON: 4}),
+            new Deposit(1, {GLASS: 4})
+          ],
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 14
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize o enquanto (<b>ENQ</b>) quantas vezes for necessário
+        para resolver este problema.
+        </p>,
+        <div>
+        <p>
+        A solução deste problema é bem similar à do passo
+        anterior. Entretanto, todas as fontes de objetos precisam
+        ser completamente consumidas para que esse passo seja completado.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          2,
+          [
+            SourceFactory(4, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                            item_list: {"GLASS": {min: 1, max: 2}}}),
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                            item_list: {"GLASS": {min: 1, max: 2}}}),
+          ],
+          [],
+          [
+            new Deposit(0, {GLASS: 4})
+          ],
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 15
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize os sensores <b>material</b> e <b>ferro</b>, e o
+        comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        Para este problema, cada uma das fontes produz dois materiais
+        diferentes (<b>FERRO</b> e <b>VIDRO</b>). A solução, então, é
+        parecida com as dos dois passos anteriores.
+        </p>
+        <p>
+        É preciso verificar, para cada uma das fontes, se ela já
+        terminou de produzir materiais e, antes de tomar a decisão
+        de como depositar cada material extraído da fonte, se ele
+        é o material correto para o depósito.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          7,
+          3,
+          [
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                           item_list: {GLASS: {min: 1, max: 2},
+                                       IRON: {min: 1, max: 2}}}),
+            SourceFactory(6, SourceType.RANDOM,
+                          {min_chunks: 1, max_chunks: 1,
+                           item_list: {GLASS: {min: 1, max: 2},
+                                       IRON: {min: 1, max: 2}}}),
+          ],
+          [],
+          [
+            new Deposit(0, {GLASS: 4}),
+            new Deposit(1, {IRON: 4})
+          ],
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 16
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Para este passo, produza tantas peças da nave quanto for possível.
+        </p>,
+        <div>
+        <p>
+        Para este passo, temos que construir uma quantidade
+        desconhecida de peças da frente da nave (podemos colocar
+        3 unidades de <b>FERRO</b> para produzir uma peça de frente
+        da nave). Para isso, coloque todas as peças produzidas pela
+        fonte na entrada da máquina, até que não haja mais material
+        na fonte.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 2, max_chunks: 4,
+                           item_list: {IRON: {min: 3, max: 3}}})
+          ],
+          [
+            new Machine([
+              new Deposit(1, {IRON: 3})
+            ], 0, "SHIP_HEAD")
+          ],
+          [],
+          Lesson04Game.Goals.EVERY_SOURCE_AND_ARM_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 17
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize os sensores <b>ferro</b> e <b>material</b>, em conjunto
+        com o comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        Este passo é bem similar ao passo anterior, com a diferença
+        que, para gerar o meio da nave, é necessário completar a
+        entrada da máquina com dois tipos diferentes de materiais.
+        A quantidade de peças produzidas também é desconhecido:
+        enquanto existirem peças produzidas na fonte, elas devem ser
+        colocadas na máquina para produzir peças.
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 2, max_chunks: 4,
+                            item_list: {IRON: {min:3, max: 3},
+                                        GLASS: {min:2, max: 2}}})
+          ],
+          [
+            new Machine([
+              new Deposit(1, {IRON: 3}),
+              new Deposit(2, {GLASS: 2})
+            ], 0, "SHIP_BODY")
+          ],
+          [],
+          Lesson04Game.Goals.EVERY_MACHINE_SOURCE_NOT_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
+    // Step 18
+    this.addStep(
+      new Lesson.LessonStep(
+        <p>
+        Utilize os sensores <b>ferro</b> e <b>material</b>, em conjunto
+        com o comando enquanto (<b>ENQ</b>) para resolver este passo.
+        </p>,
+        <div>
+        <p>
+        A resolução deste passo é bem similar à do passo anterior.
+        Quais as modificações necessárias para que o código
+        anterior resolva este problema?
+        </p>
+        </div>,
+        commandsReference,
+        new Lesson04ExerciseStepPlayer(
+          6,
+          3,
+          [
+            SourceFactory(5, SourceType.RANDOM,
+                          {min_chunks: 2, max_chunks: 4,
+                           item_list: {IRON: {min: 2, max: 2},
+                                       FUEL: {min: 4, max: 4}}})
+          ],
+          [
+            new Machine([
+              new Deposit(1, {FUEL: 4}),
+              new Deposit(2, {IRON: 2})
+            ], 0, "SHIP_TAIL")
+          ],
+          [],
+          Lesson04Game.Goals.EVERY_MACHINE_SOURCE_NOT_EMPTY
+        ),
+        "",  // initialCode
+        Constants.Lesson04.SUCCESS_MESSAGE,
+        null
+      )
+    );
+
 };
 
 Lesson04.prototype = Object.create(Lesson.Lesson.prototype);
@@ -1166,6 +1559,13 @@ Object.assign(Lesson04.prototype, {
     ResourceLoader.addImage(ElementFactories.ROBOTIC_ARM_HOLDING_GLASS_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.ROBOTIC_ARM_HOLDING_FUEL_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.SPACESHIP_FACTORY_BACKGROUND_URL);
+  },
+
+  /// Returns the index of the first step in the lesson that requires the use
+  /// of conditionals to be solved.
+  getFirstStepWithWhile: function() {
+    var ret = this._first_step_with_while;
+    return ret;
   },
 });
 module.exports = {Lesson04: Lesson04,
