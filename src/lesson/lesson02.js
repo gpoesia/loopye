@@ -146,11 +146,11 @@ function Lesson02ExerciseStepPlayer(is_example, rows, cols, robot_position,
   this._solved = !!is_example;
 }
 
-// Types of actions supported in this lesson.
+// Actions supported in this lesson.
 var Actions = {
-  MOVE_FORWARD: 1,
-  TURN_LEFT: 2,
-  TURN_RIGHT: 3,
+  MOVE_FORWARD: "F",
+  TURN_LEFT: "E",
+  TURN_RIGHT: "D",
 };
 
 Lesson02ExerciseStepPlayer.prototype = {
@@ -337,13 +337,13 @@ Lesson02ExerciseStepPlayer.prototype = {
       var action = raw_actions[i];
 
       switch (action) {
-        case "L":
+        case Actions.TURN_LEFT:
           actions.push(Actions.TURN_LEFT);
           break;
-        case "R":
+        case Actions.TURN_RIGHT:
           actions.push(Actions.TURN_RIGHT);
           break;
-        case "F":
+        case Actions.MOVE_FORWARD:
           actions.push(Actions.MOVE_FORWARD);
           break;
         default:
@@ -361,7 +361,7 @@ function Lesson02() {
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Com mais um F, esse robô coletará a bateria.
+        Com mais um "F", esse robô coletará a bateria.
       </p>,
       <div>
         <p>
@@ -378,10 +378,10 @@ function Lesson02() {
           Cada robô, agora, está olhando em uma direção.
           Vamos ver como girar o robô, mas antes o mais importante:
           como fazer ele se mover?
-          Agora, vamos usar o comando "F" maiúsculo (do inglês, Forward)
+          Agora, vamos usar o comando <b>F</b> maiúsculo (que significa <b> para frente</b>)
           para mover o robô rumo à bateria.
           Vê esse robô? Ele precisa mover-se duas vezes para chegar
-          até a bateria. Eu já coloquei um F lá: basta colocar outro para
+          até a bateria. Eu já coloquei um <b>F</b> lá: basta colocar outro para
           pegarmos esta bateria.
         </p>
       </div>,
@@ -390,21 +390,21 @@ function Lesson02() {
         false, 3, 3, new Grid.Position(0, 0), Grid.Directions.RIGHT,
         [new Grid.Position(0, 2)],
         []),
-      "F",
+      Actions.MOVE_FORWARD,
       Constants.Lesson02.SUCCESS_MESSAGE,
       null));
 
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Depois de virar à direita com o comando R, fica fácil, não?
+        Depois de virar à direita com o comando "D", fica fácil, não?
       </p>,
       <div>
         <p>
           Muito bem! Aquele foi fácil, porque o robô já estava olhando
           na direção certa. Este robô está virado para cima.
-          Para que ele vire para a direita, vamos usar o comando "R"
-          (de right, que é "direita" em inglês).
+          Para que ele vire para a direita, vamos usar o comando <b> D </b>
+          (de <b> direita</b>).
           Depois, basta andar duas vezes para frente e pegar a bateria,
           como você já fez antes.
         </p>
@@ -426,7 +426,7 @@ function Lesson02() {
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Lembre-se: use o comando "L" para virar à esquerda.
+        Lembre-se: use o comando "E" para virar à esquerda.
       </p>,
       <div>
         <p>
@@ -434,7 +434,7 @@ function Lesson02() {
           e apenas andando para frente conseguimos pegar a primeira bateria.
           Mas, para chegar à outra, vamos precisar virar à esquerda,
           e depois andar em frente novamente.
-          Para isso, use o comando "L" (de left, que é esquerda em inglês).
+          Para isso, use o comando <b> E </b> (de <b> esquerda</b>).
         </p>
       </div>,
       commandsReference,
@@ -544,7 +544,7 @@ function Lesson02() {
           Essa é outra forma de dizer <b>FFFFFFFFF</b>, mas bem melhor, não?
         </p>
         <p>
-          Da mesma forma, podemos depois virar à direita e fazer <b>{"5{F}"}</b>
+          Da mesma forma, podemos depois virar à direita e fazer <b>{"5{F} "}</b>
           para andar cinco vezes. Veja o código que eu escrevi.
           Ele pega todas as baterias e é bem curto e fácil de ler!
           Ah, veja que podemos colocar o código com espaços, e em várias linhas,
@@ -561,7 +561,7 @@ function Lesson02() {
          new Grid.Position(4, 3),
          new Grid.Position(3, 8),
         ]),
-      "L\n9{F}\nR\n5{F}",
+      "L\n9{F}\nD\n5{F}",
       Constants.Lesson02.SUCCESS_MESSAGE,
       null));
 
@@ -599,7 +599,7 @@ function Lesson02() {
          new Grid.Position(4, 4),
          new Grid.Position(5, 4),
         ]),
-      "RR\n5{F}",
+      "DD\n5{F}",
       Constants.Lesson02.SUCCESS_MESSAGE,
       null));
 
@@ -650,19 +650,19 @@ function Lesson02() {
         <p>
           Perfeito! Veja, este robô está em uma situação muito parecida.
           Desta vez, o limite é menor, então não podemos digitar
-          <b>{"4{F} R 4{F}"}</b> nem <b>FFFFRFFFF</b>, porque os dois têm 9
+          <b>{ "4{F} D 4{F}"}</b> nem <b>FFFFDFFFF</b>, porque os dois têm 9
           caracteres, mas só podemos usar 8.
           Vou te mostrar o truque.
           Um laço pode ter mais de um comando para ser repetido.
-          Nesse caso, podemos repetir duas vezes o seguinte: <b>FFFFR</b>.
+          Nesse caso, podemos repetir duas vezes o seguinte: <b>FFFFD</b>.
           Com isto, o robô chega à primeira bateria, vira à direita,
           e depois faz o mesmo: chega à segunda bateria e vira à direita.
           Essa última virada à direita não é necessária, mas não importa,
           porque o programa fica mais curto.
         </p>
         <p>
-          Basta então escrever um loop que executa <b>FFFFR</b> duas vezes.
-          Na linguagem dos robôs, isso seria: <b>{"2{FFFFR}"}</b>. Legal, não?
+          Basta então escrever um loop que executa <b>FFFFD</b> duas vezes.
+          Na linguagem dos robôs, isso seria: <b>{"2{FFFFD}"}</b>. Legal, não?
           Vamos lá, não deixe esse robô morrer de fome...
           ou melhor, sem bateria.
         </p>
@@ -844,11 +844,11 @@ function Lesson02() {
           Você sabia que um laço pode estar dentro de outro laço?
           Por exemplo, para este robô, queremos que ele percorra um quadrado
           muito grande.
-          <b>{"4 { FFFFFFFFF R }"}</b> funcionaria, mas é longo demais,
+          <b>{"4 { FFFFFFFFF D }"}</b> funcionaria, mas é longo demais,
           pois usa 13 caracteres e só podemos usar 8 desta vez.
-          Porém, podemos fazer o seguinte: repetir duas vezes o código
-          <b>{"9 {F} R"}</b>. Como fazemos isso?
-          É simples: <b>{"2 { 9 {F} R }"}</b>.
+          Porém, podemos fazer o seguinte: repetir duas vezes o
+          código <b>{"9 {F} D"}</b>. Como fazemos isso?
+          É simples: <b>{"2 { 9 {F} D }"}</b>.
         </p>
         <p>
           Tudo que está dentro do <b>{"2 { }"}</b> é repetido duas vezes,

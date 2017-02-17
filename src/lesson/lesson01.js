@@ -18,6 +18,13 @@ var FailureReasons = {
   LEFT_GRID: 2,
 };
 
+// Actions supported in this lesson.
+var Actions = {
+  WAIT: "A",
+  MOVE_LEFT: "E",
+  MOVE_RIGHT: "D",
+};
+
 var MAX_GRID_CELL_SIZE = Constants.RUN_VIEW_SQUARE_DIMENSION / 8;
 
 var Lesson01Game = function(n_rows, n_cols, robot_position,
@@ -251,19 +258,19 @@ Lesson01ExerciseStepPlayer.prototype = {
     var failure_reason = null;
 
     for (var i = 1; i < this.game.n_rows; ++i) {
-      var action = actions.shift() || "W";
+      var action = actions.shift() || Actions.WAIT;
       var direction = null;
 
       switch (action) {
-        case "L":
+        case Actions.MOVE_LEFT:
           direction = -1;
           directions.push(direction);
           break;
-        case "R":
+        case Actions.MOVE_RIGHT:
           direction = 1;
           directions.push(direction);
           break;
-        case "W":
+        case Actions.WAIT:
           direction = 0;
           directions.push(direction);
           break;
@@ -430,19 +437,19 @@ Object.assign(Lesson01ExerciseStepPlayerMulti.prototype, {
     );
 
     for (var i = 1; i < max_n_rows; ++i) {
-      var action = actions.shift() || "W";
+      var action = actions.shift() || Actions.WAIT;
       var direction = null;
 
       switch (action) {
-        case "L":
+        case Actions.MOVE_LEFT:
           direction = -1;
           directions.push(direction);
           break;
-        case "R":
+        case Actions.MOVE_RIGHT:
           direction = 1;
           directions.push(direction);
           break;
-        case "W":
+        case Actions.WAIT:
           direction = 0;
           directions.push(direction);
           break;
@@ -467,7 +474,7 @@ function Lesson01() {
     new Lesson.LessonStep(
       <p>
         Eu já escrevi um programa para salvar este robô, ali do lado esquerdo.
-        Ele é "LW". Aperte {Icons.PlayIcon} para ver o que ele faz.
+        Ele é "EA". Aperte {Icons.PlayIcon} para ver o que ele faz.
       </p>,
       <div>
         <p>
@@ -481,8 +488,8 @@ function Lesson01() {
           Veja este robô! Existem 3 obstáculos acima dele, prestes
           a cair. Para que ele sobreviva à chuva de meteoros sem ser
           atingido, ele deve se movimentar para a esquerda. Por isso já digitei
-          LW no nosso sistema, ali na esquerda. O robô executa cada comando em sequência:
-          primeiro o comando L, e em seguida o W. Quando acabam os comandos, ele fica parado,
+          <b> EA</b> no nosso sistema, ali na esquerda. O robô executa cada comando em sequência:
+          primeiro o comando <b> E</b>, e em seguida o <b> A</b>. Quando acabam os comandos, ele fica parado,
           esperando que a chuva passe. Todos os comandos são letras maiúsculas.
           Vamos ver o que acontece e já te explico o que cada um faz.
         </p>
@@ -498,29 +505,28 @@ function Lesson01() {
       [],
       new Lesson01ExerciseStepPlayer(false, 3, 3, 1,
                                      [5, 7, 8]),
-      "LW",
+      "EA",
       Constants.Lesson01.SUCCESS_MESSAGE));
 
   var commandsReference = [Constants.References.WAIT,
-                           Constants.References.MOVE_LEFT,
-                           Constants.References.MOVE_RIGHT];
+                           Constants.References.MOVE_LEFT];
 
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Para este robô, você precisará usar o comando "R" para ir para a direita.
+        Para este robô, você precisará usar o comando "D" para ir para a direita.
         Mas não apenas isso: antes, ele precisará esperar o meteoro que vai cair à sua direita.
         Boa sorte! Não tenha medo de tentar, errar e tentar de novo,
         o robô é resistente :-)
       </p>,
       <p>
-        Muito bem! Ah, você deve estar se perguntando porque LW. Bom,
-        vamos passo-a-passo: a letra L (de "left", ou esquerda em inglês), comanda
-        que o robô se movimente para a esquerda. A letra "W" (de "wait",
-        aguarde), comanda que o robô permaneça onde está naquele momento.
+        Muito bem! Ah, você deve estar se perguntando porque <b> EA</b>. Bom,
+        vamos passo-a-passo: a letra <b> E </b> (de <b> esquerda</b>), comanda
+        que o robô se movimente para a esquerda. A letra <b> A </b> (de <b> aguardar</b>),
+        comanda que o robô permaneça onde está naquele momento.
         Combinando os dois comandos, o robô se movimenta para a esquerda e,
         em sequência, aguarda na posição atual. Não precisamos utilizar a
-        letra R para o robô anterior, mas para este, iremos precisar.
+        letra <b> D </b> para o robô anterior, mas para este, iremos precisar.
         Você consegue descobrir para que ela serve? Clique em {Icons.PlayIcon} para ver
         o que acontece.
       </p>,
@@ -530,10 +536,13 @@ function Lesson01() {
       "",
       Constants.Lesson01.SUCCESS_MESSAGE));
 
+  commandsReference =
+    commandsReference.concat([Constants.References.MOVE_RIGHT]);
+
   this.addStep(
     new Lesson.LessonStep(
       <p>
-        Eu tentei "LWRL", mas o robô está sendo atingido. Acho que com uma pequena
+        Eu tentei <b>EADE</b>, mas o robô está sendo atingido. Acho que com uma pequena
         correção esse programa já deve ser suficiente.
       </p>,
       <p>
@@ -544,7 +553,7 @@ function Lesson01() {
       commandsReference,
       new Lesson01ExerciseStepPlayer(false, 5, 3, 1,
                                      [4, 7, 8, 9, 11, 12, 13]),
-      "LWRL",
+      "EADE",
       Constants.Lesson01.SUCCESS_MESSAGE));
 
   this.addStep(
@@ -572,8 +581,8 @@ function Lesson01() {
       <p>
         Para alguns casos, existem diversos programas diferentes em que o
         robô seja salvo com sucesso. Por exemplo, o robô anterior poderia
-        ser salvo com qualquer um dos programas seguintes: LWRR, LRWR, RLWR,
-        RRWL. Você acha que o mesmo é verdade para este robô?
+        ser salvo com qualquer um dos programas seguintes: <b>EADD</b>, <b>EDAD</b>, <b>DEAD</b>,
+        <b>DDAE</b>. Você acha que o mesmo é verdade para este robô?
       </p>,
       commandsReference,
       new Lesson01ExerciseStepPlayer(false, 15, 3, 1,
@@ -589,7 +598,7 @@ function Lesson01() {
         Outro robô em apuros...
       </p>,
       <p>
-        Se você respondeu RLWWWWLRRWLLRL para o robô anterior, e acha que é
+        Se você respondeu <b> DEAAAAEDDAEEDE</b> para o robô anterior, e acha que é
         o único programa que faz com que o robô desvie corretamente de
         todos os meteoros, você acertou! Igualmente, para este robô, só
         existe um programa que faz com que ele seja salvo sem ser atingido
@@ -628,7 +637,7 @@ function Lesson01() {
       <p>
         Para o robô anterior, vimos que existe uma "região segura" que,
         após alcançada, significa que o robô não será atingido se todos os
-        comandos seguintes forem somente de espera (sequência de Ws).
+        comandos seguintes forem somente de espera (sequência de <b>A</b>s).
         Você acha que existe alguma regiao segura para o robô atual?
       </p>,
       commandsReference,
@@ -678,11 +687,11 @@ function Lesson01() {
       <p>
         Alguns de nossos robôs recebem comandos do mesmo computador e, por isso,
          o programa que for escrito para salvá-los deve ser único e deve funcionar
-         igualmente para os dois robôs. Veja neste exemplo: o programa WLWW
+         igualmente para os dois robôs. Veja neste exemplo: o programa <b>AEAA </b>
          salva o primeiro robô, mas faz com que o segundo seja atingido por um meteoro.
-         Já o programa LLWW salva o segundo robô, mas faz com que o primeiro
+         Já o programa <b>EEAA</b> salva o segundo robô, mas faz com que o primeiro
          seja atingido por um meteoro. O único programa que salva os dois
-         robôs, ao mesmo tempo, é WRLW (ou WRL).
+         robôs, ao mesmo tempo, é <b>ADEA</b> (ou <b>ADE</b>).
       </p>,
       commandsReference,
       new Lesson01ExerciseStepPlayerMulti(true, 2, [5, 5], [5, 5], [2, 2],
