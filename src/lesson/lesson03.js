@@ -31,10 +31,10 @@ var FailureReasons = {
 // Actions supported in this lesson.
 var Actions = {
   MOVE_FORWARD: "F",
-  TURN_LEFT: "L",
-  TURN_RIGHT: "R",
-  GET_COMPONENT: "G",
-  PUT_COMPONENT: "P",
+  TURN_LEFT: "E",
+  TURN_RIGHT: "D",
+  GET_COMPONENT: "P",
+  PUT_COMPONENT: "C",
 };
 
 // Possible step goals: just get all components, or also fix all machines.
@@ -578,9 +578,9 @@ Lesson03ExerciseStepPlayer.prototype = {
 function Lesson03() {
   Lesson.Lesson.call(this);
 
-  var commandsReference = [Constants.References.MOVE_FORWARD,
-                           Constants.References.TURN_LEFT,
+  var commandsReference = [Constants.References.TURN_LEFT,
                            Constants.References.TURN_RIGHT,
+                           Constants.References.MOVE_FORWARD,
                            Constants.References.GET_COMPONENT];
 
   // Step 1
@@ -607,10 +607,9 @@ function Lesson03() {
         <p>
           Olhe só, nesse cenário existe uma engrenagem solta.
           Você precisa fazer o robô pegá-la. Para isso, você só precisa
-          utilizar o comando “<b>F</b>” (do inglês <i>Forward</i>,
-          que significa <b>pra frente</b>) para o robô andar uma vez
-          e ficar em frente à engrenagem, e depois utilizar
-          o comando “<b>G</b>” (do inglês <i>Get</i>, que
+          utilizar o comando “<b>F</b>” (que significa <b>para frente</b>)
+          para o robô andar uma vez e ficar em frente à engrenagem, e
+          depois utilizar o comando “<b>P</b>” (que
           significa <b>pegar</b>) para o robô pegar a engrenagem.
         </p>
       </div>,
@@ -647,13 +646,11 @@ function Lesson03() {
           ela. Agora, ele precisa colocá-la em uma máquina que
           está com uma engrenagem faltando.
           Para isso, ele precisa chegar em frente à máquina e utilizar o seu
-          comando “<b>P</b>” (do inglês <i>Put</i>, que significa
-          &nbsp;<b>colocar</b>).
+          comando <b>C</b> (<b>colocar</b>).
         </p>
         <p>
           Lembre-se que quando precisar virar à esquerda, você pode utilizar
-          o comando “<b>L</b>” (do inglês, <i>Left</i>), ou para virar à
-          direita o comando “<b>R</b>” (do inglês, <i>Right</i>).
+          o comando <b>E</b>, ou para virar à direita o comando <b>D</b>.
         </p>
       </div>,
       commandsReference,
@@ -686,8 +683,8 @@ function Lesson03() {
           que faltava nela. Agora temos que continuar consertando todas as
           máquinas na nossa base. Olhe nessa sala, existe uma engrenagem solta e
           uma máquina quebrada. Conserte a máquina pegando a engrenagem e depois
-          colocado ela na máquina. Lembre-se, o comando para pegar é
-          “<b>G</b>” (<i>Get</i>), e para colocar é “<b>P</b>” (<i>Put</i>).
+          colocado ela na máquina. Lembre-se, o comando para pegar
+          é <b>P</b>, e para colocar é <b>C</b>.
         </p>
       </div>,
       commandsReference,
@@ -956,7 +953,7 @@ function Lesson03() {
           executar um código apenas se ele encontrar uma engrenagem.
         </p>
         <p>
-          Para isso, utilizamos o seguinte código: <b>{"eng?{G}"}</b>
+          Para isso, utilizamos o seguinte código: <b>{"se eng {P}"}</b>
         </p>
         <p>
           É como se estivessemos fazendo uma pergunta: “Existe uma
@@ -964,8 +961,8 @@ function Lesson03() {
           que está entre <b>{"{"}</b> e <b>{"}"}</b> será executado.
           Se a resposta for não, o programa pula tudo que está entre
           as chaves. Nesse caso, ele só vai pegar a engrenagem com o
-          comando “G” se existir uma engrenagem escondida na área escura.
-          Senão o comando “G” não vai ser executado.
+          comando “P” se existir uma engrenagem escondida na área escura.
+          Senão o comando “P” não vai ser executado.
         </p>
       </div>,
       commandsReference,
@@ -997,7 +994,7 @@ function Lesson03() {
         <p>
           Muito bem! Encontramos uma engrenagem na área escura
           da sala anterior. Para isso, você utilizou
-          &nbsp;<b>{"eng?{G}"}</b>, que só executa o comando G se a
+          &nbsp;<b>{"se eng {P}"}</b>, que só executa o comando P se a
           engrenagem estiver em frente ao robô. Esse tipo de código
           é chamado de <b>condicional</b>. Nesse caso, a condição
           para executar o código entre chaves é existir uma
@@ -1201,7 +1198,7 @@ function Lesson03() {
           Você sabia que nós não precisamos utilizar apenas um
           comando quando utilizamos a condicional do sensor de
           engrenagens. Por exemplo, se a gente escrever o
-          código <b>{"eng?{GFPRRFR}"}</b> o robô vai executar esses
+          código <b>{"se eng {PFCDDFD}"}</b> o robô vai executar esses
           comandos entre chaves apenas se tiver uma engrenagem na
           frente dele. Senão, ele pula para o próximo. Será que
           desse jeito conseguimos resolver o problema nessa sala?
@@ -1296,9 +1293,9 @@ function Lesson03() {
           Para descobrir onde está a máquina, o nosso robô também
           conta com um sensor de máquinas, que indica se existe
           uma máquina na frente dele. Você pode utilizar esse
-          sensor através do condicional <b>{"maq?{P}"}</b>.
+          sensor através do condicional <b>{"se maq {C}"}</b>.
           Ele funciona como o sensor de engrenagens. Esse código
-          irá executar o comando P somente se o robô estiver em
+          irá executar o comando C somente se o robô estiver em
           frente a uma máquina.
         </p>
       </div>,
@@ -1470,7 +1467,7 @@ function Lesson03() {
       ),
       "",  // initialCode
       Constants.Lesson03.SUCCESS_MESSAGE,
-      22
+      24
     )
   );
 
