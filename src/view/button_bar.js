@@ -65,6 +65,19 @@ var ButtonBar = React.createClass({
       backgroundImage: "url(\"" + Constants.HELP_ICON_URL + "\")",
       backgroundColor: "#E657A3",
     },
+    fastForwardButton: {
+      height: "100%",
+      width: "100px",
+      maxWidth: "22%",
+      cursor: "pointer",
+      border: "0px",
+      borderRadius: "5px",
+      backgroundSize: "40px",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundImage: "url(\"" + Constants.FAST_FORWARD_ICON_URL + "\")",
+      backgroundColor: "#D2E21D",
+    },
     space: {
       display: "inline-block",
       width: "10px",
@@ -75,6 +88,9 @@ var ButtonBar = React.createClass({
     return  <div style={this._styles.barContainer}>
               <button onClick={this.props.onPlay}
                       style={this._styles.playButton} />
+              <div style={this._styles.space}></div>
+              <button onClick={this.props.onFastForward}
+                      style={this._styles.fastForwardButton} />
               <div style={this._styles.space}></div>
               <button onClick={this.props.onReset}
                       style={this._styles.resetButton} />
@@ -94,6 +110,7 @@ ButtonBar.populateResourceLoader = function() {
   ResourceLoader.addImage(Constants.ADVANCE_ICON_URL);
   ResourceLoader.addImage(Constants.HELP_ICON_URL);
   ResourceLoader.addImage(Constants.RESET_ICON_URL);
+  ResourceLoader.addImage(Constants.FAST_FORWARD_ICON_URL);
 }
 
 module.exports = ButtonBar;

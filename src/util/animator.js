@@ -287,9 +287,7 @@ StaticImageElement.prototype = {
 };
 
 // An Animator has elements, animations, and plays the scene in a canvas.
-var Animator = function() {
-  var animator = this;
-
+function Animator() {
   this.elements = new Object();
   this.animations = new Array();
   this.start_time = 0;
@@ -299,44 +297,49 @@ var Animator = function() {
   this.origin_y = 0;
   this.width = null;
   this.height = null;
+  // Point in time in which the animation started to be fast fowarded.
+  this.fast_forward_begin = null;
+  this.fast_forward_factor = null;
+}
 
+Object.assign(Animator.prototype, {
   // Adds an element to the scene.
-  this.addElement = function(element) {
+  addElement: function(element) {
     this.elements[element.id] = element;
-  };
+  },
 
   // Sets the origin of the animator's coordinate space relative to the canvas'
   // coordinates. Effectively, every rendered element will be displaced by
   // origin_x and origin_y.
-  this.setOrigin = function(origin_x, origin_y) {
+  setOrigin: function(origin_x, origin_y) {
     this.origin_x = origin_x;
     this.origin_y = origin_y;
-  };
+  },
 
   // Sets the size of the canvas' coordinate space.
   // If width and/or height are null (the default), the canvas' original
   // size will be respected.
-  this.setSize = function(width, height) {
+  setSize: function(width, height) {
     this.width = width;
     this.height = height;
-  };
+  },
 
   // Returns the element with the given id.
-  this.getElement = function(id) {
+  getElement: function(id) {
     if (!this.elements.hasOwnProperty(id))
       throw "No such element " + id;
     return this.elements[id];
-  };
+  },
 
   // Returns whether there is an element with the given id.
-  this.hasElement = function(id) {
+  hasElement: function(id) {
     return this.elements.hasOwnProperty(id);
-  }
+  },
 
   // Adds an animation to the scene.
   // If `animation` is an array, each element is expected to be an animation
   // to be added.
-  this.addAnimation = function(animation) {
+  addAnimation: function(animation) {
     if (Array.isArray(animation)) {
       for (var i = 0; i < animation.length; i++) {
         this.addAnimation(animation[i]);
@@ -344,25 +347,34 @@ var Animator = function() {
     } else {
       this.animations.push(animation);
     }
-  };
+  },
 
   // Clears all animations on the scene.
-  this.clearAllAnimations = function() {
+  clearAllAnimations: function() {
     this.animations = new Array();
-  };
+  },
 
   // Starts the animation timer. Needs to be called before play().
-  this.start = function() {
+  start: function() {
     this.start_time = new Date().getTime();
     this.playing = true;
-  };
+  },
+
+  fastForward: function(factor) {
+    if (this.fast_forward_factor !== null) {
+      throw "Cannot fast forward animation that is already being fast forwarded.";
+    }
+    this.fast_forward_factor = factor;
+  },
 
   // Play the animation in a canvas. Must be called after start().
-  this.play = function(canvas) {
+  play: function(canvas) {
     if (!!this.width)
       canvas.width = this.width;
     if (!!this.height)
       canvas.height = this.height;
+
+    var animator = this;
 
     function playUntilEnd() {
       if (animator.playing) {
@@ -370,31 +382,32 @@ var Animator = function() {
         window.requestAnimationFrame(playUntilEnd);
       }
     }
+
     playUntilEnd();
-  };
+  },
 
   // Registers a function to be called when the animation stops.
   // The function can optionally take one argument, which is a boolean
   // that indicates whether the animation finished (true) or was stopped
   // prematurely (false).
-  this.onStop = function(callback) {
+  onStop: function(callback) {
     this.stop_callback = callback;
-  }
+  },
 
   // Stops the current animation.
-  this.stop = function(finished) {
+  stop: function(finished) {
     this.playing = false;
     this.stop_callback(!!finished);
-  };
+  },
 
   // Renders the current state of the animation in a canvas.
-  this.render = function(canvas, t) {
+  render: function(canvas, t) {
     this._animateElements(t);
     this._renderFrame(canvas);
-  };
+  },
 
   // Renders the current state of the elements.
-  this._renderFrame = function(canvas) {
+  _renderFrame: function(canvas) {
     var context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (var id in this.elements) {
@@ -405,15 +418,27 @@ var Animator = function() {
         }
       }
     }
-  };
+  },
 
   // Updates the elements according to the animations.
-  this._animateElements = function(t) {
+  _animateElements: function(t) {
     if (this.start_time !== null && t === undefined) {
       t = (new Date().getTime() - this.start_time) / 1000;
     }
     var animations = this.animations;
     var shouldStop = true;
+
+    // Detect when fast forwarding begins.
+    if (this.fast_forward_factor !== null &&
+        this.fast_forward_begin === null) {
+      this.fast_forward_begin = t;
+    }
+
+    // Apply fast forwarding.
+    if (this.fast_forward_begin !== null && t > this.fast_forward_begin) {
+      t = this.fast_forward_begin +
+        (t - this.fast_forward_begin) * this.fast_forward_factor;
+    }
 
     // Process animations that have finished but have not yet been
     // finalized (i.e. updated the corresponding property in their final state).
@@ -463,8 +488,8 @@ var Animator = function() {
                        animation.initial_state);
       }
     }
-  };
-};
+  },
+});
 
 module.exports = {
   Element: Element,
