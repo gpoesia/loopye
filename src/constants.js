@@ -9,8 +9,10 @@ module.exports = {
   RESET_ICON_URL: "/static/images/icons/reset.png",
   ADVANCE_ICON_URL: "/static/images/icons/advance.png",
   HELP_ICON_URL: "/static/images/icons/help.png",
+  FAST_FORWARD_ICON_URL: "/static/images/icons/fast-forward.png",
 
   RUN_VIEW_SQUARE_DIMENSION: 1000,
+  FAST_FORWARD_FACTOR: 8,
 
   MAX_LOOP_TRIPS: 20,
   SemanticAnalysisErrors: {

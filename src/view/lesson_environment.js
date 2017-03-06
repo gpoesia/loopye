@@ -12,6 +12,7 @@ var ResourceLoader = require("../util/resource_loader");
 var Popup = require("react-popup").default;
 var Sidebar = require('react-sidebar').default;
 var CommandReferenceSidebar = require('./command_reference_sidebar.js');
+var Constants = require("../constants");
 
 var LessonEnvironment = React.createClass({
   styles: {
@@ -168,6 +169,12 @@ var LessonEnvironment = React.createClass({
     });
   },
 
+  _fastForward: function() {
+    if (this.currentAnimator) {
+      this.currentAnimator.fastForward(Constants.FAST_FORWARD_FACTOR);
+    }
+  },
+
   componentWillMount: function() {
     this._startStep(this.state.currentStep);
   },
@@ -231,10 +238,11 @@ var LessonEnvironment = React.createClass({
                   </div>
                   <div style={this.styles.buttonBar}>
                     <ButtonBar onPlay={this._playCode}
-                                onReset={this._reset}
-                                onAdvance={this._advanceStep}
-                                onHelp={this._showInstructions.bind(this, null)}
-                                advanceEnabled={currentStep.canAdvance()} />
+                               onReset={this._reset}
+                               onAdvance={this._advanceStep}
+                               onHelp={this._showInstructions.bind(this, null)}
+                               onFastForward={this._fastForward}
+                               advanceEnabled={currentStep.canAdvance()} />
 
                   </div>
                 </div>
