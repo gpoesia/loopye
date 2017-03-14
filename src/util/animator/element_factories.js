@@ -5,13 +5,15 @@
 var animator = require("../animator");
 var ResourceLoader = require("../resource_loader");
 
-var ROBOT_IMAGE_URL = "/static/images/elements/robot.png";
-var ROBOT_HOLDING_IMAGE_URL = "/static/images/elements/robot-with-gear.png";
+var ROBOT_IMAGE_URL = "/static/images/elements/robot-new.png";
+var ROBOT_HOLDING_IMAGE_URL = "/static/images/elements/robot-with-gear-new.png";
 var ASTEROIDS_IMAGE_URL = "/static/images/elements/asteroids.png";
+var ROCKS_IMAGE_URL = "/static/images/elements/rocks.png";
 var MACHINE_COMPONENT_URL = "/static/images/elements/gear.png";
 var MACHINE_URL = "/static/images/elements/bad-machine.png";
 var WORKING_MACHINE_URL = "/static/images/elements/good-machine.png";
-var ASTEROIDS_BACKGROUND_URL = "/static/images/elements/asteroids-background.png";
+var ASTEROIDS_BACKGROUND_URL = "/static/images/elements/asteroids-background-new.png";
+var DESERT_BACKGROUND_URL = "/static/images/elements/desert-background.png"
 var ROBOTIC_ARM_IMAGE_URL = "/static/images/elements/robotic-arm.png";
 var ROBOTIC_ARM_HOLDING_IRON_IMAGE_URL = "/static/images/elements/robotic-arm-iron.png";
 var ROBOTIC_ARM_HOLDING_GLASS_IMAGE_URL = "/static/images/elements/robotic-arm-glass.png";
@@ -25,7 +27,7 @@ var SHIP_HEAD_DEPOSIT_URL = "/static/images/elements/ship-head-deposit.png";
 var SHIP_TAIL_DEPOSIT_URL = "/static/images/elements/ship-tail-deposit.png";
 var SHIP_BODY_DEPOSIT_URL = "/static/images/elements/ship-body-deposit.png";
 
-var SOURCE_IMAGE_URL = "/static/images/elements/source.png"
+var SOURCE_IMAGE_URL = "/static/images/elements/source.png";
 
 // Calculates the largest size an image can have so that 1) proportions are kept
 // and 2) maximum size constraints are not violated.
@@ -50,25 +52,37 @@ function calculateDimensions(max_width, max_height, image_width, image_height) {
 function createAsteroidsBackground(id, max_width, max_height,
                                    grid_width, grid_height) {
   var image = ResourceLoader.get(ASTEROIDS_BACKGROUND_URL);
-  var IMAGE_WIDTH = 48 * 15;
-  var IMAGE_HEIGHT = 48 * 15;
+  var tile_size = 50;
+  var IMAGE_WIDTH = tile_size * 15;
+  var IMAGE_HEIGHT = tile_size * 15;
   var dimensions = calculateDimensions(max_width, max_height,
                                        IMAGE_WIDTH, IMAGE_HEIGHT);
   var cut_x = 0;
-  var cut_y = 7 * 48;
-  var cut_width = 8 * 48;
-  var cut_height = 8 * 48;
+  var cut_y = 7 * tile_size;
+  var cut_width = 8 * tile_size;
+  var cut_height = 8 * tile_size;
   var max_grid = (grid_width > grid_height) ? grid_width : grid_height;
   if (max_grid > 8) {
-    cut_y = (15 - max_grid) * 48;
-    cut_width = max_grid * 48;
-    cut_height = max_grid * 48;
+    cut_y = (15 - max_grid) * tile_size;
+    cut_width = max_grid * tile_size;
+    cut_height = max_grid * tile_size;
   }
   return new animator.StaticImageElement(
       id, image, dimensions[0], dimensions[1],
       cut_x, cut_y,
       cut_width, cut_height
     );
+}
+
+function createDesertBackground(id, max_width, max_height) {
+  var image = ResourceLoader.get(DESERT_BACKGROUND_URL);
+  var IMAGE_WIDTH = 500;
+  var IMAGE_HEIGHT = 500;
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+  return new animator.StaticImageElement(
+    id, image, dimensions[0], dimensions[1]
+  );
 }
 
 function createSource(id, max_width, max_height) {
@@ -187,8 +201,8 @@ var ROBOT_HOLDING_STYLE = "robot_holding";
 function createRobot(id, max_width, max_height) {
   var image = ResourceLoader.get(ROBOT_IMAGE_URL);
   var holding_image = ResourceLoader.get(ROBOT_HOLDING_IMAGE_URL, true);
-  var IMAGE_WIDTH = 32;
-  var IMAGE_HEIGHT = 48;
+  var IMAGE_WIDTH = 100;
+  var IMAGE_HEIGHT = 100;
   var dimensions = calculateDimensions(max_width, max_height,
                                        IMAGE_WIDTH, IMAGE_HEIGHT);
 
@@ -224,13 +238,48 @@ function createRobot(id, max_width, max_height) {
       );
 }
 
+var ALIEN_LEFT_IMAGE_URL = "/static/images/elements/alien-left.png";
+var ALIEN_RIGHT_IMAGE_URL = "/static/images/elements/alien-right.png";
+
+function createAlien(id, max_width, max_height) {
+  var image01 = ResourceLoader.get(ALIEN_LEFT_IMAGE_URL);
+  var image02 = ResourceLoader.get(ALIEN_RIGHT_IMAGE_URL);
+  var IMAGE_WIDTH = 50;
+  var IMAGE_HEIGHT = 50;
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+  var look_right_frames = [0,1,2,3];
+  var look_left_frames = [4,5,6,7];
+  var panic_frames = [8,9,10,9,10,9,10];
+  var dead_frames = [11]
+  var styles = {
+    "default": image01,
+    "alien_left": image01,
+    "alien_right": image02
+  };
+  return new animator.AnimatedImageElement(
+    id,
+    styles,
+    [
+      new animator.SpriteAnimation("look_left", look_left_frames),
+      new animator.SpriteAnimation("look_right", look_right_frames),
+      new animator.SpriteAnimation("panic", panic_frames),
+      new animator.SpriteAnimation("dead", dead_frames),
+    ],
+    4,
+    3,
+    dimensions[0],
+    dimensions[1]
+  );
+}
+
 var GOOD_BATTERY_IMAGE_URL = "/static/images/elements/good-battery.png";
 var BAD_BATTERY_IMAGE_URL = "/static/images/elements/bad-battery.png";
 
 function createBattery(id, max_width, max_height, is_good) {
   var image = null;
-  var IMAGE_WIDTH = 32;
-  var IMAGE_HEIGHT = 32;
+  var IMAGE_WIDTH = 50;
+  var IMAGE_HEIGHT = 50;
 
   if (is_good) {
     image = ResourceLoader.get(GOOD_BATTERY_IMAGE_URL);
@@ -241,15 +290,11 @@ function createBattery(id, max_width, max_height, is_good) {
   var dimensions = calculateDimensions(max_width, max_height,
                                        IMAGE_WIDTH, IMAGE_HEIGHT);
 
-  var charge_frames = [0, 1, 2, 3];
-
   return new animator.AnimatedImageElement(
       id,
       image,
-      [
-        new animator.SpriteAnimation("charge", charge_frames),
-      ],
-      4,
+      [],
+      1,
       1,
       dimensions[0],
       dimensions[1]
@@ -297,6 +342,55 @@ function createAsteroid(id, max_width, max_height) {
         new animator.SpriteAnimation("asteroid_5", asteroid_5_frames),
         new animator.SpriteAnimation("asteroid_6", asteroid_6_frames),
         new animator.SpriteAnimation("asteroid_7", asteroid_7_frames),
+      ],
+      4,
+      2,
+      width,
+      height
+      );
+}
+
+function createRock(id, max_width, max_height) {
+  var image = ResourceLoader.get(ROCKS_IMAGE_URL);
+  var IMAGE_WIDTH = 50;
+  var IMAGE_HEIGHT = 50;
+  var width = IMAGE_WIDTH;
+  var height = IMAGE_HEIGHT;
+
+  if (max_width || max_height) {
+    max_width = max_width || (max_height * (IMAGE_HEIGHT / IMAGE_WIDTH));
+    max_height = max_height || (max_width * (IMAGE_WIDTH / IMAGE_HEIGHT));
+
+    if (max_width * (IMAGE_HEIGHT / IMAGE_WIDTH) < max_height) {
+      width = max_width;
+      height = width * (IMAGE_HEIGHT / IMAGE_WIDTH);
+    } else {
+      height = max_height;
+      width = height * (IMAGE_WIDTH / IMAGE_HEIGHT);
+    }
+  }
+
+  var rock_0_frames = [0];
+  var rock_1_frames = [1];
+  var rock_2_frames = [2];
+  var rock_3_frames = [3];
+  var rock_4_frames = [4];
+  var rock_5_frames = [5];
+  var rock_6_frames = [6];
+  var rock_7_frames = [7];
+
+  return new animator.AnimatedImageElement(
+      id,
+      image,
+      [
+        new animator.SpriteAnimation("rock_0", rock_0_frames),
+        new animator.SpriteAnimation("rock_1", rock_1_frames),
+        new animator.SpriteAnimation("rock_2", rock_2_frames),
+        new animator.SpriteAnimation("rock_3", rock_3_frames),
+        new animator.SpriteAnimation("rock_4", rock_4_frames),
+        new animator.SpriteAnimation("rock_5", rock_5_frames),
+        new animator.SpriteAnimation("rock_6", rock_6_frames),
+        new animator.SpriteAnimation("rock_7", rock_7_frames),
       ],
       4,
       2,
@@ -384,7 +478,9 @@ module.exports = {
   ROBOT_HOLDING_IMAGE_URL: ROBOT_HOLDING_IMAGE_URL,
   ROBOT_HOLDING_STYLE: ROBOT_HOLDING_STYLE,
   createAsteroid: createAsteroid,
+  createRock: createRock,
   ASTEROIDS_IMAGE_URL: ASTEROIDS_IMAGE_URL,
+  ROCKS_IMAGE_URL: ROCKS_IMAGE_URL,
   MACHINE_COMPONENT_URL: MACHINE_COMPONENT_URL,
   MACHINE_URL: MACHINE_URL,
   WORKING_MACHINE_URL: WORKING_MACHINE_URL,
@@ -395,7 +491,9 @@ module.exports = {
   createMachineComponent: createMachineComponent,
   createMachine: createMachine,
   createAsteroidsBackground: createAsteroidsBackground,
+  createDesertBackground: createDesertBackground,
   ASTEROIDS_BACKGROUND_URL: ASTEROIDS_BACKGROUND_URL,
+  DESERT_BACKGROUND_URL: DESERT_BACKGROUND_URL,
   createSource: createSource,
   createDeposit: createDeposit,
   future_createDeposit: future_createDeposit,
@@ -412,4 +510,7 @@ module.exports = {
   ROBOTIC_ARM_HOLDING_FUEL_STYLE: ROBOTIC_ARM_HOLDING_FUEL_STYLE,
   SPACESHIP_FACTORY_BACKGROUND_URL: SPACESHIP_FACTORY_BACKGROUND_URL,
   SOURCE_IMAGE_URL: SOURCE_IMAGE_URL,
+  createAlien: createAlien,
+  ALIEN_LEFT_IMAGE_URL: ALIEN_LEFT_IMAGE_URL,
+  ALIEN_RIGHT_IMAGE_URL: ALIEN_RIGHT_IMAGE_URL,
 };

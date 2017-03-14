@@ -206,17 +206,63 @@ Lesson02ExerciseStepPlayer.prototype = {
                     grid_cell_size * this._game.rows() / 2);
     this._animator.setOrigin(offset_x, offset_y);
 
+    var background = ElementFactories.createDesertBackground(
+        "background",
+        Constants.RUN_VIEW_SQUARE_DIMENSION,
+        Constants.RUN_VIEW_SQUARE_DIMENSION
+        );
+    background.x = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_x;
+    background.y = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_y;
+    this._animator.addElement(background);
+
+    var rock_size = grid_cell_size;
+
+    for (i = 0; i < this._game.rows()+2; i++) {
+      var rock = new ElementFactories.createRock('r' + i + '0', rock_size);
+      rock.x = (-0.5) * grid_cell_size;
+      rock.y = (0.5 + i-1) * grid_cell_size;
+      this._animator.addElement(rock);
+      var rock_number = (this._game.rows() * i + 0) % 8;
+      this._animator.addAnimation(rock.createAnimation(
+        'rock_' + rock_number, 0, 1, 1));
+
+      rock = new ElementFactories.createRock('r' + i + (this._game.columns()+1),
+                                             rock_size);
+      rock.x = (0.5 + this._game.columns()) * grid_cell_size;
+      rock.y = (0.5 + i-1) * grid_cell_size;
+      this._animator.addElement(rock);
+      rock_number = (this._game.rows() * i + this._game.columns() + 1) % 8;
+      this._animator.addAnimation(rock.createAnimation(
+        'rock_' + rock_number, 0, 1, 1));
+
+      if (i == 0 || i == this._game.rows()+1) {
+        for (j = 1; j < this._game.columns()+1; j++) {
+          rock = new ElementFactories.createRock('r' + i + j, rock_size);
+          rock.x = (0.5 + j-1) * grid_cell_size;
+          rock.y = (0.5 + i-1) * grid_cell_size;
+          this._animator.addElement(rock);
+          rock_number = (this._game.rows() * i + j) % 8;
+          this._animator.addAnimation(rock.createAnimation(
+            'rock_' + rock_number, 0, 1, 1));
+        }
+      }
+    }
+
     var grid = new Animator.SimpleGridElement(
         "grid", grid_cell_size, this._game.rows(),
-         grid_cell_size, this._game.columns());
+        grid_cell_size, this._game.columns(),
+        'rgba(255,243,161,1)', 5
+        );
     this._animator.addElement(grid);
+
+    var battery_size = grid_cell_size;
 
     for (var i = 0; i < this._game.batteries().length; ++i) {
       var battery = this._game.batteries()[i];
       var element = new ElementFactories.createBattery(
             "b_" + battery.row + "_" + battery.column,
-            grid_cell_size / 2,
-            grid_cell_size / 2,
+            battery_size,
+            battery_size,
             true);
       element.x = (0.5 + battery.column) * grid_cell_size;
       element.y = (0.5 + battery.row) * grid_cell_size;
@@ -227,8 +273,8 @@ Lesson02ExerciseStepPlayer.prototype = {
       var battery = this._game.leakingBatteries()[i];
       var element = new ElementFactories.createBattery(
             "l_" + battery.row + "_" + battery.column,
-            grid_cell_size / 2,
-            grid_cell_size / 2,
+            battery_size,
+            battery_size,
             false);
       element.x = (0.5 + battery.column) * grid_cell_size;
       element.y = (0.5 + battery.row) * grid_cell_size;
@@ -236,7 +282,7 @@ Lesson02ExerciseStepPlayer.prototype = {
     }
 
     this._character = new ElementFactories.createRobot(
-        "r", grid_cell_size, grid_cell_size);
+        "r", grid_cell_size*2, grid_cell_size*2);
     this._character.x = (0.5 + this._game.position().column) * grid_cell_size;
     this._character.y = (0.5 + this._game.position().row) * grid_cell_size;
     this._animator.addElement(this._character);
@@ -999,6 +1045,8 @@ Object.assign(Lesson02.prototype, {
     ResourceLoader.addImage(ElementFactories.ROBOT_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.GOOD_BATTERY_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.BAD_BATTERY_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.DESERT_BACKGROUND_URL);
+    ResourceLoader.addImage(ElementFactories.ROCKS_IMAGE_URL);
   },
 });
 

@@ -169,11 +169,27 @@ Lesson01ExerciseStepPlayer.prototype = {
     var grid = new Animator.SimpleGridElement(
         'grid', grid_cell_size, this.game.n_rows,
          grid_cell_size, this.game.n_cols,
-         'white');
+         'rgba(255,255,255,0.2)', 5);
     this._animator.addElement(grid);
 
+    var alien_size = grid_cell_size;
+
+    var alien01 = new ElementFactories.createAlien('a1', alien_size,
+                                                   alien_size);
+    alien01.x = (-0.5) * grid_cell_size;
+    alien01.y = (0.5 + this.game.n_rows - 1) * grid_cell_size;
+    this._animator.addElement(alien01);
+
+    var alien02 = new ElementFactories.createAlien('a2', alien_size,
+                                                   alien_size);
+    alien02.x = (0.5 + this.game.n_cols) * grid_cell_size;
+    alien02.y = (0.5 + this.game.n_rows - 1) * grid_cell_size;
+    this._animator.addElement(alien02);
+    this._animator.addAnimation(alien02.changeStyle(
+        'alien_right', 0));
+
     var character = new ElementFactories.createRobot(
-        'p', grid_cell_size, grid_cell_size);
+        'p', grid_cell_size*2, grid_cell_size*2);
     character.x = (0.5 + this.game.character_position) * grid_cell_size;
     character.y = (0.5 + this.game.n_rows - 1) * grid_cell_size;
     this._animator.addElement(character);
@@ -225,6 +241,8 @@ Lesson01ExerciseStepPlayer.prototype = {
     }
 
     var character = this._animator.getElement('p');
+    var alien01 = this._animator.getElement('a1');
+    var alien02 = this._animator.getElement('a2');
 
     for (var i = 0; i < directions.length; i++) {
       var animationName = ((directions[i] == -1) ? 'walk_left':
@@ -235,6 +253,22 @@ Lesson01ExerciseStepPlayer.prototype = {
           AnimationFactories.straightMove(
             'p', i, i + 1, grid_cell_size * directions[i], 0),
       ]);
+      if (i == directions.length-1) {
+        if (failure_reason === FailureReasons.LEFT_GRID) {
+          if (directions[i] == -1) {
+            this._animator.addAnimation([
+              alien01.createAnimation('panic', i, i+duration, duration),
+              alien01.createAnimation('dead', i+duration, i+duration+1, 1)
+            ]);
+          }
+          if (directions[i] == 1) {
+            this._animator.addAnimation([
+              alien02.createAnimation('panic', i, i+duration, duration),
+              alien02.createAnimation('dead', i+duration, i+duration+1, 1)
+            ]);
+          }
+        }
+      }
     }
 
     if (!failure_reason)
@@ -768,6 +802,8 @@ Object.assign(Lesson01.prototype, {
     ResourceLoader.addImage(ElementFactories.ROBOT_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.ASTEROIDS_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.ASTEROIDS_BACKGROUND_URL);
+    ResourceLoader.addImage(ElementFactories.ALIEN_LEFT_IMAGE_URL);
+    ResourceLoader.addImage(ElementFactories.ALIEN_RIGHT_IMAGE_URL);
   },
 });
 

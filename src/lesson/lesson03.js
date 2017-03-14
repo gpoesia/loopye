@@ -379,7 +379,7 @@ Lesson03ExerciseStepPlayer.prototype = {
     }
 
     this._character = new ElementFactories.createRobot(
-        "r", grid_cell_size, grid_cell_size);
+        "r", grid_cell_size*2, grid_cell_size*2);
     this._character.x = (0.5 + this._game.position().column) * grid_cell_size;
     this._character.y = (0.5 + this._game.position().row) * grid_cell_size;
     this._animator.addElement(this._character);
