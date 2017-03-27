@@ -351,28 +351,70 @@ Lesson03ExerciseStepPlayer.prototype = {
                     grid_cell_size * this._game.rows() / 2);
     this._animator.setOrigin(offset_x, offset_y);
 
-    var grid = new Animator.SimpleGridElement(
+    var screen_background = new Animator.RectangleElement("background",
+        Constants.RUN_VIEW_SQUARE_DIMENSION,
+        Constants.RUN_VIEW_SQUARE_DIMENSION,
+        "black");
+    screen_background.x = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_x;
+    screen_background.y = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_y;
+    this._animator.addElement(screen_background);
+
+    var room_background = new Animator.RectangleElement("room_bg",
+        grid_cell_size * (this._game.columns() + 1),
+        grid_cell_size * (this._game.rows() +1),
+        "white");
+    room_background.x = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_x;
+    room_background.y = Constants.RUN_VIEW_SQUARE_DIMENSION / 2 - offset_y;
+    this._animator.addElement(room_background);
+
+    var grid = new Animator.ColoredGridElement(
         "grid", grid_cell_size, this._game.rows(),
-         grid_cell_size, this._game.columns());
+         grid_cell_size, this._game.columns(), "#D1D1D1", "#FFFFFF");
     this._animator.addElement(grid);
+
+    var wall_size = grid_cell_size;
+
+    for (i = 0; i < this._game.rows()+2; i++) {
+      var wall = new ElementFactories.createWall('w' + i + '0', wall_size);
+      wall.x = (-0.5) * grid_cell_size;
+      wall.y = (0.5 + i-1) * grid_cell_size;
+      this._animator.addElement(wall);
+
+      wall = new ElementFactories.createWall('w' + i + (this._game.columns()+1),
+                                             wall_size);
+      wall.x = (0.5 + this._game.columns()) * grid_cell_size;
+      wall.y = (0.5 + i-1) * grid_cell_size;
+      this._animator.addElement(wall);
+
+      if (i == 0 || i == this._game.rows()+1) {
+        for (j = 1; j < this._game.columns()+1; j++) {
+          wall = new ElementFactories.createWall('w' + i + j, wall_size);
+          wall.x = (0.5 + j-1) * grid_cell_size;
+          wall.y = (0.5 + i-1) * grid_cell_size;
+          this._animator.addElement(wall);
+        }
+      }
+    }
+
+    var element_size = grid_cell_size;
 
     for (var i = 0; i < this._game.components().length; ++i) {
       var component = this._game.components()[i];
       var element = new ElementFactories.createMachineComponent(
             "c_" + component.row + "_" + component.column,
-            grid_cell_size / 3,
-            grid_cell_size / 3);
+            element_size, element_size);
       element.x = (0.5 + component.column) * grid_cell_size;
       element.y = (0.5 + component.row) * grid_cell_size;
       this._animator.addElement(element);
     }
 
+    var machine_size = grid_cell_size;
+
     for (var i = 0; i < this._game.machines().length; ++i) {
       var machine = this._game.machines()[i];
       var element = new ElementFactories.createMachine(
             "m_" + machine.row + "_" + machine.column,
-            grid_cell_size / 1.5,
-            grid_cell_size / 1.5);
+            machine_size, machine_size);
       element.x = (0.5 + machine.column) * grid_cell_size;
       element.y = (0.5 + machine.row) * grid_cell_size;
       this._animator.addElement(element);
@@ -1605,6 +1647,7 @@ function Lesson03() {
 Lesson03.prototype = Object.create(Lesson.Lesson.prototype);
 Object.assign(Lesson03.prototype, {
   populateResourceLoader: function() {
+    ResourceLoader.addImage(ElementFactories.WALL_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.ROBOT_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.ROBOT_HOLDING_IMAGE_URL);
     ResourceLoader.addImage(ElementFactories.MACHINE_COMPONENT_URL);

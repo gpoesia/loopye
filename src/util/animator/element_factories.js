@@ -9,6 +9,7 @@ var ROBOT_IMAGE_URL = "/static/images/elements/robot-new.png";
 var ROBOT_HOLDING_IMAGE_URL = "/static/images/elements/robot-with-gear-new.png";
 var ASTEROIDS_IMAGE_URL = "/static/images/elements/asteroids.png";
 var ROCKS_IMAGE_URL = "/static/images/elements/rocks.png";
+var WALL_IMAGE_URL = "/static/images/elements/wall.png";
 var MACHINE_COMPONENT_URL = "/static/images/elements/gear.png";
 var MACHINE_URL = "/static/images/elements/bad-machine.png";
 var WORKING_MACHINE_URL = "/static/images/elements/good-machine.png";
@@ -399,6 +400,16 @@ function createRock(id, max_width, max_height) {
       );
 }
 
+function createWall(id, max_width, max_height) {
+  var image = ResourceLoader.get(WALL_IMAGE_URL);
+  var IMAGE_WIDTH = 50;
+  var IMAGE_HEIGHT = 50;
+  var dimensions = calculateDimensions(max_width, max_height,
+                                       IMAGE_WIDTH, IMAGE_HEIGHT);
+  return new animator.StaticImageElement(id, image,
+                                         dimensions[0], dimensions[1]);
+}
+
 function createMachineComponent(id, max_width, max_height) {
   var image = ResourceLoader.get(MACHINE_COMPONENT_URL);
   var IMAGE_WIDTH = 32;
@@ -479,8 +490,10 @@ module.exports = {
   ROBOT_HOLDING_STYLE: ROBOT_HOLDING_STYLE,
   createAsteroid: createAsteroid,
   createRock: createRock,
+  createWall: createWall,
   ASTEROIDS_IMAGE_URL: ASTEROIDS_IMAGE_URL,
   ROCKS_IMAGE_URL: ROCKS_IMAGE_URL,
+  WALL_IMAGE_URL: WALL_IMAGE_URL,
   MACHINE_COMPONENT_URL: MACHINE_COMPONENT_URL,
   MACHINE_URL: MACHINE_URL,
   WORKING_MACHINE_URL: WORKING_MACHINE_URL,
