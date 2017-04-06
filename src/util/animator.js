@@ -147,6 +147,47 @@ Object.assign(SimpleGridElement.prototype, {
   },
 });
 
+// An element that draws a colored grid.
+var ColoredGridElement = function(id, cell_width, h_cells, cell_height, v_cells,
+                                 color1, color2) {
+  Element.apply(this, [id]);
+  this.cell_width = cell_width || 10;
+  this.cell_height = cell_height || this.cell_width;
+  this.h_cells = h_cells || 10;
+  this.v_cells = v_cells || this.h_cells;
+  this.color1 = color1 || 'black';
+  this.color2 = color2 || 'white';
+
+}
+
+ColoredGridElement.prototype = Object.create(Element.prototype);
+Object.assign(ColoredGridElement.prototype, {
+  render: function(canvas, origin_x, origin_y) {
+    var context = canvas.getContext('2d');
+    var width = this.h_cells * this.cell_width;
+    var height = this.v_cells * this.cell_height;
+    var color = this.color1;
+    for (var x = 0; x < this.v_cells; ++x) {
+      for (var y = 0; y < this.h_cells; ++y) {
+        context.beginPath();
+        context.rect(origin_x + this.x + this.cell_height * x,
+                     origin_y + this.y + this.cell_width * y,
+                     this.cell_width, this.cell_height);
+        if ((x+y) % 2 == 0) {
+          color = this.color1;
+        } else {
+          color = this.color2;
+        }
+        context.fillStyle = color;
+        context.fill();
+        context.closePath();
+      }
+    }
+
+  },
+});
+
+
 // Represents an animation in a tiled image.
 // `name` should be a String with an identifying name for the animation
 // (e.g. 'walk_left').
@@ -496,6 +537,7 @@ module.exports = {
   RectangleElement: RectangleElement,
   CircleElement: CircleElement,
   SimpleGridElement: SimpleGridElement,
+  ColoredGridElement: ColoredGridElement,
   Animation: Animation,
   Animator: Animator,
   AnimatedImageElement: AnimatedImageElement,
