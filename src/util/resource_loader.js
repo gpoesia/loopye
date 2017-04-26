@@ -5,15 +5,18 @@
 
 function ResourceLoader() {
   this._images = [];
+  this._loaded_resources = {};
 }
 
 ResourceLoader.prototype = {
   /// Adds a resource to be loaded.
   addImage: function(url) {
-    this._images.push(url);
+    if (!this._loaded_resources.hasOwnProperty(url)) {
+      this._images.push(url);
+    }
   },
-  /// Loads the registered resources and calls onLoad when all of them have
-  /// finished loading.
+  /// Loads the registered resources that have not been loaded yet
+  /// and calls onLoad when all of them have finished loading.
   load: function(onLoad) {
     var loaded_images = new Array();
     loaded_images.length = this._images.length;
@@ -23,7 +26,6 @@ ResourceLoader.prototype = {
       return loaded_images.indexOf(false) == -1;
     };
 
-    this._loaded_resources = {};
     var loaded_resources = this._loaded_resources;
     function createCallback(loaded_images, index, done, url, image, onLoad) {
       return function() {
@@ -36,10 +38,17 @@ ResourceLoader.prototype = {
     }
 
     for (var i = 0; i < this._images.length; i++) {
-      var image = new Image();
       var index = new Number(i);
       var url = this._images[i];
 
+      // Avoids loading resources which have been previously loaded.
+      // This allows incremental uses of the ResourceLoaded.
+      if (this._loaded_resources.hasOwnProperty(url)) {
+        loaded_images[index] = true;
+        continue;
+      }
+
+      var image = new Image();
       image.onload = createCallback(loaded_images, new Number(i), done,
                                     url, image, onLoad);
 

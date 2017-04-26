@@ -12,6 +12,7 @@
     "react-popup": "0.4.2",
     "react-sidebar": "2.2.1",
     "codeeditor": "1.0.4",
-    "node.packer": "2.0.3"
+    "node.packer": "2.0.3",
+    "react-loading": "0.0.9"
   }
 }

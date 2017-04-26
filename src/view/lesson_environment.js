@@ -13,6 +13,8 @@ var Popup = require("react-popup").default;
 var Sidebar = require('react-sidebar').default;
 var CommandReferenceSidebar = require('./command_reference_sidebar.js');
 var Constants = require("../constants");
+var Game = require("../game/game");
+var Loading = require("react-loading");
 
 var LessonEnvironment = React.createClass({
   styles: {
@@ -69,12 +71,14 @@ var LessonEnvironment = React.createClass({
   },
 
   getInitialState: function() {
-    this.currentAnimator = null;
+    this._currentAnimator = null;
+    this._gameRunner = null;
 
     return {
       sourceCode: "",
-      currentStep: this.props.initialStep,
+      currentChallenge: this.props.initialChallenge || 0,
       docked: true,
+      loaded: false,
     };
   },
 
@@ -82,29 +86,38 @@ var LessonEnvironment = React.createClass({
     this.setState({sourceCode: code});
   },
 
-  _startStep: function(step) {
+  _startChallenge: function(challengeIndex) {
     // Before the first rendering, we don't have refs.
     if (this.refs.exercise_messages !== undefined) {
       this.refs.exercise_messages.clear();
       this.refs.code_messages.clear();
     }
 
-    this.setState({
-        currentStep: step,
-        sourceCode: this.props.lesson.getStep(step).getInitialSourceCode(),
-      },
-      this._reset);
+    var challenge = this.props.lesson.getChallenge(challengeIndex)
+    this._gameRunner = Game.newGameRunner(challenge.getGameID());
+    this._gameRunner.populateResourceLoader();
 
-    this._showInstructions(step);
+    this.setState({currentChallenge: challengeIndex,
+                   sourceCode: challenge.getInitialSourceCode(),
+                   loaded: false},
+                  function() {
+                    ResourceLoader.load((function() {
+                      this.setState({loaded: true},
+                                    function() {
+                                      this._reset();
+                                      this._showInstructions(challengeIndex);
+                                    }.bind(this));
+                    }).bind(this));
+                  }.bind(this));
   },
 
-  _advanceStep: function() {
-    this._startStep(Math.min(this.props.lesson.getNumberOfSteps() - 1,
-                             this.state.currentStep + 1));
+  _nextChallenge: function() {
+    this._startChallenge(Math.min(this.props.lesson.getNumberOfChallenges() - 1,
+                                  this.state.currentChallenge + 1));
   },
 
-  _previousStep: function() {
-    this._startStep(Math.max(0, this.state.currentStep - 1));
+  _previousChallenge: function() {
+    this._startChallenge(Math.max(0, this.state.currentChallenge - 1));
   },
 
   _playCode: function() {
@@ -113,8 +126,8 @@ var LessonEnvironment = React.createClass({
     this.refs.exercise_messages.clear();
     this.refs.code_messages.clear();
 
-    var currentStep = this.props.lesson.getStep(this.state.currentStep);
-    var result = currentStep.play(this.state.sourceCode);
+    var currentChallenge = this.props.lesson.getChallenge(this.state.currentChallenge);
+    var result = this._gameRunner.run(this.state.sourceCode);
 
     if (!!result.compilation_errors) {
       this.refs.code_messages.setErrors(result.compilation_errors);
@@ -135,34 +148,38 @@ var LessonEnvironment = React.createClass({
         var forceUpdate = this.forceUpdate.bind(this);
         animator.onStop(function(ok) {
           if (ok) {
-            exercise_messages.addSuccess(currentStep.getSuccessMessage());
+            exercise_messages.addSuccess(currentChallenge.getSuccessMessage());
             forceUpdate();
           }
         });
       }
 
       animator.play(this.refs.run_view.getCanvas());
-      this.currentAnimator = animator;
+      this._currentAnimator = animator;
     }
   },
 
   _reset: function() {
     this._stopCurrentAnimation();
-    var currentStep = this.props.lesson.getStep(this.state.currentStep);
-    currentStep.reset(this.refs.run_view.getCanvas());
+    var currentChallenge =
+        this.props.lesson.getChallenge(this.state.currentChallenge);
+    this._gameRunner.reset(currentChallenge.getGameParameters(),
+                           this.refs.run_view.getCanvas());
   },
 
   _stopCurrentAnimation: function() {
-    if (this.currentAnimator) {
-      this.currentAnimator.stop();
+    if (this._currentAnimator) {
+      this._currentAnimator.stop();
     }
   },
 
-  _showInstructions: function(step) {
+  _showInstructions: function(challengeIndex) {
+    var lesson = this.props.lesson;
+    var challenge = lesson.getChallenge(challengeIndex ||
+                                        this.state.currentChallenge);
     Popup.create({
       title: "Instruções",
-      content: (this.props.lesson.getStep(step || this.state.currentStep)
-                .getInstructions()),
+      content: challenge.getInstructions(),
       buttons: {
         right: ["ok"],
       },
@@ -170,13 +187,14 @@ var LessonEnvironment = React.createClass({
   },
 
   _fastForward: function() {
-    if (this.currentAnimator) {
-      this.currentAnimator.fastForward(Constants.FAST_FORWARD_FACTOR);
+    if (this._currentAnimator) {
+      this._currentAnimator.fastForward(Constants.FAST_FORWARD_FACTOR);
     }
   },
 
   componentWillMount: function() {
-    this._startStep(this.state.currentStep);
+    ButtonBar.populateResourceLoader();
+    this._startChallenge(this.state.currentChallenge);
   },
 
   _closeSidebar: function() {
@@ -205,16 +223,20 @@ var LessonEnvironment = React.createClass({
   },
 
   render: function() {
-    var currentStep = this.props.lesson.getStep(this.state.currentStep);
+    if (!this.state.loaded) {
+      return <Loading type="balls" color="black" />
+    }
+
+    var currentChallenge = this.props.lesson.getChallenge(this.state.currentChallenge);
 
     var commandReferenceSidebar = <CommandReferenceSidebar
           onClose={this._closeSidebar}
-          content={currentStep.getCommandReference()} />;
+          content={currentChallenge.getCommandReference()} />;
 
     return  <Sidebar sidebar={commandReferenceSidebar}
-                    docked={this.state.docked}
-                    pullRight={true}
-                    touch={false}>
+                     docked={this.state.docked}
+                     pullRight={true}
+                     touch={false}>
               <div style={this.styles.container} ref="containerDiv">
                 <div style={this.styles.leftPanel}>
                   <div style={this.styles.gameWindow}>
@@ -222,27 +244,26 @@ var LessonEnvironment = React.createClass({
                   </div>
                   <MessagePane ref="exercise_messages" />
                   <MessagePane ref="code_messages" />
-                  <InstructionPane content={
-                    currentStep.getShortInstructions()
-                  } />
+                  <InstructionPane content={currentChallenge.getShortInstructions()} />
                 </div>
                 <div style={this.state.docked ?
-                              this.styles.centerPanelDocked :
-                              this.styles.centerPanel}>
+                            this.styles.centerPanelDocked :
+                            this.styles.centerPanel}>
                   <div style={this.styles.codeEditor}>
                     <CodeEditor code={this.state.sourceCode}
                                 onChange={this._updateCode}
-                                limit={currentStep.getCodeSizeLimit()}
+                                limit={currentChallenge.getCodeSizeLimit()}
                                 ref={function(editor){
-                                       return editor && editor.focus(); }}/>
+                                  return editor && editor.focus();
+                                }}/>
                   </div>
                   <div style={this.styles.buttonBar}>
                     <ButtonBar onPlay={this._playCode}
                                onReset={this._reset}
-                               onAdvance={this._advanceStep}
+                               onAdvance={this._nextChallenge}
                                onHelp={this._showInstructions.bind(this, null)}
                                onFastForward={this._fastForward}
-                               advanceEnabled={currentStep.canAdvance()} />
+                               advanceEnabled={this._gameRunner.challengeSolved()} />
 
                   </div>
                 </div>
@@ -252,20 +273,23 @@ var LessonEnvironment = React.createClass({
   },
 
   componentDidMount: function() {
-    this._reset();
+    if (this.loaded) {
+      this._reset();
+    }
+  },
 
-    // "Cheat code" for quickly advancing steps: Ctrl + "9"
-    var advanceStep = this._advanceStep;
-    this.refs.containerDiv.onkeyup = function(event) {
-      if (!!event.ctrlKey && String.fromCharCode(event.keyCode) === "9") {
-        advanceStep();
-      }
-    };
+  // "Cheat code" for quickly advancing steps: Ctrl + "9"
+  componentDidUpdate: function() {
+    if (this.refs.containerDiv) {
+      this.refs.containerDiv.onkeyup = this._checkCheatCode;
+    }
+  },
+
+  _checkCheatCode: function(event) {
+    if (!!event.ctrlKey && String.fromCharCode(event.keyCode) === "9") {
+      this._nextChallenge();
+    }
   },
 });
-
-LessonEnvironment.populateResourceLoader = function() {
-  ButtonBar.populateResourceLoader();
-}
 
 module.exports = LessonEnvironment;
