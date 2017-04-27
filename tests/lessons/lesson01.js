@@ -1,8 +1,4 @@
 window.onload = function() {
-  var lesson = new comp4kids.Lesson01();
-  lesson.populateResourceLoader();
-  comp4kids.LessonEnvironment.populateResourceLoader();
-  comp4kids.ResourceLoader.load(function() {
-    comp4kids.startLesson(lesson, document.getElementById("lesson"));
-  });
+  var lesson = loopye.Lesson.findLesson("first-mission");
+  loopye.startLesson(lesson, document.getElementById("lesson"));
 };

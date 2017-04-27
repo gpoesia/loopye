@@ -18,7 +18,7 @@ var InstructionPane = React.createClass({
   },
   render: function() {
     return <div style={this.styles.instructionBox}>
-              <p>{this.props.content}</p>
+              {this.props.content}
            </div>;
   },
 });

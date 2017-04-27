@@ -22,7 +22,6 @@ module.exports = {
   Lesson01: {
     FAILURE_MESSAGE_HIT_BY_ASTEROID: "Que pena! O robô foi atingido! Tente novamente.",
     FAILURE_MESSAGE_LEFT_GRID: "Oh, o robô atingiu um alien! Tente novamente.",
-    SUCCESS_MESSAGE: "Muito bem! Mais um robô a salvo! :)",
   },
 
   Lesson02: {
