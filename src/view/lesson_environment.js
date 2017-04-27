@@ -112,8 +112,13 @@ var LessonEnvironment = React.createClass({
   },
 
   _nextChallenge: function() {
-    this._startChallenge(Math.min(this.props.lesson.getNumberOfChallenges() - 1,
-                                  this.state.currentChallenge + 1));
+    if (this.state.currentChallenge + 1 === this.props.lesson.getNumberOfChallenges()) {
+      if (this.props.onLessonFinished) {
+        this.props.onLessonFinished();
+      }
+    } else {
+      this._startChallenge(this.state.currentChallenge + 1);
+    }
   },
 
   _previousChallenge: function() {
