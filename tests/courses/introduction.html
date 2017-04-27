@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Loopye - Introdução à Programação</title>
+    <script type="text/javascript" src="/static/js/polyfill.js"></script>
+    <script type="text/javascript" src="../../bundle.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/styles/main.css" />
+  </head>
+  <body>
+    <div id="course" style="width: 75%; height: 40em"></div>
+  </body>
+  <script type="text/javascript">
+    window.onload = function() {
+      var course = loopye.Course.findCourse("introduction");
+      loopye.startCourse(course, document.getElementById("course"));
+    };
+  </script>
+</html>
