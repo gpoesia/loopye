@@ -15,6 +15,7 @@ var CommandReferenceSidebar = require('./command_reference_sidebar.js');
 var Constants = require("../constants");
 var Game = require("../game/game");
 var Loading = require("react-loading");
+var ProgressManager = require("../backend/progress_manager");
 
 var LessonEnvironment = React.createClass({
   styles: {
@@ -113,8 +114,8 @@ var LessonEnvironment = React.createClass({
 
   _nextChallenge: function() {
     if (this.state.currentChallenge + 1 === this.props.lesson.getNumberOfChallenges()) {
-      if (this.props.onLessonFinished) {
-        this.props.onLessonFinished();
+      if (this.props.onLessonExit) {
+        this.props.onLessonFinished(true);
       }
     } else {
       this._startChallenge(this.state.currentChallenge + 1);
@@ -134,6 +135,8 @@ var LessonEnvironment = React.createClass({
     var currentChallenge = this.props.lesson.getChallenge(this.state.currentChallenge);
     var result = this._gameRunner.run(this.state.sourceCode);
 
+    var success = false;
+
     if (!!result.compilation_errors) {
       this.refs.code_messages.setErrors(result.compilation_errors);
     } else {
@@ -150,6 +153,7 @@ var LessonEnvironment = React.createClass({
           }
         });
       } else {
+        success = true;
         var forceUpdate = this.forceUpdate.bind(this);
         animator.onStop(function(ok) {
           if (ok) {
@@ -162,6 +166,12 @@ var LessonEnvironment = React.createClass({
       animator.play(this.refs.run_view.getCanvas());
       this._currentAnimator = animator;
     }
+
+    this.props.progressManager.handleSubmission(this.props.course,
+                                                this.props.lesson,
+                                                currentChallenge,
+                                                this.state.sourceCode,
+                                                success);
   },
 
   _reset: function() {
@@ -283,16 +293,21 @@ var LessonEnvironment = React.createClass({
     }
   },
 
-  // "Cheat code" for quickly advancing steps: Ctrl + "9"
   componentDidUpdate: function() {
     if (this.refs.containerDiv) {
-      this.refs.containerDiv.onkeyup = this._checkCheatCode;
+      this.refs.containerDiv.onkeyup = this._checkShortcuts;
     }
   },
 
-  _checkCheatCode: function(event) {
+  // Shortcuts for quickly advancing steps (Ctrl + 9) and for
+  // exiting a lesson (Ctrl + 8).
+  _checkShortcuts: function(event) {
     if (!!event.ctrlKey && String.fromCharCode(event.keyCode) === "9") {
       this._nextChallenge();
+    } else if (!!event.ctrlKey && String.fromCharCode(event.keyCode) === "8") {
+      if (this.props.onLessonExit) {
+        this.props.onLessonExit(false);
+      }
     }
   },
 });
