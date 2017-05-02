@@ -17,16 +17,18 @@ var CourseOverview = React.createClass({
     });
   },
 
-  _handleLessonFinished: function() {
-    var lesson = this.props.course.getLesson(this.state.currentLesson);
-    Popup.create({
-      title: T("Muito bem!"),
-      content: sprintf(T("Parabéns! Você terminou a aula \"%s\"!"),
-                       lesson.getLessonName()),
-      buttons: {
-        right: ["ok"],
-      },
-    });
+  _handleLessonExit: function(finished) {
+    if (finished) {
+      var lesson = this.props.course.getLesson(this.state.currentLesson);
+      Popup.create({
+        title: T("Muito bem!"),
+        content: sprintf(T("Parabéns! Você terminou a aula \"%s\"!"),
+                         lesson.getLessonName()),
+        buttons: {
+          right: ["ok"],
+        },
+      });
+    }
     this.setState({
       currentLesson: null,
     });
@@ -52,8 +54,10 @@ var CourseOverview = React.createClass({
     if (this.state.currentLesson !== null) {
       var lesson = course.getLesson(this.state.currentLesson);
       return <LessonEnvironment lesson={lesson}
+                                course={course}
+                                progressManager={this.props.progressManager}
                                 initialChallenge={this.state.initialChallenge}
-                                onLessonFinished={this._handleLessonFinished} />;
+                                onLessonExit={this._handleLessonExit} />;
     }
 
     var lessons = [];
@@ -63,7 +67,9 @@ var CourseOverview = React.createClass({
       lessons.push(
           <LessonOverview
             key={i}
+            course={course}
             lesson={lesson}
+            progressManager={this.props.progressManager}
             onChallengeSelected={this._handleChallengeSelected.bind(this, i)}
             onLessonSelected={this._handleLessonSelected.bind(this, i)}
           />

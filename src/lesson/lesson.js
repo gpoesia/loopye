@@ -34,6 +34,17 @@ Object.assign(Lesson.prototype, {
   getChallenge: function(i) {
     return this._challenges[i];
   },
+
+  /// Returns the index of the given challenge in this lesson, or -1 if
+  /// the given challenge is not part of the lesson.
+  getChallengeIndex: function(challenge) {
+    for (var i = 0; i < this._challenges.length; i++) {
+      if (this._challenges[i].equals(challenge)) {
+        return i;
+      }
+    }
+    return -1;
+  },
 });
 
 /// Global registry of lessons by ID.

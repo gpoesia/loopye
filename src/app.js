@@ -6,6 +6,8 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var Lesson = require("./lesson/lesson");
 var Course = require("./course/course");
+var ProgressManager = require("./backend/progress_manager");
+var LocalProgressManager = require("./backend/local_progress_manager");
 
 // Load built-in games, challenges, lessons and courses.
 require("./game/builtin");
@@ -28,17 +30,25 @@ function initializePopUp() {
   }
 }
 
-var startLesson = function(lesson, domElement, initialStep) {
+var startLesson = function(lesson, domElement, initialStep, progressManager) {
   initialStep = initialStep || 0;
   initializePopUp();
+  if (!progressManager) {
+    progressManager = new ProgressManager.ProgressManager();
+  }
   ReactDOM.render(<LessonEnvironment lesson={lesson}
                                      initialStep={initialStep} />,
                   domElement)
 };
 
-var startCourse = function(course, domElement) {
+var startCourse = function(course, progressManager, domElement) {
   initializePopUp();
-  ReactDOM.render(<CourseOverview course={course}/>, domElement);
+  if (!progressManager) {
+    progressManager = new ProgressManager.ProgressManager();
+  }
+  ReactDOM.render(<CourseOverview course={course}
+                                  progressManager={progressManager}/>,
+                  domElement);
 };
 
 module.exports = {
@@ -46,4 +56,6 @@ module.exports = {
   startCourse: startCourse,
   Lesson: Lesson,
   Course: Course,
+  ProgressManager: ProgressManager,
+  LocalProgressManager: LocalProgressManager,
 };

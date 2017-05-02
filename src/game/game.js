@@ -90,6 +90,15 @@ Object.assign(Challenge.prototype, {
     return this._gameID;
   },
 
+  /// Returns whether both challenges are the same.
+  equals: function(challenge) {
+    if (!challenge instanceof Challenge) {
+      return false;
+    }
+    return (this.getGameID() == challenge.getGameID() &&
+            this.getChallengeID() == challenge.getChallengeID());
+  },
+
   /// Returns the short instructional content that will be displayed during this
   /// challenge (inside the lesson environment).
   getShortInstructions: function() {

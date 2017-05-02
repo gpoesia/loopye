@@ -13,7 +13,8 @@
   <script type="text/javascript">
     window.onload = function() {
       var course = loopye.Course.findCourse("introduction");
-      loopye.startCourse(course, document.getElementById("course"));
+      var progressManager = new loopye.LocalProgressManager.LocalProgressManager();
+      loopye.startCourse(course, progressManager, document.getElementById("course"));
     };
   </script>
 </html>
