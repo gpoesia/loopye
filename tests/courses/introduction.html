@@ -6,9 +6,26 @@
     <script type="text/javascript" src="/static/js/polyfill.js"></script>
     <script type="text/javascript" src="../../bundle.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/styles/main.css" />
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/static/styles/materialize.min.css"  media="screen,projection"/>
   </head>
-  <body>
-    <div id="course" style="width: 75%; height: 40em"></div>
+  <body style="background: #EEEEEE">
+    <nav class="nav-extended blue">
+      <div class="container">
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo">Loopye</a>
+        </div>
+        <div class="nav-wrapper">
+            <div class="col s12">
+              <a href="#!" class="breadcrumb">Cursos</a>
+              <a href="#!" class="breadcrumb">Introdução à Programação</a>
+            </div>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div id="course"></div>
+    </div>
   </body>
   <script type="text/javascript">
     window.onload = function() {
@@ -17,4 +34,6 @@
       loopye.startCourse(course, progressManager, document.getElementById("course"));
     };
   </script>
+  <script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/static/js/materialize.min.js"></script>
 </html>

@@ -76,8 +76,12 @@ var CourseOverview = React.createClass({
       );
     }
 
-    return <div>{lessons}</div>;
-  },
+    return (
+      <div>
+        <div>{lessons}</div>
+      </div>
+    );
+  }
 });
 
 module.exports = CourseOverview;

@@ -2,11 +2,12 @@
  * Represents a Lesson, which is a sequence of challenges in one or more games.
  */
 
-function Lesson(id, name, description, challenges) {
+function Lesson(id, name, description, challenges, thumbnail) {
   this._id = id;
   this._name = name;
   this._description = description;
   this._challenges = challenges;
+  this._thumbnail = thumbnail;
 }
 
 Object.assign(Lesson.prototype, {
@@ -35,6 +36,7 @@ Object.assign(Lesson.prototype, {
     return this._challenges[i];
   },
 
+
   /// Returns the index of the given challenge in this lesson, or -1 if
   /// the given challenge is not part of the lesson.
   getChallengeIndex: function(challenge) {
@@ -44,6 +46,11 @@ Object.assign(Lesson.prototype, {
       }
     }
     return -1;
+  },
+
+  /// Returns the thumbnail url for this lesson.
+  getThumbnail: function() {
+    return this._thumbnail;
   },
 });
 

@@ -26,7 +26,8 @@ var firstMissionLesson = new Lesson.Lesson(
     Game.findChallenge("asteroids2", "easy"),
     Game.findChallenge("asteroids2", "medium"),
     Game.findChallenge("asteroids2", "hard"),
-  ]
+  ],
+  "/static/images/thumbs/asteroids.png"
 );
 
 Lesson.registerLesson(firstMissionLesson);

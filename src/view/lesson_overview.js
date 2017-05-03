@@ -7,51 +7,6 @@ var T = require("../util/translate").T;
 var ProgressManager = require("../backend/progress_manager");
 
 var LessonOverview = React.createClass({
-  _styles: {
-    container: {
-      margin: "1em",
-      padding: "1em",
-      border: "1px solid black",
-    },
-
-    lessonName: {
-      fontSize: "2em",
-    },
-
-    lessonDescription: {
-      fontStyle: "italic",
-      fontWeight: "lighter",
-      marginTop: "0.5em",
-    },
-
-    step: {
-      border: "1px solid black",
-      margin: 0,
-    },
-
-    button: {
-      margin: "0.5em 0 0.5em 0",
-    },
-
-    solvedChallenge: {
-      border: "1px solid black",
-      padding: "0.25em",
-      backgroundColor: "#AAFFAA",
-    },
-
-    unlockedChallenge: {
-      border: "1px solid black",
-      padding: "0.25em",
-      backgroundColor: "white",
-    },
-
-    lockedChallenge: {
-      border: "1px solid black",
-      padding: "0.25em",
-      color: "#777777",
-      fontWeight: "lighter",
-    },
-  },
 
   render: function() {
     var lesson = this.props.lesson;
@@ -63,20 +18,17 @@ var LessonOverview = React.createClass({
     for (var i = 0; i < lesson.getNumberOfChallenges(); i++) {
       var challenge = lesson.getChallenge(i);
       var status = progressManager.getChallengeStatus(course, lesson, challenge);
-
-      var style = {};
+      var color = "green";
 
       switch (status) {
       case ProgressManager.ChallengeStatus.SOLVED:
-        style = this._styles.solvedChallenge;
+        color = "green";
         break;
-
       case ProgressManager.ChallengeStatus.UNLOCKED:
-        style = this._styles.unlockedChallenge;
+        color = "pink"
         break;
-
       case ProgressManager.ChallengeStatus.LOCKED:
-        style = this._styles.lockedChallenge;
+        color = "grey"
         break;
       }
 
@@ -84,26 +36,39 @@ var LessonOverview = React.createClass({
                      ? null
                      : this.props.onChallengeSelected.bind(null, i));
 
-      var challengeSpan = <span key={i} style={style} onClick={onClick}>{i + 1}</span>;
-      children.push(challengeSpan);
+      var challengeA = <a className={"btn-floating btn waves-effect waves-light " + color}
+                        key={i} onClick={onClick}>{i + 1}</a>;
+      children.push(challengeA);
     }
 
     return (
-        <div style={this._styles.container}>
-          <p style={this._styles.lessonName}>
-            {lesson.getLessonName()}
-          </p>
-          <p style={this._styles.lessonDescription}>
-            {lesson.getLessonDescription()}
-          </p>
-          <br/>
-          <br/>
-          {children}
-          <br/>
-          <br/>
-          <button style={this._styles.button}
-                  onClick={this.props.onLessonSelected}>{T("Jogar")}</button>
+      <div className="row">
+        <div className="col s12">
+          <div className="card horizontal">
+            <div className="card-image">
+              <img src={lesson.getThumbnail()} width={"300px"}/>
+            </div>
+            <div className="card-stacked">
+              <div className="card-content">
+                  <h5>{lesson.getLessonName()}</h5>
+                  <p>{lesson.getLessonDescription()}</p>
+              </div>
+              <div className="card-action">
+                <h6>Níveis:</h6>
+                <div>{children}</div>
+              </div>
+              <div className="card-action">
+                  <a className="waves-effect waves-light btn green"
+                     onClick={this.props.onLessonSelected}>
+                     <i className="material-icons left">play_arrow</i>
+                     {T("Jogar")}
+                  </a>
+              </div>
+
+            </div>
+          </div>
         </div>
+      </div>
     );
   }
 });
