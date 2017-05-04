@@ -11,6 +11,7 @@ var introductionCourse = new Course.Course(
   T("Introdução à Programação"),
   [
     Lesson.findLesson("first-mission"),
+    Lesson.findLesson("second-mission"),
   ]
 );
 
