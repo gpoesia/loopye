@@ -3,3 +3,4 @@
  */
 
 require("./first_mission");
+require("./second_mission");
