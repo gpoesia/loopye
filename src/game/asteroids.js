@@ -544,6 +544,6 @@ Game.registerGame("asteroids", AsteroidsGameRunner);
 Game.registerGame("asteroids2", Asteroids2GameRunner);
 
 module.exports = {
-  AsteroidsGameRunner,
-  Asteroids2GameRunner,
+  AsteroidsGameRunner: AsteroidsGameRunner,
+  Asteroids2GameRunner: Asteroids2GameRunner,
 };

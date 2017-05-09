@@ -49,10 +49,10 @@ Object.assign(LocalProgressManager.prototype, {
             lesson.getLessonID(),
             challenge.getChallengeID()].join("/");
   },
-  _markSolved(course, lesson, challenge) {
+  _markSolved: function(course, lesson, challenge) {
     this._solved[this._getKey(course, lesson, challenge)] = true;
   },
-  _isSolved(course, lesson, challenge) {
+  _isSolved: function(course, lesson, challenge) {
     return !!this._solved[this._getKey(course, lesson, challenge)];
   },
 });

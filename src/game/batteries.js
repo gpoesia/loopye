@@ -416,5 +416,5 @@ Object.assign(BatteriesGameRunner.prototype, {
 Game.registerGame("batteries", BatteriesGameRunner);
 
 module.exports = {
-  BatteriesGameRunner,
+  BatteriesGameRunner: BatteriesGameRunner,
 };
