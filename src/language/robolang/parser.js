@@ -19,12 +19,14 @@ function ASTNode(type) {
   this.type = type;
   this.children = [];
   this.attributes = {};
+  this.location = null;
 }
 
 ASTNode.prototype = {
   type: null,
   children: null,
   attributes: null,
+  location: null,
 
   toString: function() {
     var repr = "";
@@ -106,10 +108,17 @@ Object.assign(ASTProgramNodeParser.prototype, {
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.PROGRAM);
+    var before = parserState.currentLocation();
     var parser = new ASTGeneralNodeParser();
 
     while (!parserState.programEnded() && parser.lookahead(parserState)) {
       node.children.push(parser.parse(parserState));
+    }
+
+    var after = parserState.currentLocation();
+
+    if (before && after) {
+      node.location = new Lexer.SourceCodeRange(before, after);
     }
 
     return node;
@@ -125,9 +134,14 @@ Object.assign(ASTBlockNodeParser.prototype, {
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.BLOCK);
+    var before = parserState.currentLocation();
     parserState.consumeToken(Lexer.TokenTypes.BEGIN_BLOCK);
     node.children.push(new ASTProgramNodeParser().parse(parserState));
     parserState.consumeToken(Lexer.TokenTypes.END_BLOCK);
+    var after = parserState.currentLocation();
+    if (before && after) {
+      node.location = new Lexer.SourceCodeRange(before, after);
+    }
     return node;
   },
 });
@@ -141,9 +155,14 @@ Object.assign(ASTBlockNodeParser.prototype, {
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.BLOCK);
+    var before = parserState.currentLocation();
     parserState.consumeToken(Lexer.TokenTypes.BEGIN_BLOCK);
     node.children.push(new ASTProgramNodeParser().parse(parserState));
     parserState.consumeToken(Lexer.TokenTypes.END_BLOCK);
+    var after = parserState.currentLocation();
+    if (before && after) {
+      node.location = new Lexer.SourceCodeRange(before, after);
+    }
     return node;
   },
 });
@@ -159,9 +178,16 @@ Object.assign(ASTLoopNodeParser.prototype, {
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.LOOP);
+    var before = parserState.currentLocation();
     node.attributes.tripCount =
         parserState.consumeToken(Lexer.TokenTypes.INTEGER).value;
     node.children.push(new ASTBlockNodeParser().parse(parserState));
+    var after = parserState.currentLocation();
+    if (before && after) {
+      node.location = new Lexer.SourceCodeRange(before, after);
+    } else {
+      console.log("No loop location: " + before + " " + after);
+    }
     return node;
   },
 });
@@ -178,6 +204,7 @@ Object.assign(ASTConditionalNodeParser.prototype, {
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.CONDITIONAL);
+    var before = parserState.currentLocation();
     parserState.consumeToken(Lexer.TokenTypes.IF_KEYWORD);
 
     node.attributes.variable =
@@ -190,7 +217,10 @@ Object.assign(ASTConditionalNodeParser.prototype, {
       parserState.consumeToken(Lexer.TokenTypes.ELSE_KEYWORD);
       node.children.push(new ASTBlockNodeParser().parse(parserState));
     }
-
+    var after = parserState.currentLocation();
+    if (before && after) {
+      node.location = new Lexer.SourceCodeRange(before, after);
+    }
     return node;
   },
 });
@@ -206,8 +236,13 @@ Object.assign(ASTActionNodeParser.prototype, {
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.ACTION);
+    var before = parserState.currentLocation();
     node.attributes.action =
-        parserState.consumeToken(Lexer.TokenTypes.ACTION_IDENTIFIER).value;
+      parserState.consumeToken(Lexer.TokenTypes.ACTION_IDENTIFIER).value;
+    var after = parserState.currentLocation();
+    if (before && after) {
+      node.location = new Lexer.SourceCodeRange(before, after);
+    }
     return node;
   },
 });
@@ -224,10 +259,15 @@ Object.assign(ASTConditionalLoopNodeParser.prototype, {
 
   parse: function(parserState) {
     var node = new ASTNode(ASTNodeTypes.CONDITIONAL_LOOP);
+    var before = parserState.currentLocation();
     parserState.consumeToken(Lexer.TokenTypes.CONDITIONAL_LOOP_KEYWORD);
     node.attributes.variable =
         parserState.consumeToken(Lexer.TokenTypes.IDENTIFIER).value;
     node.children.push(new ASTBlockNodeParser().parse(parserState));
+    var after = parserState.currentLocation();
+    if (before && after) {
+      node.location = new Lexer.SourceCodeRange(before, after);
+    }
     return node;
   },
 });

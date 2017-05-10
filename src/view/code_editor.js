@@ -28,7 +28,8 @@ function joinRegexes(regexes) {
   return regexes.join("|");
 }
 
-function buildCodeEditorParameters(keywords, sensors, actions, onChange, code) {
+function buildCodeEditorParameters(keywords, sensors, actions, onChange, code,
+                                   highlightingRanges) {
   keywords = keywords || DEFAULT_KEYWORDS;
   sensors = sensors || DEFAULT_SENSORS;
   actions = actions || DEFAULT_ACTIONS;
@@ -63,6 +64,7 @@ function buildCodeEditorParameters(keywords, sensors, actions, onChange, code) {
         style: {fontStyle: "italic"},
       },
     ],
+    highlightingRanges: highlightingRanges,
     onChange: onChange,
     initialCode: code,
   };
@@ -85,6 +87,7 @@ var CodeEditor = React.createClass({
   getInitialState: function() {
     return {
       code: this.props.code || "",
+      highlightingRanges: [],
     };
   },
   focus: function() {
@@ -103,6 +106,10 @@ var CodeEditor = React.createClass({
         return callback(code);
       };
     }.bind(this);
+  },
+
+  highlightRanges: function(ranges) {
+    this.setState({highlightRanges: ranges});
   },
 
   render: function() {
@@ -126,10 +133,18 @@ var CodeEditor = React.createClass({
                                            this.props.sensors,
                                            this.props.actions,
                                            this._callOnChange(this.props.onChange),
-                                           this.state.code)}
+                                           this.state.code,
+                                           this.state.highlightRanges
+                                         )}
                              ref="base"
                />
            </div>;
+  },
+
+  componentDidUpdate: function() {
+    if (this.refs.base) {
+      this.refs.base.forceUpdate();
+    }
   },
 });
 

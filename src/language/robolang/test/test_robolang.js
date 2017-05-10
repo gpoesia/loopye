@@ -3,11 +3,17 @@
  */
 
 var Robolang = require("../robolang");
+var Lexer = require("../lexer");
+var Parser = require("../parser");
 var assert = require("assert");
 
 function testBasicSyntax() {
   var interpreter = new Robolang.Interpreter();
   var parseErrors = interpreter.parse("2{ 3{R R} LLRL}");
+
+  if (parseErrors) {
+    console.log(parseErrors[0].stack);
+  }
 
   assert.equal(parseErrors, null);
 
@@ -133,6 +139,27 @@ function testConditionalLoopInitiallyFalseCondition(){
   assert.equal(actions.join(""), "ABFG");
 }
 
+// Test that the code inside a conditional loop is not executed when the
+// condition is false.
+function testSourceCodeLocations(){
+  var tokens = Lexer.tokenize("10 {\n  ABC\n}\nD");
+  var tokenStream = new Lexer.TokenStream(tokens);
+  var parser = new Parser.ASTProgramNodeParser();
+  var root = parser.parse(tokenStream);
+
+  // Root is a ProgramNode.
+  assert.equal(0, root.location.getBegin().getLine());
+  assert.equal(0, root.location.getBegin().getColumn());
+  assert.equal(3, root.location.getEnd().getLine());
+  assert.equal(1, root.location.getEnd().getColumn());
+
+  // Its first child is the loop.
+  assert.equal(0, root.children[0].location.getBegin().getLine());
+  assert.equal(0, root.children[0].location.getBegin().getColumn());
+  assert.equal(2, root.children[0].location.getEnd().getLine());
+  assert.equal(1, root.children[0].location.getEnd().getColumn());
+}
+
 module.exports = {
   tests: [
     testBasicSyntax,
@@ -143,5 +170,6 @@ module.exports = {
     testElseTrueCondition,
     testConditionalLoopInitiallyTrueCondition,
     testConditionalLoopInitiallyFalseCondition,
+    testSourceCodeLocations,
   ],
 };

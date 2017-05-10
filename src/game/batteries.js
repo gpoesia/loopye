@@ -178,7 +178,19 @@ Object.assign(BatteriesGameRunner.prototype, {
       return {compilation_errors: compilation_errors};
     }
 
-    var actions_list = interpreter.run();
+    var actions_list = [];
+    var action = null;
+
+    for (var t = 0; !!(action = interpreter.runUntilNextAction()); ++t) {
+      actions_list.push(action);
+      var location = interpreter.getCurrentLocation();
+      this._animator.addEvent(t, {type: Game.AnimationEventTypes.ACTIVE_CODE_CHANGED,
+                                  beginLine: location.getBegin().getLine(),
+                                  endLine: location.getEnd().getLine(),
+                                  beginColumn: location.getBegin().getColumn(),
+                                  endColumn: location.getEnd().getColumn()});
+    }
+
     var runtime_errors = this._render(actions_list);
 
     if (!runtime_errors.length) {

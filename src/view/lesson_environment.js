@@ -80,6 +80,7 @@ var LessonEnvironment = React.createClass({
       currentChallenge: this.props.initialChallenge || 0,
       docked: true,
       loaded: false,
+      highlightingRanges: [],
     };
   },
 
@@ -92,6 +93,7 @@ var LessonEnvironment = React.createClass({
     if (this.refs.exercise_messages !== undefined) {
       this.refs.exercise_messages.clear();
       this.refs.code_messages.clear();
+      this._codeEditor.highlightRanges([]);
     }
 
     var challenge = this.props.lesson.getChallenge(challengeIndex)
@@ -100,7 +102,8 @@ var LessonEnvironment = React.createClass({
 
     this.setState({currentChallenge: challengeIndex,
                    sourceCode: challenge.getInitialSourceCode(),
-                   loaded: false},
+                   loaded: false,
+                   highlightingRanges: []},
                   function() {
                     ResourceLoader.load((function() {
                       this.setState({loaded: true},
@@ -144,23 +147,28 @@ var LessonEnvironment = React.createClass({
       var runtime_errors = result.runtime_errors;
       var exercise_messages = this.refs.exercise_messages;
 
+      animator.setEventHandler(this._handleAnimationEvent);
       animator.start();
 
       if (Array.isArray(runtime_errors) && runtime_errors.length) {
         animator.onStop(function(ok) {
+          if (this._codeEditor)
+            this._codeEditor.highlightRanges([]);
           if (ok) {
             runtime_errors.map(exercise_messages.addError);
           }
-        });
+        }.bind(this));
       } else {
         success = true;
         var forceUpdate = this.forceUpdate.bind(this);
         animator.onStop(function(ok) {
           if (ok) {
+            if (this._codeEditor)
+              this._codeEditor.highlightRanges([]);
             exercise_messages.addSuccess(currentChallenge.getSuccessMessage());
             forceUpdate();
           }
-        });
+        }.bind(this));
       }
 
       animator.play(this.refs.run_view.getCanvas());
@@ -174,8 +182,28 @@ var LessonEnvironment = React.createClass({
                                                 success);
   },
 
+  _handleAnimationEvent: function(event) {
+    if (this._codeEditor && event.type === Game.AnimationEventTypes.ACTIVE_CODE_CHANGED) {
+      this._codeEditor.highlightRanges(
+        [
+          {
+            beginLine: event.beginLine,
+            endLine: event.endLine,
+            beginColumn: event.beginColumn,
+            endColumn: event.endColumn,
+            style: {
+              backgroundColor: '#ffff00',
+            },
+          },
+        ]);
+    }
+  },
+
   _reset: function() {
     this._stopCurrentAnimation();
+    if (this._codeEditor) {
+      this._codeEditor.highlightRanges([]);
+    }
     var currentChallenge =
         this.props.lesson.getChallenge(this.state.currentChallenge);
     this._gameRunner.reset(currentChallenge.getGameParameters(),
@@ -268,9 +296,11 @@ var LessonEnvironment = React.createClass({
                     <CodeEditor code={this.state.sourceCode}
                                 onChange={this._updateCode}
                                 limit={currentChallenge.getCodeSizeLimit()}
+                                highlightingRanges={this.state.highlightingRanges}
                                 ref={function(editor){
+                                  this._codeEditor = editor;
                                   return editor && editor.focus();
-                                }}/>
+                                }.bind(this)}/>
                   </div>
                   <div style={this.styles.buttonBar}>
                     <ButtonBar onPlay={this._playCode}
