@@ -1,11 +1,11 @@
 /*
- * Represents a programming game. Here, we ues "game" as per Bernand Suits' definition:
+ * Represents a programming game. Here, we use "game" as per Bernard Suits' definition:
  * "to play a game is to engage in activity directed toward bringing about
- *  a speciﬁc state of affairs, using only means permitted by speciﬁc rules,
- *  where the means permitted by the rules are more limited in scope than they
- *  would be in the absence of the rules, and where the sole reason for accepting
- *  such limitation is to make possible such activity."
- *  Suits, Bernard (1967). "What Is a Game?". The University of Chicago Press.
+ * a speciﬁc state of affairs, using only means permitted by speciﬁc rules,
+ * where the means permitted by the rules are more limited in scope than they
+ * would be in the absence of the rules, and where the sole reason for accepting
+ * such limitation is to make possible such activity."
+ * Suits, Bernard (1967). "What Is a Game?". The University of Chicago Press.
  *
  * Thus, an activity in which you have to write code in order to save robots
  * from asteroids is a game. However, one in which you have to write code in
@@ -27,6 +27,17 @@
 /// Creates a Game Runner, which is responsible for executing and rendering
 /// challenges for a game.
 function GameRunner() {}
+
+/// Types of the events that a GameRunner may put in the animator, to be called
+/// when the animation is playing. These events are mostly intended to be used
+/// to change external UI according to how the animation progresses.
+var AnimationEventTypes = {
+  /// ACTIVE_CODE_CHANGED: called whenever the portion of the code that is
+  /// executing changes.
+  /// Parameters: beginLine, endLine, beginColumn, endColumn. These represent
+  /// the range of the portion of the code that is being executed.
+  ACTIVE_CODE_CHANGED: 1,
+};
 
 Object.assign(GameRunner.prototype, {
   /// Returns a string that uniquely identifies the game this runner implements.
@@ -183,6 +194,7 @@ function findChallenge(gameID, challengeID) {
 module.exports = {
   GameRunner: GameRunner,
   Challenge: Challenge,
+  AnimationEventTypes: AnimationEventTypes,
   registerGame: registerGame,
   registerChallenge: registerChallenge,
   findChallenge: findChallenge,

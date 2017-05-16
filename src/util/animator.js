@@ -341,6 +341,8 @@ function Animator() {
   // Point in time in which the animation started to be fast fowarded.
   this.fast_forward_begin = null;
   this.fast_forward_factor = null;
+  this.events = [];
+  this.event_handler = function() {};
 }
 
 Object.assign(Animator.prototype, {
@@ -390,6 +392,13 @@ Object.assign(Animator.prototype, {
     }
   },
 
+  // Adds an event to the animation.
+  // This event will fire the event handler with the given `parameters`
+  // when the animator renders the first frame after the given time `t`.
+  addEvent: function(t, parameters) {
+    this.events.push({time: t, parameters: parameters, fired: false});
+  },
+
   // Clears all animations on the scene.
   clearAllAnimations: function() {
     this.animations = new Array();
@@ -399,6 +408,10 @@ Object.assign(Animator.prototype, {
   start: function() {
     this.start_time = new Date().getTime();
     this.playing = true;
+  },
+
+  setEventHandler: function(event_handler) {
+    this.event_handler = event_handler;
   },
 
   fastForward: function(factor) {
@@ -527,6 +540,18 @@ Object.assign(Animator.prototype, {
         element[animation.property] =
           animation.fn(t - animation.start_time, element,
                        animation.initial_state);
+      }
+    }
+
+    // Fire pending events.
+    if (this.event_handler) {
+      for (var i = 0; i < this.events.length; ++i) {
+        if (!this.events[i].fired) {
+          if (this.events[i].time <= t) {
+            this.event_handler(this.events[i].parameters);
+            this.events[i].fired = true;
+          }
+        }
       }
     }
   },

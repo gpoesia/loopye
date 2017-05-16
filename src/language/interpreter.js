@@ -29,6 +29,12 @@ Interpreter.prototype = {
     throw "Not implemented.";
   },
 
+  /// Returns the range in the source code corresponding to the last executed
+  /// action, or null if it doesn't have associated debug information.
+  getCurrentLocation: function() {
+    return null;
+  },
+
   /// Runs the program until its end, returning a list of all actions executed.
   /// Only useful if the program does not use variables and is guaranteed to
   /// terminate.

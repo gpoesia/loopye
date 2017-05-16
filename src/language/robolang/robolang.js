@@ -50,6 +50,7 @@ function Robolang(actions, flags) {
   Interpreter.call(this);
   this.actions = actions;
   this.flags = flags;
+  this.lastActionNode = null;
 }
 
 function InterpreterState(globalScope) {
@@ -184,10 +185,15 @@ Object.assign(Robolang.prototype, {
       return null;
     } else {
       var action = currentNode.attributes.action;
+      this.lastActionNode = currentNode;
       nodes.pop();
       this.state.nextChildIndex.pop();
       return action;
     }
+  },
+
+  getCurrentLocation: function() {
+    return this.lastActionNode ? this.lastActionNode.location : null;
   },
 });
 
