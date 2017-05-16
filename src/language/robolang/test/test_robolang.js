@@ -9,7 +9,7 @@ var assert = require("assert");
 
 function testBasicSyntax() {
   var interpreter = new Robolang.Interpreter();
-  var parseErrors = interpreter.parse("2{ 3{R R} LLRL}");
+  var parseErrors = interpreter.parse("2{ 3{R R} LLRL}", ["R", "L"]);
 
   if (parseErrors) {
     console.log(parseErrors[0].stack);
@@ -42,7 +42,9 @@ function testBasicSyntax() {
 // Test that the conditional statement is executed when the condition is true.
 function testConditionalStatementTrueCondition() {
   var interpreter = new Robolang.Interpreter();
-  var parseErrors = interpreter.parse("A B se sensor { C D E } F G");
+  var parseErrors = interpreter.parse("A B se sensor { C D E } F G",
+                                      ["A", "B", "C", "D", "E", "F", "G"],
+                                      ["sensor"]);
   assert.equal(parseErrors, null);
 
   interpreter.getGlobalScope().set("sensor", true);
@@ -55,7 +57,9 @@ function testConditionalStatementTrueCondition() {
 // false.
 function testConditionalStatementFalseCondition() {
   var interpreter = new Robolang.Interpreter();
-  var parseErrors = interpreter.parse("A B se sensor { C D E } F G");
+  var parseErrors = interpreter.parse("A B se sensor { C D E } F G",
+                                      ["A", "B", "C", "D", "E", "F", "G"],
+                                      ["sensor"]);
   assert.equal(parseErrors, null);
 
   interpreter.getGlobalScope().set("sensor", false);
@@ -69,7 +73,9 @@ function testConditionalStatementFalseCondition() {
 // is true.
 function testConditionalLoopInitiallyTrueCondition(){
   var interpreter = new Robolang.Interpreter()
-  var parseErrors = interpreter.parse("A B enquanto sensor { C D E } F G");
+  var parseErrors = interpreter.parse("A B enquanto sensor { C D E } F G",
+                                      ["A", "B", "C", "D", "E", "F", "G"],
+                                      ["sensor"]);
   assert.equal(parseErrors, null);
 
   var actions = [];
@@ -92,7 +98,9 @@ function testConditionalLoopInitiallyTrueCondition(){
 // condition is false
 function testElseFalseCondition() {
   var interpreter = new Robolang.Interpreter();
-  var parseErrors = interpreter.parse("A B se sensor { C D } senao { E F } G H");
+  var parseErrors = interpreter.parse("A B se sensor { C D } senao { E F } G H",
+                                      ["A", "B", "C", "D", "E", "F", "G", "H"],
+                                      ["sensor"]);
   assert.equal(parseErrors, null);
 
   interpreter.getGlobalScope().set("sensor", false);
@@ -105,7 +113,9 @@ function testElseFalseCondition() {
 // the condition is true
 function testElseTrueCondition() {
   var interpreter = new Robolang.Interpreter();
-  var parseErrors = interpreter.parse("A B se sensor { C D } senao { E F } G H");
+  var parseErrors = interpreter.parse("A B se sensor { C D } senao { E F } G H",
+                                      ["A", "B", "C", "D", "E", "F", "G", "H"],
+                                      ["sensor"]);
   assert.equal(parseErrors, null);
 
   interpreter.getGlobalScope().set("sensor", true);
@@ -117,7 +127,9 @@ function testElseTrueCondition() {
 // Test that the conditional at end of the code is properly parsed and executed
 function testConditionalStatementAtTheEnd() {
   var interpreter = new Robolang.Interpreter();
-  var parseErrors = interpreter.parse("A B se sensor { C D }");
+  var parseErrors = interpreter.parse("A B se sensor { C D }",
+                                      ["A", "B", "C", "D"],
+                                      ["sensor"]);
   assert.equal(parseErrors, null);
 
   interpreter.getGlobalScope().set("sensor", true);
@@ -128,9 +140,11 @@ function testConditionalStatementAtTheEnd() {
 
 // Test that the code inside a conditional loop is not executed when the
 // condition is false.
-function testConditionalLoopInitiallyFalseCondition(){
+function testConditionalLoopInitiallyFalseCondition() {
   var interpreter = new Robolang.Interpreter()
-  var parseErrors = interpreter.parse("A B enquanto sensor { C D E } F G");
+  var parseErrors = interpreter.parse("A B enquanto sensor { C D E } F G",
+                                      ["A", "B", "C", "D", "E", "F", "G"],
+                                      ["sensor"]);
   assert.equal(parseErrors, null);
 
   interpreter.getGlobalScope().set("sensor", false);
@@ -139,12 +153,14 @@ function testConditionalLoopInitiallyFalseCondition(){
   assert.equal(actions.join(""), "ABFG");
 }
 
+
 // Test that the code inside a conditional loop is not executed when the
 // condition is false.
-function testSourceCodeLocations(){
+function testSourceCodeLocations() {
   var tokens = Lexer.tokenize("10 {\n  ABC\n}\nD");
   var tokenStream = new Lexer.TokenStream(tokens);
-  var parser = new Parser.ASTProgramNodeParser();
+  var parsingContext = new Parser.ParsingContext(["A", "B", "C", "D"], []);
+  var parser = new Parser.ASTProgramNodeParser(parsingContext);
   var root = parser.parse(tokenStream);
 
   // Root is a ProgramNode.
@@ -160,6 +176,13 @@ function testSourceCodeLocations(){
   assert.equal(1, root.children[0].location.getEnd().getColumn());
 }
 
+// Test that a program with a single identifier is considered incorrect.
+function testSingleIdentifierCompilationError() {
+  var interpreter = new Robolang.Interpreter()
+  var parseErrors = interpreter.parse("identifier");
+  assert.notEqual(parseErrors, null);
+}
+
 module.exports = {
   tests: [
     testBasicSyntax,
@@ -171,5 +194,6 @@ module.exports = {
     testConditionalLoopInitiallyTrueCondition,
     testConditionalLoopInitiallyFalseCondition,
     testSourceCodeLocations,
+    testSingleIdentifierCompilationError,
   ],
 };
