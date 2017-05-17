@@ -419,9 +419,9 @@ createBatteriesChallenge(
 );
 
 createBatteriesChallenge(
-  "step12",
+  "pre-step12a",
   <p>
-    Mais um robô faminto. Vamos lá!
+    Utilizando laços para criar padrões: Zigue-Zague.
   </p>,
   <div>
     <p>
@@ -432,6 +432,186 @@ createBatteriesChallenge(
       então usar laços vai ser essencial.
       Pense em como fazer um zigue-zague até a bateria mais alta
       usando um laço.
+      O que o robô precisa repetir para fazer esse movimento de subir
+      uma escada? Sei que você consegue!
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(4, 0),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(3, 0), new Grid.Position(2, 0),
+    new Grid.Position(2, 1), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 3), new Grid.Position(0, 4)
+  ],
+  []
+);
+
+createBatteriesChallenge(
+  "pre-step12b",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô também pode ser salvo com um zigue-zague. Pense em
+      como você pode alterar o código do robô anterior para salvar este robô.
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(4, 4),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(3, 4), new Grid.Position(2, 4),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 1), new Grid.Position(0, 0)
+  ],
+  []
+);
+
+createBatteriesChallenge(
+  "pre-step12c",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô também pode ser salvo com um zigue-zague. Pense em
+      como você pode alterar o código do robô anterior para salvar este robô.
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(0, 4),
+  Grid.Directions.LEFT,
+  [
+    new Grid.Position(3, 0), new Grid.Position(2, 0),
+    new Grid.Position(2, 1), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 3), new Grid.Position(4, 0)
+  ],
+  []
+);
+
+createBatteriesChallenge(
+  "pre-step12d",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô também pode ser salvo com um zigue-zague. Pense em
+      como você pode alterar o código do robô anterior para salvar este robô.
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(0, 0),
+  Grid.Directions.RIGHT,
+  [
+    new Grid.Position(3, 4), new Grid.Position(2, 4),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 1), new Grid.Position(4, 4)
+  ],
+  []
+);
+
+
+
+createBatteriesChallenge(
+  "pre-step12e",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Este robô também pode ser salvo utilizando um zigue-zague.
+      Você consegue pensar em como escrever um padrão de zigue-zague,
+      utilizando laços, para este robô?
+    </p>
+  </div>,
+  commandReference,
+  "",
+  8,
+  6,
+  5,
+  new Grid.Position(5, 4),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(4, 4),
+    new Grid.Position(3, 4), new Grid.Position(3, 3),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(1, 1),
+    new Grid.Position(0, 1), new Grid.Position(0, 0)
+  ],
+  [
+    new Grid.Position(2, 4), new Grid.Position(1, 3),
+    new Grid.Position(0, 2),
+    new Grid.Position(4, 3), new Grid.Position(3, 2),
+    new Grid.Position(2, 1), new Grid.Position(1, 0)
+  ]
+);
+
+createBatteriesChallenge(
+  "pre-step12f",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô pode ser salvo com um zigue-zague, assim como o
+      robô anterior. O que precisa mudar?
+    </p>
+  </div>,
+  commandReference,
+  "",
+  8,
+  6,
+  5,
+  new Grid.Position(5, 0),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(4, 0),
+    new Grid.Position(3, 0), new Grid.Position(3, 1),
+    new Grid.Position(2, 1), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(1, 3),
+    new Grid.Position(0, 3), new Grid.Position(0, 4)
+  ],
+  [
+    new Grid.Position(2, 0), new Grid.Position(1, 1),
+    new Grid.Position(0, 2),
+    new Grid.Position(4, 1), new Grid.Position(3, 2),
+    new Grid.Position(2, 3), new Grid.Position(1, 4)
+  ]
+);
+
+createBatteriesChallenge(
+  "step12",
+  <p>
+    Mais um robô faminto. Vamos lá!
+  </p>,
+  <div>
+    <p>
+      Este robô também pode ser salvo utilizando um laço para criar um
+      zigue-zague. É exatamente como foi feito para os robôs anteriores,
+      com a diferença de que nem todo o caminho do zigue-zague contém baterias.
       O que o robô precisa repetir para fazer esse movimento de subir
       uma escada? Sei que você consegue!
     </p>
