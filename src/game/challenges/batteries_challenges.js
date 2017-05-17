@@ -675,3 +675,569 @@ createBatteriesChallenge(
     new Grid.Position(9, 0), new Grid.Position(2, 1)
   ]
 );
+
+createBatteriesChallenge(
+  "pre-step6a", // id
+  <p>
+    Temos poucas baterias aqui, podemos pegar todas facilmente.
+  </p>,
+  <div>
+    <p>
+      Temos poucas baterias aqui, podemos pegar todas facilmente.
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  null, // limit
+  3, // height
+  8, // width
+  new Grid.Position(1, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(1, 1), new Grid.Position(1, 2),
+    new Grid.Position(1, 3), new Grid.Position(1, 4),
+    new Grid.Position(1, 5), new Grid.Position(1, 6),
+    new Grid.Position(1, 7)
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pre-step6b", // id
+  <p>
+    Dessa vez o código só pode ter quatro caracteres! Acho que utilizar um
+    laço pode ajudar!
+  </p>,
+  <div>
+    <p>
+      Dessa vez o código só pode ter quatro caracteres! Acho que utilizar um
+      laço pode ajudar! Tente <b>{"5{F}"}</b>, por exemplo.
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  4, // limit
+  3, // height
+  8, // width
+  new Grid.Position(1, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(1, 1), new Grid.Position(1, 2),
+    new Grid.Position(1, 3), new Grid.Position(1, 4),
+    new Grid.Position(1, 5), new Grid.Position(1, 6),
+    new Grid.Position(1, 7)
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pre-step6c", // id
+  <p>
+    Pegue todas as baterias boas!
+  </p>,
+  <div>
+    <p>
+      Resolva esse problema do jeito que achar melhor.
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  null, // limit
+  3, // height
+  8, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(0, 1), new Grid.Position(0, 2),
+    new Grid.Position(0, 3), new Grid.Position(0, 4),
+    new Grid.Position(0, 5), new Grid.Position(0, 6),
+    new Grid.Position(0, 7), new Grid.Position(1, 7),
+    new Grid.Position(2, 7), new Grid.Position(2, 6),
+    new Grid.Position(2, 5), new Grid.Position(2, 4),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(2, 1), new Grid.Position(2, 0),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pre-step6d", // id
+  <p>
+    Pegue todas as baterias boas! Você pode usar laços!
+  </p>,
+  <div>
+    <p>
+      Esse problema é bem parecido com o anterior, só que agora você só tem
+      14 caracteres para usar! Você pode usar laços!
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  14, // limit
+  3, // height
+  8, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(0, 1), new Grid.Position(0, 2),
+    new Grid.Position(0, 3), new Grid.Position(0, 4),
+    new Grid.Position(0, 5), new Grid.Position(0, 6),
+    new Grid.Position(0, 7), new Grid.Position(1, 7),
+    new Grid.Position(2, 7), new Grid.Position(2, 6),
+    new Grid.Position(2, 5), new Grid.Position(2, 4),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(2, 1), new Grid.Position(2, 0),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pre-step6e", // id
+  <p>
+    Vamos ver se consegue resolver esse também!
+  </p>,
+  <div>
+    <p>
+      Vamos ver se consegue resolver esse também!
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  14, // limit
+  3, // height
+  8, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(2, 0),
+  ], // good batteries
+  [
+    new Grid.Position(1, 0), new Grid.Position(1, 1),
+    new Grid.Position(1, 2), new Grid.Position(1, 3),
+    new Grid.Position(1, 4), new Grid.Position(1, 5),
+    new Grid.Position(1, 6),
+  ] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pre-step6f", // id
+  <p>
+    Esse aqui vai ser bem fácil pra você agora!
+  </p>,
+  <div>
+    <p>
+      Esse aqui vai ser bem fácil pra você agora!
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  14, // limit
+  8, // height
+  8, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(0, 1), new Grid.Position(0, 2),
+    new Grid.Position(0, 3), new Grid.Position(0, 4),
+    new Grid.Position(0, 5), new Grid.Position(0, 6),
+    new Grid.Position(0, 7), new Grid.Position(1, 7),
+    new Grid.Position(2, 7), new Grid.Position(3, 7),
+    new Grid.Position(4, 7), new Grid.Position(5, 7),
+    new Grid.Position(6, 7), new Grid.Position(7, 7),
+    new Grid.Position(7, 6), new Grid.Position(7, 5),
+    new Grid.Position(7, 4), new Grid.Position(7, 3),
+    new Grid.Position(7, 2), new Grid.Position(7, 1),
+    new Grid.Position(7, 0),
+  ], // good batteries
+  [] // bad batteries
+);
+
+
+createBatteriesChallenge(
+  "pos-step11a", // id
+  <p>
+    Resolva esse problema com quantos caracteres você quiser. Já comecei
+    o código para você.
+  </p>,
+  <div>
+    <p>
+      Resolva esse problema com quantos caracteres você quiser. Já comecei
+      o código para você.
+    </p>
+  </div>,
+  commandReference,
+  "FDFE\nFDFE\n", // codigo inicial
+  null, // limit
+  9, // height
+  9, // width
+  new Grid.Position(8, 0), // robot position
+  Grid.Directions.UP, // robot direction
+  [
+    new Grid.Position(7, 0), new Grid.Position(7, 1),
+    new Grid.Position(6, 1), new Grid.Position(6, 2),
+    new Grid.Position(5, 2), new Grid.Position(5, 3),
+    new Grid.Position(4, 3), new Grid.Position(4, 4),
+    new Grid.Position(3, 4), new Grid.Position(3, 5),
+    new Grid.Position(2, 5), new Grid.Position(2, 6),
+    new Grid.Position(1, 6), new Grid.Position(1, 7),
+    new Grid.Position(0, 7), new Grid.Position(0, 8),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pos-step11b", // id
+  <p>
+    Agora só podemos usar 7 caracteres. Mas tem como resolver!
+  </p>,
+  <div>
+    <p>
+      Agora só podemos usar 7 caracteres. Mas tem como resolver!
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  7, // limit
+  9, // height
+  9, // width
+  new Grid.Position(8, 0), // robot position
+  Grid.Directions.UP, // robot direction
+  [
+    new Grid.Position(7, 0), new Grid.Position(7, 1),
+    new Grid.Position(6, 1), new Grid.Position(6, 2),
+    new Grid.Position(5, 2), new Grid.Position(5, 3),
+    new Grid.Position(4, 3), new Grid.Position(4, 4),
+    new Grid.Position(3, 4), new Grid.Position(3, 5),
+    new Grid.Position(2, 5), new Grid.Position(2, 6),
+    new Grid.Position(1, 6), new Grid.Position(1, 7),
+    new Grid.Position(0, 7), new Grid.Position(0, 8),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pos-step11c", // id
+  <p>
+    Apenas uma bateria boa aqui. Vai ser fácil!
+  </p>,
+  <div>
+    <p>
+      Apenas uma bateria boa aqui. Vai ser fácil!
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  7, // limit
+  6, // height
+  6, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(5, 5),
+  ], // good batteries
+  [
+    new Grid.Position(0, 2), new Grid.Position(0, 3),
+    new Grid.Position(1, 3), new Grid.Position(1, 4),
+    new Grid.Position(2, 4), new Grid.Position(2, 5),
+    new Grid.Position(3, 5),
+    new Grid.Position(1, 0),
+    new Grid.Position(2, 0), new Grid.Position(2, 1),
+    new Grid.Position(3, 1), new Grid.Position(3, 2),
+    new Grid.Position(4, 2), new Grid.Position(4, 3),
+    new Grid.Position(5, 3), new Grid.Position(5, 4),
+  ] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pos-step11d", // id
+  <p>
+    Será que tem como usar a mesma ideia dos passos anteriores?
+  </p>,
+  <div>
+    <p>
+      Será que tem como usar a mesma ideia dos passos anteriores?
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  7, // limit
+  8, // height
+  8, // width
+  new Grid.Position(0, 7), // robot position
+  Grid.Directions.LEFT, // robot direction
+  [
+    new Grid.Position(1, 6), new Grid.Position(2, 5),
+    new Grid.Position(3, 4), new Grid.Position(4, 3),
+    new Grid.Position(5, 2), new Grid.Position(6, 1),
+    new Grid.Position(7, 0),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pos-step11e", // id
+  <p>
+    Agora temos que andar um pouco mais antes de pegar essas baterias.
+  </p>,
+  <div>
+    <p>
+      Agora temos que andar um pouco mais antes de pegar essas baterias.
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  13, // limit
+  8, // height
+  8, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(0, 7),
+    new Grid.Position(1, 6), new Grid.Position(2, 5),
+    new Grid.Position(3, 4), new Grid.Position(4, 3),
+    new Grid.Position(5, 2), new Grid.Position(6, 1),
+    new Grid.Position(7, 0),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pos-step11f", // id
+  <p>
+    E aquela última bateria lá? Como pegar?
+  </p>,
+  <div>
+    <p>
+      E aquela última bateria lá? Como pegar?
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  17, // limit
+  8, // height
+  8, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(0, 7),
+    new Grid.Position(1, 6), new Grid.Position(2, 5),
+    new Grid.Position(3, 4), new Grid.Position(4, 3),
+    new Grid.Position(5, 2), new Grid.Position(6, 1),
+    new Grid.Position(7, 0), new Grid.Position(7, 7),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pos-step11g", // id
+  <p>
+    Essa vai ser bem legal!
+  </p>,
+  <div>
+    <p>
+      Essa vai ser bem legal!
+    </p>
+  </div>,
+  commandReference,
+  "", // codigo inicial
+  21, // limit
+  8, // height
+  8, // width
+  new Grid.Position(0, 0), // robot position
+  Grid.Directions.RIGHT, // robot direction
+  [
+    new Grid.Position(0, 7),
+    new Grid.Position(1, 6), new Grid.Position(2, 5),
+    new Grid.Position(3, 4), new Grid.Position(4, 3),
+    new Grid.Position(5, 2), new Grid.Position(6, 1),
+    new Grid.Position(7, 0), new Grid.Position(7, 7),
+    new Grid.Position(6, 6), new Grid.Position(5, 5),
+    new Grid.Position(4, 4), new Grid.Position(3, 3),
+    new Grid.Position(2, 2), new Grid.Position(1, 1),
+  ], // good batteries
+  [] // bad batteries
+);
+
+createBatteriesChallenge(
+  "pre-step12a",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Só trocar um 2 por um 3 já fez uma grande diferença, não?
+    </p>
+    <p>
+      Agora ajude este robô. Você não tem muitos caracteres para usar,
+      então usar laços vai ser essencial.
+      Pense em como fazer um zigue-zague até a bateria mais alta
+      usando um laço.
+      O que o robô precisa repetir para fazer esse movimento de subir
+      uma escada? Sei que você consegue!
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(4, 0),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(3, 0), new Grid.Position(2, 0),
+    new Grid.Position(2, 1), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 3), new Grid.Position(0, 4)
+  ],
+  []
+);
+
+createBatteriesChallenge(
+  "pre-step12b",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô também pode ser salvo com um zigue-zague. Pense em
+      como você pode alterar o código do robô anterior para salvar este robô.
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(4, 4),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(3, 4), new Grid.Position(2, 4),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 1), new Grid.Position(0, 0)
+  ],
+  []
+);
+
+createBatteriesChallenge(
+  "pre-step12c",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô também pode ser salvo com um zigue-zague. Pense em
+      como você pode alterar o código do robô anterior para salvar este robô.
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(0, 4),
+  Grid.Directions.LEFT,
+  [
+    new Grid.Position(3, 0), new Grid.Position(2, 0),
+    new Grid.Position(2, 1), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 3), new Grid.Position(4, 0)
+  ],
+  []
+);
+
+createBatteriesChallenge(
+  "pre-step12d",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô também pode ser salvo com um zigue-zague. Pense em
+      como você pode alterar o código do robô anterior para salvar este robô.
+    </p>
+  </div>,
+  commandReference,
+  "",
+  9,
+  5,
+  5,
+  new Grid.Position(0, 0),
+  Grid.Directions.RIGHT,
+  [
+    new Grid.Position(3, 4), new Grid.Position(2, 4),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(0, 2),
+    new Grid.Position(0, 1), new Grid.Position(4, 4)
+  ],
+  []
+);
+
+
+
+createBatteriesChallenge(
+  "pre-step12e",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Este robô também pode ser salvo utilizando um zigue-zague.
+      Você consegue pensar em como escrever um padrão de zigue-zague,
+      utilizando laços, para este robô?
+    </p>
+  </div>,
+  commandReference,
+  "",
+  8,
+  6,
+  5,
+  new Grid.Position(5, 4),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(4, 4),
+    new Grid.Position(3, 4), new Grid.Position(3, 3),
+    new Grid.Position(2, 3), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(1, 1),
+    new Grid.Position(0, 1), new Grid.Position(0, 0)
+  ],
+  [
+    new Grid.Position(2, 4), new Grid.Position(1, 3),
+    new Grid.Position(0, 2),
+    new Grid.Position(4, 3), new Grid.Position(3, 2),
+    new Grid.Position(2, 1), new Grid.Position(1, 0)
+  ]
+);
+
+createBatteriesChallenge(
+  "pre-step12f",
+  <p>
+    Utilizando laços para criar padrões: Zigue-Zague.
+  </p>,
+  <div>
+    <p>
+      Muito bem! Este robô pode ser salvo com um zigue-zague, assim como o
+      robô anterior. O que precisa mudar?
+    </p>
+  </div>,
+  commandReference,
+  "",
+  8,
+  6,
+  5,
+  new Grid.Position(5, 0),
+  Grid.Directions.UP,
+  [
+    new Grid.Position(4, 0),
+    new Grid.Position(3, 0), new Grid.Position(3, 1),
+    new Grid.Position(2, 1), new Grid.Position(2, 2),
+    new Grid.Position(1, 2), new Grid.Position(1, 3),
+    new Grid.Position(0, 3), new Grid.Position(0, 4)
+  ],
+  [
+    new Grid.Position(2, 0), new Grid.Position(1, 1),
+    new Grid.Position(0, 2),
+    new Grid.Position(4, 1), new Grid.Position(3, 2),
+    new Grid.Position(2, 3), new Grid.Position(1, 4)
+  ]
+);
