@@ -25,12 +25,12 @@ function testMaxLoopTripCount() {
   var program = Robolang.CompileRobolangProgram("15{X 10{Y}} 19{Z}",
                                                 ["X", "Y", "Z"]);
     assert.equal(true, program instanceof Robolang.RobolangProgram);
-  assert.equal(19, Analysis.getMaxLoopTripCount(program));
+  assert.equal(19, Analysis.getMaxLoopTripCount(program).maxLoop);
 
   program = Robolang.CompileRobolangProgram("10{X 15{Y}} 20{Z}",
                                             ["X", "Y", "Z"]);
   assert.equal(true, program instanceof Robolang.RobolangProgram);
-  assert.equal(20, Analysis.getMaxLoopTripCount(program));
+  assert.equal(20, Analysis.getMaxLoopTripCount(program).maxLoop);
 }
 
 module.exports = {
