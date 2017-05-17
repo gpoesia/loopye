@@ -28,7 +28,7 @@ function joinRegexes(regexes) {
   return regexes.join("|");
 }
 
-function buildCodeEditorParameters(keywords, sensors, actions, onChange, code,
+function buildCodeEditorParameters(keywords, sensors, actions, onChange, initialCode,
                                    highlightingRanges) {
   keywords = keywords || DEFAULT_KEYWORDS;
   sensors = sensors || DEFAULT_SENSORS;
@@ -66,7 +66,7 @@ function buildCodeEditorParameters(keywords, sensors, actions, onChange, code,
     ],
     highlightingRanges: highlightingRanges,
     onChange: onChange,
-    initialCode: code,
+    initialCode: initialCode,
   };
 }
 
@@ -86,8 +86,8 @@ var CodeEditor = React.createClass({
   },
   getInitialState: function() {
     return {
-      code: this.props.code || "",
       highlightingRanges: [],
+      codeLength: this._length(this.props.initialCode.length),
     };
   },
   focus: function() {
@@ -95,16 +95,12 @@ var CodeEditor = React.createClass({
           this.refs.base.focus();
   },
   _callOnChange: function(callback) {
-    var limit = this.props.limit;
-    var length = this._length;
-
     return function(code) {
-      if (!!limit && length(code) > limit) {
-        this.forceUpdate();
-      } else if (callback) {
-        this.setState({code: code});
-        return callback(code);
-      };
+      var length = this._length(code);
+      this.setState({codeLength: length});
+      if (callback) {
+        return callback(code, length);
+      }
     }.bind(this);
   },
 
@@ -113,27 +109,27 @@ var CodeEditor = React.createClass({
   },
 
   render: function() {
-    var limit_text = null;
-    var code_length = this._length(this.state.code);
+    var limitText = null;
+    var codeLength = this.state.codeLength;
 
     if (!!this.props.limit) {
-      var color = (code_length == this.props.limit) ? "red" : "black";
-      limit_text =
+      var color = (codeLength > this.props.limit) ? "red" : "black";
+      limitText =
         <p style={{color: color}}>
-          Tamanho do código: {this._length(this.state.code)}/{this.props.limit}
+          Tamanho do código: {codeLength}/{this.props.limit}
         </p>;
     } else {
-      limit_text = <span></span>;
+      limitText = <span></span>;
     }
 
     return <div style={this._styles.containingDiv}>
-             {limit_text}
+             {limitText}
              <CodeEditorBase parameters={buildCodeEditorParameters(
                                            this.props.keywords,
                                            this.props.sensors,
                                            this.props.actions,
                                            this._callOnChange(this.props.onChange),
-                                           this.state.code,
+                                           this.props.initialCode,
                                            this.state.highlightRanges
                                          )}
                              ref="base"

@@ -2,6 +2,9 @@
  * Lexical analyzer for Robolang.
  */
 
+var T = require("../../util/translate").T;
+var sprintf = require("sprintf-js").sprintf;
+
 /// Source code tokens.
 var TokenTypes = {
   ACTION_IDENTIFIER: {name: "action_identifier"},
@@ -54,6 +57,13 @@ Object.assign(SourceCodeRange.prototype, {
   },
 });
 
+function LexerError(message, location) {
+  return {
+    message: message,
+    range: location,
+  };
+}
+
 function isKeyword(token) {
   return (token === TokenTypes.IF_KEYWORD.value ||
           token === TokenTypes.ELSE_KEYWORD.value ||
@@ -76,6 +86,34 @@ Token.prototype = {
   type: null,
   value: null,
   location: null,
+  toString: function() {
+    switch (this.type) {
+    case TokenTypes.ACTION_IDENTIFIER:
+      return this.value;
+    case TokenTypes.IDENTIFIER:
+      return this.value;
+    case TokenTypes.BEGIN_BLOCK:
+      return BEGIN_BLOCK_TOKEN;
+    case TokenTypes.END_BLOCK:
+      return END_BLOCK_TOKEN;
+    case TokenTypes.IF_KEYWORD:
+      return TokenTypes.IF_KEYWORD.value;
+    case TokenTypes.ELSE_KEYWORD:
+      return TokenTypes.ELSE_KEYWORD.value;
+    case TokenTypes.INTEGER:
+      return this.value;
+    case TokenTypes.CONDITIONAL_LOOP_KEYWORD:
+      return TokenTypes.CONDITIONAL_LOOP_KEYWORD.value;
+    case TokenTypes.BEGIN_EXPRESSION:
+      return BEGIN_EXPRESSION_TOKEN;
+    case TokenTypes.END_EXPRESSION:
+      return END_EXPRESSION_TOKEN;
+    case TokenTypes.END_OF_FILE:
+      return "";
+    default:
+      return "<???>";
+    }
+  }
 };
 
 /// Stores the stream of tokens output by the lexer.
@@ -83,14 +121,13 @@ function TokenStream(tokens) {
   this._i = 0;
   this._tokens = tokens;
   this._error = null;
-  if (tokens[0].location) {
-    this._location = tokens[0].location.getBegin();
-  }
 }
 
 TokenStream.prototype = {
+  /// Returns whether all tokens in the input have been consumed.
   programEnded: function() {
-    return this.i >= this._tokens.length - 1;
+    // An EOF is appended to the end; hence we subtract 1.
+    return this._i >= this._tokens.length - 1;
   },
   /// Consumes and returns the next token of the string.
   /// If expectedType is not undefined, this function throws an error if the
@@ -99,19 +136,31 @@ TokenStream.prototype = {
     var token = this._tokens[this._i];
     if (expectedType !== undefined &&
         (token === undefined || token.type !== expectedType)) {
-      throw ("Unexpected token " + token +
-             " (expected " + expectedType.name + ")");
+      throw LexerError(sprintf(T("Não esperava um %s aqui (esperava um %s)."),
+                               token, expectedType.name),
+                       token.location.getBegin());
     }
-    this._location = token.location ? token.location.getEnd() : null;
     ++this._i;
     return token;
   },
+  /// Returns the location up to which tokens were consumed.
   currentLocation: function() {
-    if (this.programEnded()) {
-      return this._location;
-    } else {
-      return this._tokens[this._i].location.getBegin();
+    if (this.programEnded() && this._tokens.length > 1) {
+      return this._tokens[this._tokens.length - 2].location.getEnd();
     }
+    if (this._i > 0) {
+      return this._tokens[this._i - 1].location.getEnd();
+    } else {
+      return this._tokens[0].location.getBegin();
+    }
+  },
+  /// Returns the location right before the next token to be consumed.
+  /// If there are no tokens left, returns null
+  nextTokenLocation: function() {
+    if (this.programEnded()) {
+      return null;
+    }
+    return this._tokens[this._i].location.getBegin();
   },
   /// Returns some of the next tokens in the stream without consuming them.
   /// `n` is the number of tokens wanted. If there are fewer than `n` tokens
@@ -191,7 +240,8 @@ var tokenize = function(code) {
         i = j;
         column += j - i;
         after = new SourceCodePosition(line, column);
-        tokens.push(new Token(TokenTypes.IDENTIFIER, id));
+        tokens.push(new Token(TokenTypes.IDENTIFIER, id,
+                              new SourceCodeRange(before, after)));
         continue;
       }
     }
@@ -249,8 +299,10 @@ var tokenize = function(code) {
       continue;
     }
 
-    throw ("Unrecognized token: " +
-           (code.substr(i, 10) + (i + 10 < code.length ? "" : "...")));
+    // Unrecognized token.
+    var snippet = (code.substr(i, 10) + (i + 10 < code.length ? "" : "..."));
+    throw LexerError(T("Trecho de código não reconhecido: ") + snippet,
+                     new SourceCodeRange(before));
   }
 
   tokens.push(new Token(TokenTypes.END_OF_FILE, null,
@@ -266,4 +318,6 @@ module.exports = {
   TokenTypes: TokenTypes,
   SourceCodePosition: SourceCodePosition,
   SourceCodeRange: SourceCodeRange,
+  BEGIN_BLOCK_TOKEN: BEGIN_BLOCK_TOKEN,
+  END_BLOCK_TOKEN: END_BLOCK_TOKEN,
 };

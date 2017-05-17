@@ -8,7 +8,14 @@ var Lexer = require("./lexer");
 var Parser = require("./parser");
 var Scope = require("../scope");
 var Analysis = require("./analysis");
-var Constants = require("../../constants");
+var T = require("../../util/translate").T;
+
+var MAX_LOOP_TRIP_COUNT = 20;
+
+var SemanticAnalysisErrors = {
+  TOO_MANY_LOOP_ITERATIONS_ERROR: T("O seu laço tem uma repetição muito grande. " +
+                                    "Assim, o robô ficará andando para sempre!"),
+};
 
 /// Feature flags: control which language constructs are enabled.
 var LOOPS = 1 << 0;
@@ -29,15 +36,16 @@ RobolangProgram.prototype = {
 /// unsuccessful, it returns a list of errors. If successful, runs
 /// semantic checks and returns a RobolangProgram in case these checks pass.
 /// Otherwise, it returns an error.
-function CompileRobolangProgram(code) {
+function CompileRobolangProgram(code, actions, sensors) {
   try {
     var tokens = Lexer.tokenize(code);
     var token_stream = new Lexer.TokenStream(tokens);
-    var parser = new Parser.ASTProgramNodeParser();
+    var context = new Parser.ParsingContext(actions, sensors);
+    var parser = new Parser.ASTProgramNodeParser(context);
 
     var program = new RobolangProgram(parser.parse(token_stream));
-    if (Analysis.getMaxLoopTripCount(program) > Constants.MAX_LOOP_TRIPS) {
-      return [Constants.SemanticAnalysisErrors.TOO_MANY_LOOP_TRIPS];
+    if (Analysis.getMaxLoopTripCount(program) > MAX_LOOP_TRIP_COUNT) {
+      return [SemanticAnalysisErrors.TOO_MANY_LOOP_ITERATIONS_ERROR];
     }
 
     return program;
@@ -69,8 +77,8 @@ Object.assign(Robolang.prototype, {
   /// Parses the given source code and initializes the interpreter for
   /// executing the program. If compilation fails, returns an array of errors.
   /// Otherwise, returns null.
-  parse: function(code) {
-    var program_or_errors = CompileRobolangProgram(code);
+  parse: function(code, actions, sensors) {
+    var program_or_errors = CompileRobolangProgram(code, actions, sensors);
 
     if (program_or_errors instanceof Array) {
       return program_or_errors;

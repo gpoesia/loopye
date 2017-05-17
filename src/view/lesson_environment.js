@@ -16,6 +16,7 @@ var Constants = require("../constants");
 var Game = require("../game/game");
 var Loading = require("react-loading");
 var ProgressManager = require("../backend/progress_manager");
+var T = require("../util/translate").T;
 
 var LessonEnvironment = React.createClass({
   styles: {
@@ -74,9 +75,11 @@ var LessonEnvironment = React.createClass({
   getInitialState: function() {
     this._currentAnimator = null;
     this._gameRunner = null;
+    this._codeLength = 0;
 
     return {
       sourceCode: "",
+      initialCode: "",
       currentChallenge: this.props.initialChallenge || 0,
       docked: true,
       loaded: false,
@@ -84,7 +87,9 @@ var LessonEnvironment = React.createClass({
     };
   },
 
-  _updateCode: function(code) {
+  _updateCode: function(code, codeLength) {
+    this._codeLength = codeLength;
+    this._codeEditor.highlightRanges([]);
     this.setState({sourceCode: code});
   },
 
@@ -102,6 +107,7 @@ var LessonEnvironment = React.createClass({
 
     this.setState({currentChallenge: challengeIndex,
                    sourceCode: challenge.getInitialSourceCode(),
+                   initialCode: challenge.getInitialSourceCode(),
                    loaded: false,
                    highlightingRanges: []},
                   function() {
@@ -136,12 +142,25 @@ var LessonEnvironment = React.createClass({
     this.refs.code_messages.clear();
 
     var currentChallenge = this.props.lesson.getChallenge(this.state.currentChallenge);
-    var result = this._gameRunner.run(this.state.sourceCode);
+    var errors = [];
+    var result;
+
+    if (!!currentChallenge.getCodeSizeLimit() &&
+        this._codeLength > currentChallenge.getCodeSizeLimit()) {
+      errors.push(
+        {
+          message: T("Seu código passou do tamanho permitido neste desafio!"),
+        }
+      );
+    } else {
+      result = this._gameRunner.run(this.state.sourceCode);
+      errors = result.compilation_errors;
+    }
 
     var success = false;
 
-    if (!!result.compilation_errors) {
-      this.refs.code_messages.setErrors(result.compilation_errors);
+    if (errors && errors.length > 0) {
+      this._handleCompilationErrors(errors);
     } else {
       var animator = result.animator;
       var runtime_errors = result.runtime_errors;
@@ -180,6 +199,31 @@ var LessonEnvironment = React.createClass({
                                                 currentChallenge,
                                                 this.state.sourceCode,
                                                 success);
+  },
+
+  _handleCompilationErrors: function(errors) {
+    this.refs.code_messages.setErrors(
+      errors.map(function(error) { return error.message; }));
+
+    // Highlight relevant code ranges.
+    var highlightRanges = [];
+    for (var i = 0; i < errors.length; i++) {
+      var sourceCodeRange = errors[i].range;
+      if (sourceCodeRange) {
+        highlightRanges.push(
+          {
+            beginLine: sourceCodeRange.getBegin().getLine(),
+            endLine: sourceCodeRange.getEnd().getLine(),
+            beginColumn: sourceCodeRange.getBegin().getColumn(),
+            endColumn: sourceCodeRange.getEnd().getColumn(),
+            style: {
+              backgroundColor: '#ff9999',
+            },
+            ephemeral: true,
+          });
+      }
+    }
+    this._codeEditor.highlightRanges(highlightRanges);
   },
 
   _handleAnimationEvent: function(event) {
@@ -293,7 +337,7 @@ var LessonEnvironment = React.createClass({
                             this.styles.centerPanelDocked :
                             this.styles.centerPanel}>
                   <div style={this.styles.codeEditor}>
-                    <CodeEditor code={this.state.sourceCode}
+                    <CodeEditor initialCode={this.state.initialCode}
                                 onChange={this._updateCode}
                                 limit={currentChallenge.getCodeSizeLimit()}
                                 highlightingRanges={this.state.highlightingRanges}

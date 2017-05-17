@@ -172,7 +172,10 @@ Object.assign(BatteriesGameRunner.prototype, {
     this.reset(this._gameParameters);
 
     var interpreter = new Robolang.Interpreter();
-    var compilation_errors = interpreter.parse(sourceCode);
+    var compilation_errors = interpreter.parse(sourceCode,
+                                               [Actions.MOVE_FORWARD,
+                                                Actions.TURN_LEFT,
+                                                Actions.TURN_RIGHT]);
 
     if (compilation_errors) {
       return {compilation_errors: compilation_errors};

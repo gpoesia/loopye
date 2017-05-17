@@ -124,7 +124,10 @@ Object.assign(AsteroidsGameRunner.prototype, {
     this.reset(this._gameParameters);
 
     var interpreter = new Robolang.Interpreter();
-    var compilation_errors = interpreter.parse(sourceCode);
+    var compilation_errors = interpreter.parse(sourceCode,
+                                               [Actions.WAIT,
+                                                Actions.MOVE_LEFT,
+                                                Actions.MOVE_RIGHT]);
 
     if (compilation_errors) {
       return {compilation_errors: compilation_errors};
