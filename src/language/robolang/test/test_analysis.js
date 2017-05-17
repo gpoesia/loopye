@@ -9,7 +9,9 @@ var assert = require("assert");
 
 function testNodeTypeCountAnalysis() {
   var program =
-    Robolang.CompileRobolangProgram("2{ enquanto x {Q} 3{XY} se a{se b{ZW} K se c{X}}}");
+      Robolang.CompileRobolangProgram("2{ enquanto x {Q} 3{XY} se a{se b{ZW} K se c{X}}}",
+                                      ["X", "Y", "Q", "Z", "W", "K"],
+                                      ["x", "a", "b", "c"]);
   assert.equal(true, program instanceof Robolang.RobolangProgram);
 
   var counts = Analysis.countNodeTypes(program);
@@ -20,13 +22,15 @@ function testNodeTypeCountAnalysis() {
 }
 
 function testMaxLoopTripCount() {
-  var program = Robolang.CompileRobolangProgram("20000{X 1000{Y}} 3000{Z}");
-  assert.equal(true, program instanceof Robolang.RobolangProgram);
-  assert.equal(20000, Analysis.getMaxLoopTripCount(program));
+  var program = Robolang.CompileRobolangProgram("15{X 10{Y}} 19{Z}",
+                                                ["X", "Y", "Z"]);
+    assert.equal(true, program instanceof Robolang.RobolangProgram);
+  assert.equal(19, Analysis.getMaxLoopTripCount(program));
 
-  program = Robolang.CompileRobolangProgram("20000{X 100000{Y}} 3000{Z}");
+  program = Robolang.CompileRobolangProgram("10{X 15{Y}} 20{Z}",
+                                            ["X", "Y", "Z"]);
   assert.equal(true, program instanceof Robolang.RobolangProgram);
-  assert.equal(100000, Analysis.getMaxLoopTripCount(program));
+  assert.equal(20, Analysis.getMaxLoopTripCount(program));
 }
 
 module.exports = {
