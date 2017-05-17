@@ -39,4 +39,5 @@ node_modules
 
 build
 bundle.js
+bundle-min.js
 test_bundle.js
