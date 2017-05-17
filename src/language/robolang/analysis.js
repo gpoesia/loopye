@@ -32,14 +32,19 @@ function countNodeTypes(program) {
 
 function getMaxLoopTripCount(program) {
   var maxLoop = 0;
+  var location = null;
   traverseAST(program.getASTRoot(),
               function(node) {
                 if (node.type.name == Parser.ASTNodeTypes.LOOP.name) {
                   maxLoop = Math.max(maxLoop, node.attributes.tripCount);
+                  location = node.location;
                 }
               });
 
-  return maxLoop;
+  return {
+      maxLoop: maxLoop,
+      location: location
+  };
 }
 
 module.exports = {
